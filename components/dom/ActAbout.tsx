@@ -93,7 +93,7 @@ export function ActAbout() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.3 + i * 0.07 }}
-                  className="flex flex-col gap-1 p-4 rounded-xl border border-white/8 bg-white/[0.02]"
+                  className="flex flex-col gap-1 p-4 rounded-xl border border-white/8 bg-white/[0.02] hover:border-[#FF6B2C]/30 transition-colors"
                 >
                   <span className="font-display font-black text-white text-2xl md:text-3xl tracking-tight">
                     {s.value}

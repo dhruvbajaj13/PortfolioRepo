@@ -169,7 +169,7 @@ export function ActCPStats() {
                   onClick={() => setActiveIdx(i)}
                   className={`group text-left w-full px-6 py-5 rounded-2xl border transition-all duration-300 flex justify-between items-center gap-4 ${
                     activeIdx === i
-                      ? 'bg-white/5 border-white/30'
+                      ? 'bg-[#FF6B2C]/5 border-[#FF6B2C]/40 shadow-[0_0_20px_rgba(255,107,44,0.08)]'
                       : 'bg-white/[0.02] border-white/8 hover:border-white/20 hover:bg-white/[0.04]'
                   }`}
                 >
@@ -181,14 +181,14 @@ export function ActCPStats() {
                       <span className={`font-display font-bold text-lg md:text-xl tracking-tight transition-colors leading-tight ${activeIdx === i ? 'text-white' : 'text-white/50 group-hover:text-white/85'}`}>
                         {plat.name}
                       </span>
-                      <span className={`text-xs font-light transition-colors ${activeIdx === i ? 'text-white/50' : 'text-white/35 group-hover:text-white/50'}`}>
+                      <span className={`text-xs font-light transition-colors ${activeIdx === i ? 'text-[#FF6B2C]' : 'text-white/35 group-hover:text-white/50'}`}>
                         {plat.tagline}
                       </span>
                     </div>
                   </div>
 
                   {/* Active indicator line on right */}
-                  <div className={`w-0.5 h-10 rounded-full flex-shrink-0 transition-all duration-300 ${activeIdx === i ? 'bg-white' : 'bg-white/10'}`} />
+                  <div className={`w-0.5 h-10 rounded-full flex-shrink-0 transition-all duration-300 ${activeIdx === i ? 'bg-[#FF6B2C] shadow-[0_0_8px_#FF6B2C]' : 'bg-white/10'}`} />
                 </motion.button>
               );
             })}
@@ -221,7 +221,7 @@ export function ActCPStats() {
                     </div>
                   </div>
 
-                  <span className="text-xs font-bold font-mono px-3.5 py-1.5 rounded-full border border-white/15 bg-white/5 text-white shadow-sm">
+                  <span className="text-xs font-bold font-mono px-3.5 py-1.5 rounded-full border border-[#FF6B2C]/25 bg-[#FF6B2C]/10 text-[#FF6B2C] shadow-sm">
                     {active.badge}
                   </span>
                 </div>
@@ -229,11 +229,11 @@ export function ActCPStats() {
                 {/* Stats Row */}
                 <div className="grid grid-cols-3 gap-4 py-2">
                   {active.stats.map((s, idx) => (
-                    <div key={s.label} className="flex flex-col gap-1 p-4 rounded-xl border border-white/8 bg-white/[0.02] text-center">
+                    <div key={s.label} className="flex flex-col gap-1 p-4 rounded-xl border border-white/8 bg-white/[0.02] text-center hover:border-[#FF6B2C]/30 transition-colors">
                       <span className="font-display font-black text-2xl md:text-3xl text-white tracking-tight">
                         <AnimatedCounter target={s.value} />
                       </span>
-                      <span className="font-mono text-[10px] tracking-widest text-white/40 uppercase">
+                      <span className="font-mono text-[10px] tracking-widest text-[#FF6B2C]/70 uppercase">
                         {s.label}
                       </span>
                     </div>
@@ -276,7 +276,7 @@ export function ActCPStats() {
                     href={active.profileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl border border-white/10 hover:border-white text-white font-semibold uppercase tracking-wider text-xs bg-white/5 hover:bg-white hover:text-black transition-all duration-300 shadow-lg hover:scale-105"
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl border border-white/10 hover:border-[#FF6B2C] text-white font-semibold uppercase tracking-wider text-xs bg-white/5 hover:bg-[#FF6B2C] hover:text-black transition-all duration-300 shadow-lg hover:scale-105"
                   >
                     <span>View Profile</span>
                     <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

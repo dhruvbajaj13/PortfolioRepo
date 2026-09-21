@@ -10,8 +10,10 @@ module.exports = {
       colors: {
         background: '#030306',
         cardBackground: 'rgba(10, 11, 20, 0.75)',
-        cyanAccent: '#00f0ff',
-        blueAccent: '#0066ff',
+        cyanAccent: '#FF6B2C',
+        orangeAccent: '#FF6B2C',
+        amberAccent: '#FF8F5E',
+        blueAccent: '#FF8F5E',
         violetAccent: '#7000ff',
         magentaAccent: '#d946ef',
       },

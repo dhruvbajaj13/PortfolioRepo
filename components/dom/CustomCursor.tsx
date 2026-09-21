@@ -1,20 +1,36 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export function CustomCursor() {
-  const [position, setPosition] = useState({ x: -100, y: -100 });
-  const [isHovered, setIsHovered] = useState(false);
-  const [isClicked, setIsClicked] = useState(false);
+  const posRef = useRef({ x: -100, y: -100 });
+  const hoveredRef = useRef(false);
+  const clickedRef = useRef(false);
+  const rafRef = useRef<number | null>(null);
+  const [renderState, setRenderState] = useState({ x: -100, y: -100, hovered: false, clicked: false });
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
+    const update = () => {
+      setRenderState({
+        x: posRef.current.x,
+        y: posRef.current.y,
+        hovered: hoveredRef.current,
+        clicked: clickedRef.current,
+      });
+      rafRef.current = null;
+    };
 
-      // Check if hovering interactive element
+    const scheduleUpdate = () => {
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(update);
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      posRef.current = { x: e.clientX, y: e.clientY };
       const target = e.target as HTMLElement;
-      if (
+      hoveredRef.current = !!(
         target &&
         (target.tagName === 'BUTTON' ||
           target.tagName === 'A' ||
@@ -22,17 +38,20 @@ export function CustomCursor() {
           target.closest('a') ||
           target.getAttribute('role') === 'button' ||
           target.classList.contains('interactive'))
-      ) {
-        setIsHovered(true);
-      } else {
-        setIsHovered(false);
-      }
+      );
+      scheduleUpdate();
     };
 
-    const handleMouseDown = () => setIsClicked(true);
-    const handleMouseUp = () => setIsClicked(false);
+    const handleMouseDown = () => {
+      clickedRef.current = true;
+      scheduleUpdate();
+    };
+    const handleMouseUp = () => {
+      clickedRef.current = false;
+      scheduleUpdate();
+    };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
 
@@ -40,33 +59,36 @@ export function CustomCursor() {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
+  const { x, y, hovered, clicked } = renderState;
+
   return (
     <>
-      {/* Outer Sleek White Ring */}
+      {/* Outer Sleek Ring */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-50 rounded-full border border-white/20 mix-blend-difference"
         animate={{
-          x: position.x - (isHovered ? 20 : 12),
-          y: position.y - (isHovered ? 20 : 12),
-          width: isHovered ? 40 : 24,
-          height: isHovered ? 40 : 24,
-          scale: isClicked ? 0.8 : 1,
-          backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0)',
-          borderColor: isHovered ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)',
+          x: x - (hovered ? 20 : 12),
+          y: y - (hovered ? 20 : 12),
+          width: hovered ? 40 : 24,
+          height: hovered ? 40 : 24,
+          scale: clicked ? 0.8 : 1,
+          backgroundColor: hovered ? 'rgba(255, 107, 44, 0.15)' : 'rgba(255, 255, 255, 0)',
+          borderColor: hovered ? 'rgba(255, 107, 44, 0.7)' : 'rgba(255, 255, 255, 0.2)',
         }}
         transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.4 }}
       />
 
       {/* Inner Classic Center Dot */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-50 w-1.5 h-1.5 bg-white rounded-full mix-blend-difference"
+        className="fixed top-0 left-0 pointer-events-none z-50 w-1.5 h-1.5 bg-[#FF6B2C] rounded-full mix-blend-difference"
         animate={{
-          x: position.x - 3,
-          y: position.y - 3,
-          scale: isHovered ? 1.4 : 1,
+          x: x - 3,
+          y: y - 3,
+          scale: hovered ? 1.4 : 1,
         }}
         transition={{ type: 'spring', damping: 30, stiffness: 500, mass: 0.1 }}
       />

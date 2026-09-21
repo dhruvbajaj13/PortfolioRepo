@@ -195,7 +195,7 @@ function ProjectCardMedia({
                 }}
                 className={`px-2 py-0.5 rounded-full text-[8.5px] font-mono transition-all backdrop-blur-md border ${
                   isActive
-                    ? 'bg-white text-black font-bold border-white shadow-[0_0_8px_rgba(255,255,255,0.4)] scale-105'
+                    ? 'bg-[#FF6B2C] text-black font-bold border-[#FF6B2C] shadow-[0_0_8px_rgba(255,107,44,0.4)] scale-105'
                     : 'bg-black/60 text-white/50 border-white/10 hover:text-white hover:border-white/30'
                 }`}
                 title={`Switch to ${label}`}
@@ -250,7 +250,7 @@ export function ActProjects() {
               viewport={{ once: true, margin: '-30px' }}
               transition={{ duration: 0.4, delay: (i % 2) * 0.1 }}
               whileHover={{ y: -4 }}
-              className="group/card relative rounded-2xl border border-white/10 bg-[#0C0C0C] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:border-white/25 hover:shadow-[0_16px_45px_rgba(0,0,0,0.95)] transition-all duration-300 flex flex-col justify-between"
+              className="group/card relative rounded-2xl border border-white/10 bg-[#0C0C0C] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:border-[#FF6B2C]/30 hover:shadow-[0_16px_45px_rgba(255,107,44,0.12)] transition-all duration-300 flex flex-col justify-between"
             >
               {/* macOS Browser Header Bar */}
               <div className="flex items-center justify-between px-3.5 py-2 bg-[#121212] border-b border-white/8">
@@ -275,7 +275,7 @@ export function ActProjects() {
                     href={proj.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 hover:bg-white/10 transition-all bg-[#080808]"
+                    className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-white hover:border-[#FF6B2C]/60 hover:bg-white/10 transition-all bg-[#080808]"
                     title="View GitHub Repository"
                   >
                     <Github className="w-2.5 h-2.5" />
@@ -284,7 +284,7 @@ export function ActProjects() {
                     href={proj.liveDemo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2 h-6 rounded-full bg-white text-black font-bold uppercase tracking-wider text-[8px] flex items-center gap-0.5 hover:scale-105 transition-transform shadow-sm"
+                    className="px-2 h-6 rounded-full bg-[#FF6B2C] text-black font-bold uppercase tracking-wider text-[8px] flex items-center gap-0.5 hover:scale-105 transition-transform shadow-[0_0_10px_rgba(255,107,44,0.4)]"
                     title="Open Live App"
                   >
                     <span>Live</span>
@@ -309,13 +309,13 @@ export function ActProjects() {
                   {/* Problem & Solution Block */}
                   <div className="pt-1 space-y-1.5 text-[10.5px] text-white/65 leading-relaxed font-light">
                     <div>
-                      <span className="font-mono text-[8px] tracking-widest text-white/30 uppercase block mb-0.5 font-bold">
+                      <span className="font-mono text-[8px] tracking-widest text-[#FF6B2C]/80 uppercase block mb-0.5 font-bold">
                         // Problem
                       </span>
                       <p className="line-clamp-2">{proj.problem}</p>
                     </div>
                     <div>
-                      <span className="font-mono text-[8px] tracking-widest text-white/30 uppercase block mb-0.5 font-bold">
+                      <span className="font-mono text-[8px] tracking-widest text-[#FF6B2C]/80 uppercase block mb-0.5 font-bold">
                         // Solution
                       </span>
                       <p className="line-clamp-2">{proj.solution}</p>
@@ -329,7 +329,7 @@ export function ActProjects() {
                     {proj.techStack.map((tech) => (
                       <span
                         key={tech}
-                        className="px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.04] text-[9px] font-mono text-white/70 hover:border-white/30 hover:text-white transition-colors"
+                        className="px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.04] text-[9px] font-mono text-white/70 hover:border-[#FF6B2C]/40 hover:text-[#FF6B2C] transition-colors"
                       >
                         {tech}
                       </span>

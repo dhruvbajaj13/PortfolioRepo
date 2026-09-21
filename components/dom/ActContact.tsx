@@ -209,7 +209,7 @@ export function ActContact() {
                         placeholder="e.g. John Doe"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20"
+                        className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-[#FF6B2C]/50 focus:ring-1 focus:ring-[#FF6B2C]/30 transition-all placeholder:text-white/20"
                       />
                     </div>
 
@@ -223,7 +223,7 @@ export function ActContact() {
                         placeholder="you@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20"
+                        className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-[#FF6B2C]/50 focus:ring-1 focus:ring-[#FF6B2C]/30 transition-all placeholder:text-white/20"
                       />
                     </div>
                   </div>
@@ -238,7 +238,7 @@ export function ActContact() {
                       placeholder="Tell me about your project or opportunity..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20 resize-none"
+                      className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-[#FF6B2C]/50 focus:ring-1 focus:ring-[#FF6B2C]/30 transition-all placeholder:text-white/20 resize-none"
                     />
                   </div>
 
@@ -251,7 +251,7 @@ export function ActContact() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="px-7 py-3 rounded-full bg-white font-sans text-sm font-bold text-black shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_35px_rgba(255,255,255,0.5)] hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2"
+                      className="px-7 py-3 rounded-full bg-[#FF6B2C] font-sans text-sm font-bold text-black shadow-[0_0_20px_rgba(255,107,44,0.35)] hover:shadow-[0_0_35px_rgba(255,107,44,0.6)] hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2"
                     >
                       <span>{isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}</span>
                       <Send className={`w-4 h-4 ${isSubmitting ? 'animate-bounce' : ''}`} />
@@ -307,7 +307,7 @@ export function ActContact() {
 
             <button
               onClick={handleCopyEmail}
-              className="ml-4 px-3.5 py-1.5 rounded-lg bg-[#050505] border border-white/10 font-mono text-xs font-semibold text-white hover:border-white hover:text-white/80 transition-colors flex items-center gap-1.5"
+              className="ml-4 px-3.5 py-1.5 rounded-lg bg-[#050505] border border-white/10 font-mono text-xs font-semibold text-white hover:border-[#FF6B2C] hover:text-[#FF6B2C] transition-colors flex items-center gap-1.5"
             >
               {copiedEmail ? (
                 <>
@@ -336,7 +336,7 @@ export function ActContact() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="relative overflow-hidden group p-6 rounded-2xl border border-white/10 hover:border-white/30 hover:bg-white/[0.05] flex flex-col items-center justify-center gap-3 transition-all duration-300 shadow-xl bg-[#0C0C0C] hover:scale-105"
+              className="relative overflow-hidden group p-6 rounded-2xl border border-white/10 hover:border-[#FF6B2C]/40 hover:bg-[#FF6B2C]/[0.04] flex flex-col items-center justify-center gap-3 transition-all duration-300 shadow-xl bg-[#0C0C0C] hover:scale-105"
             >
               <div className="relative z-10 flex flex-col items-center gap-2.5">
                 {card.icon}

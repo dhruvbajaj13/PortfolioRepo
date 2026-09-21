@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, ArrowDown, ExternalLink, Download, Terminal, Code2, Cpu, Activity } from "lucide-react";
 import * as THREE from "three";
 
-// ─── 1. Restored 3D Geometric Spinning Wireframes & Floating Particle Constellation ───
+
+// ─── 1. Smooth 3D Geometric Spinning Wireframes + Floating Particle Constellation ───
 const Hero3DGeometricBackground = () => {
   const mountRef = useRef<HTMLDivElement>(null);
 
@@ -20,113 +21,84 @@ const Hero3DGeometricBackground = () => {
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
     camera.position.z = 6;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: false,
+      alpha: true,
+      powerPreference: 'low-power',
+    });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(1); // Keep at 1 for perf
     container.appendChild(renderer.domElement);
 
-    // Spinning Wireframe Icosahedron — Left
+    // Left spinning wireframe icosahedron
     const icoGeo1 = new THREE.IcosahedronGeometry(1.6, 1);
-    const icoMat1 = new THREE.MeshBasicMaterial({
-      color: 0x00e5ff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.18,
-    });
+    const icoMat1 = new THREE.MeshBasicMaterial({ color: 0x00e5ff, wireframe: true, transparent: true, opacity: 0.16 });
     const icoMesh1 = new THREE.Mesh(icoGeo1, icoMat1);
     icoMesh1.position.set(-3.5, 0.5, -2);
     scene.add(icoMesh1);
 
-    // Spinning Wireframe Icosahedron — Right
+    // Right spinning wireframe icosahedron
     const icoGeo2 = new THREE.IcosahedronGeometry(2.2, 1);
-    const icoMat2 = new THREE.MeshBasicMaterial({
-      color: 0x00e5ff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.22,
-    });
+    const icoMat2 = new THREE.MeshBasicMaterial({ color: 0x00e5ff, wireframe: true, transparent: true, opacity: 0.19 });
     const icoMesh2 = new THREE.Mesh(icoGeo2, icoMat2);
     icoMesh2.position.set(3.8, -0.2, -3);
     scene.add(icoMesh2);
 
-    // Floating Particle Constellation Field
-    const particleCount = 600;
+    // Floating particle constellation
+    const particleCount = 400;
     const particleGeo = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const cyan = new THREE.Color(0x00e5ff);
     const white = new THREE.Color(0xffffff);
-
     for (let i = 0; i < particleCount; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 16;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
       const c = Math.random() > 0.45 ? cyan : white;
-      colors[i * 3] = c.r;
-      colors[i * 3 + 1] = c.g;
-      colors[i * 3 + 2] = c.b;
+      colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
     }
-    particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    particleGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-    const particleMat = new THREE.PointsMaterial({
-      size: 0.035,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.65,
-      blending: THREE.AdditiveBlending,
-    });
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const particleMat = new THREE.PointsMaterial({ size: 0.03, vertexColors: true, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending });
     const particles = new THREE.Points(particleGeo, particleMat);
     scene.add(particles);
 
-    // Gentle Mouse Parallax
-    let mouseX = 0;
-    let mouseY = 0;
+    // Gentle mouse parallax
+    let mouseX = 0, mouseY = 0;
     const onMouseMove = (e: MouseEvent) => {
       mouseX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
     };
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener('mousemove', onMouseMove);
 
     let animId: number;
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      icoMesh1.rotation.y += 0.003;
-      icoMesh1.rotation.x += 0.002;
-      icoMesh2.rotation.y -= 0.0025;
-      icoMesh2.rotation.x -= 0.0015;
-      particles.rotation.y += 0.0006;
-      particles.rotation.x += 0.0003;
-
-      camera.position.x += (mouseX * 0.35 - camera.position.x) * 0.04;
-      camera.position.y += (mouseY * 0.25 - camera.position.y) * 0.04;
+      icoMesh1.rotation.y += 0.003; icoMesh1.rotation.x += 0.002;
+      icoMesh2.rotation.y -= 0.0025; icoMesh2.rotation.x -= 0.0015;
+      particles.rotation.y += 0.0005;
+      camera.position.x += (mouseX * 0.3 - camera.position.x) * 0.04;
+      camera.position.y += (mouseY * 0.2 - camera.position.y) * 0.04;
       camera.lookAt(0, 0, 0);
-
       renderer.render(scene, camera);
     };
     animate();
 
     const handleResize = () => {
       if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      const w = container.clientWidth, h = container.clientHeight;
+      camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', onMouseMove);
       cancelAnimationFrame(animId);
       if (container && renderer.domElement) container.removeChild(renderer.domElement);
-      icoGeo1.dispose();
-      icoMat1.dispose();
-      icoGeo2.dispose();
-      icoMat2.dispose();
-      particleGeo.dispose();
-      particleMat.dispose();
-      renderer.dispose();
+      icoGeo1.dispose(); icoMat1.dispose(); icoGeo2.dispose(); icoMat2.dispose();
+      particleGeo.dispose(); particleMat.dispose(); renderer.dispose();
     };
   }, []);
 
@@ -164,9 +136,9 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
     camera.position.set(0, 1.35, 4.6);
     camera.lookAt(0, 0.45, 0);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(1); // Fixed at 1 for smooth perf
     container.appendChild(renderer.domElement);
 
     // Root Group for Mouse Parallax
@@ -174,12 +146,13 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
     deskGroup.position.set(0, -0.4, 0);
     scene.add(deskGroup);
 
-    // 1. CRT Screen Canvas
+    // 1. CRT Screen Canvas (reduced resolution for smooth updates)
     const screenCanvas = document.createElement("canvas");
-    screenCanvas.width = 512;
-    screenCanvas.height = 384;
+    screenCanvas.width = 256;
+    screenCanvas.height = 192;
     const ctx = screenCanvas.getContext("2d");
     const screenTexture = new THREE.CanvasTexture(screenCanvas);
+    screenTexture.minFilter = THREE.LinearFilter;
 
     // Materials
     const darkChassisMat = new THREE.MeshStandardMaterial({
@@ -236,7 +209,7 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
       nctx.fillStyle = "#fef08a";
       nctx.fillRect(0, 0, 128, 128);
       nctx.fillStyle = "#713f12";
-      nctx.font = "bold 15px monospace";
+      nctx.font = "bold 8px monospace";
       nctx.textAlign = "center";
       nctx.fillText("BUILD", 64, 42);
       nctx.fillText("IMPACT", 64, 72);
@@ -293,7 +266,7 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
     // Keyboard Underglow RGB Light Strip
     const underglowGeo = new THREE.BoxGeometry(1.8, 0.01, 0.72);
     const underglowMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+      color: 0xff6b2c,
       transparent: true,
       opacity: 0.35,
     });
@@ -317,7 +290,7 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
     // Mouse sensor glow
     const mouseGlow = new THREE.Mesh(
       new THREE.SphereGeometry(0.02, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0x06b6d4 })
+      new THREE.MeshBasicMaterial({ color: 0xff6b2c })
     );
     mouseGlow.position.set(1.3, 0.075, 1.08);
     deskGroup.add(mouseGlow);
@@ -391,7 +364,7 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
     scene.add(ambientLight);
 
-    const screenLight = new THREE.PointLight(0x38bdf8, 2.2, 4.5);
+    const screenLight = new THREE.PointLight(0xff6b2c, 2.2, 4.5);
     screenLight.position.set(0, 1.25, 0.7);
     deskGroup.add(screenLight);
 
@@ -415,7 +388,7 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
     dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
     const dustMat = new THREE.PointsMaterial({
       size: 0.02,
-      color: 0x38bdf8,
+      color: 0xff6b2c,
       transparent: true,
       opacity: 0.45,
     });
@@ -542,12 +515,12 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
         if (mode === "matrix") {
           // ── MATRIX DIGITAL RAIN ──
           ctx.fillStyle = "rgba(4, 9, 14, 0.2)";
-          ctx.fillRect(0, 0, 512, 384);
+          ctx.fillRect(0, 0, 256, 192);
 
-          ctx.font = "bold 14px monospace";
+          ctx.font = "bold 7px monospace";
           for (let i = 0; i < matrixCols; i++) {
             const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-            const x = 16 + i * 17.5;
+            const x = 8 + i * 9;
             const y = matrixDrops[i] * 18;
 
             // Head character is glowing white/cyan, body is matrix green
@@ -558,7 +531,7 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
             const prevChar = matrixChars[Math.floor(Math.random() * matrixChars.length)];
             ctx.fillText(prevChar, x, y - 18);
 
-            if (y > 384 && Math.random() > 0.96) {
+            if (y > 192 && Math.random() > 0.96) {
               matrixDrops[i] = 0;
             }
             matrixDrops[i]++;
@@ -566,29 +539,29 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
 
           // Matrix Title Banner
           ctx.fillStyle = "rgba(2, 6, 23, 0.85)";
-          ctx.fillRect(10, 10, 492, 28);
+          ctx.fillRect(5, 5, 246, 14);
           ctx.strokeStyle = "rgba(34, 197, 94, 0.4)";
-          ctx.strokeRect(10, 10, 492, 28);
+          ctx.strokeRect(5, 5, 246, 14);
           ctx.fillStyle = "#4ade80";
-          ctx.font = "bold 13px monospace";
-          ctx.fillText("● MATRIX STREAM // DHRUV.SYS ACTIVE", 24, 28);
+          ctx.font = "bold 7px monospace";
+          ctx.fillText("● MATRIX STREAM // DHRUV.SYS ACTIVE", 12, 14);
 
         } else if (mode === "specs") {
           // ── NEOFETCH / SYSTEM SPECS ──
           if (frame % 4 === 0) {
             ctx.fillStyle = "#0a0e17";
-            ctx.fillRect(0, 0, 512, 384);
+            ctx.fillRect(0, 0, 256, 192);
 
             // Scanlines
             ctx.fillStyle = "rgba(0, 0, 0, 0.22)";
-            for (let y = 0; y < 384; y += 4) {
-              ctx.fillRect(0, y, 512, 2);
+            for (let y = 0; y < 384; y += 2) {
+              ctx.fillRect(0, y, 256, 1);
             }
 
             // Top Bar
             ctx.fillStyle = "#38bdf8";
-            ctx.font = "bold 16px monospace";
-            ctx.fillText("● ● ●  neofetch - dhruv@nsut", 24, 32);
+            ctx.font = "bold 8px monospace";
+            ctx.fillText("● ● ●  neofetch - dhruv@nsut", 12, 16);
 
             ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
             ctx.beginPath();
@@ -598,7 +571,7 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
 
             // ASCII Art Mascot (Left)
             ctx.fillStyle = "#38bdf8";
-            ctx.font = "14px monospace";
+            ctx.font = "7px monospace";
             const asciiArt = [
               "    /\\_/\\    ",
               "   ( o.o )   ",
@@ -608,11 +581,11 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
               "   ^^   ^^   ",
             ];
             for (let a = 0; a < asciiArt.length; a++) {
-              ctx.fillText(asciiArt[a], 24, 88 + a * 24);
+              ctx.fillText(asciiArt[a], 12, 44 + a * 12);
             }
 
             // Neofetch Specs List (Right)
-            ctx.font = "14px monospace";
+            ctx.font = "7px monospace";
             const specs = [
               { label: "USER", val: "dhruv@nsut.ac.in", col: "#38bdf8" },
               { label: "OS", val: "DhruvOS v2.5 (x86_64)", col: "#e2e8f0" },
@@ -626,20 +599,20 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
 
             for (let s = 0; s < specs.length; s++) {
               ctx.fillStyle = "#94a3b8";
-              ctx.fillText(`${specs[s].label}: `, 190, 78 + s * 28);
+              ctx.fillText(`${specs[s].label}: `, 95, 39 + s * 14);
               ctx.fillStyle = specs[s].col;
-              ctx.fillText(specs[s].val, 280, 78 + s * 28);
+              ctx.fillText(specs[s].val, 140, 39 + s * 14);
             }
 
             // Memory Bar
             ctx.fillStyle = "#94a3b8";
-            ctx.fillText("MEMORY: [██████████████░░] 88%", 190, 310);
+            ctx.fillText("MEMORY: [██████████████░░] 88%", 95, 155);
 
             // Color Palette squares at bottom
             const palette = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#a855f7"];
             for (let p = 0; p < palette.length; p++) {
               ctx.fillStyle = palette[p];
-              ctx.fillRect(190 + p * 34, 332, 26, 14);
+              ctx.fillRect(95 + p * 17, 166, 13, 7);
             }
           }
 
@@ -647,23 +620,23 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
           // ── CYBERPUNK AUDIO & CPU EQUALIZER ──
           if (frame % 2 === 0) {
             ctx.fillStyle = "#090d16";
-            ctx.fillRect(0, 0, 512, 384);
+            ctx.fillRect(0, 0, 256, 192);
 
             // Header
             ctx.fillStyle = "#a855f7";
-            ctx.font = "bold 15px monospace";
-            ctx.fillText("● SPECTRUM AUDIO & CORE TELEMETRY", 24, 34);
+            ctx.font = "bold 8px monospace";
+            ctx.fillText("● SPECTRUM AUDIO & CORE TELEMETRY", 12, 17);
 
             // EQ Bars
-            const numBars = 24;
-            const barWidth = 14;
-            const barGap = 6;
-            const startX = 20;
+            const numBars = 16;
+            const barWidth = 7;
+            const barGap = 3;
+            const startX = 10;
 
             for (let b = 0; b < numBars; b++) {
               const freq = Math.sin(frame * 0.1 + b * 0.45) * 0.5 + 0.5;
-              const barHeight = 40 + freq * 180 + Math.sin(frame * 0.04 * b) * 30;
-              const y = 290 - barHeight;
+              const barHeight = 20 + freq * 90 + Math.sin(frame * 0.04 * b) * 15;
+              const y = 145 - barHeight;
 
               // Gradient bar
               const grad = ctx.createLinearGradient(0, y, 0, 290);
@@ -675,41 +648,41 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
 
               // Cap
               ctx.fillStyle = "#ffffff";
-              ctx.fillRect(startX + b * (barWidth + barGap), y - 4, barWidth, 2);
+              ctx.fillRect(startX + b * (barWidth + barGap), y - 2, barWidth, 1);
             }
 
             // Realtime CPU Stats below
             ctx.fillStyle = "#38bdf8";
-            ctx.font = "13px monospace";
-            ctx.fillText(`CPU: ${(24 + Math.sin(frame * 0.08) * 8).toFixed(1)}%   RAM: 4.8 / 16 GB   LATENCY: 12ms`, 24, 340);
-            ctx.fillText(`CORES: 8 ACTIVE   SYS LOAD: OPTIMAL`, 24, 362);
+            ctx.font = "7px monospace";
+            ctx.fillText(`CPU: ${(24 + Math.sin(frame * 0.08) * 8).toFixed(1)}%   RAM: 4.8 / 16 GB   LATENCY: 12ms`, 12, 170);
+            ctx.fillText(`CORES: 8 ACTIVE   SYS LOAD: OPTIMAL`, 12, 182);
           }
 
         } else {
           // ── TERMINAL BASH (Default) ──
           if (frame % 3 === 0) {
             ctx.fillStyle = "#090c13";
-            ctx.fillRect(0, 0, 512, 384);
+            ctx.fillRect(0, 0, 256, 192);
 
             // CRT Scanlines
             ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
-            for (let y = 0; y < 384; y += 4) {
-              ctx.fillRect(0, y, 512, 2);
+            for (let y = 0; y < 384; y += 2) {
+              ctx.fillRect(0, y, 256, 1);
             }
 
             // Window Title Bar
             ctx.fillStyle = "#38bdf8";
-            ctx.font = "bold 18px monospace";
-            ctx.fillText("● ● ●  bash - 80x24", 24, 34);
+            ctx.font = "bold 9px monospace";
+            ctx.fillText("● ● ●  bash - 80x24", 12, 17);
 
             ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
             ctx.beginPath();
-            ctx.moveTo(20, 48);
-            ctx.lineTo(492, 48);
+            ctx.moveTo(10, 24);
+            ctx.lineTo(246, 24);
             ctx.stroke();
 
             // Lines
-            ctx.font = "15px monospace";
+            ctx.font = "8px monospace";
             const visibleLines = Math.min(Math.floor(frame / 36) + 1, terminalLines.length);
             for (let l = 0; l < visibleLines; l++) {
               const isPrompt = l === 0;
@@ -718,16 +691,16 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
               const text = terminalLines[l];
               if (l === visibleLines - 1 && visibleLines < terminalLines.length) {
                 const charCount = Math.floor(((frame % 36) / 36) * text.length);
-                ctx.fillText(text.slice(0, charCount) + "█", 24, 82 + l * 34);
+                ctx.fillText(text.slice(0, charCount) + "█", 24, 41 + l * 17);
               } else {
-                ctx.fillText(text, 24, 82 + l * 34);
+                ctx.fillText(text, 24, 41 + l * 17);
               }
             }
 
             // Command Hint
             ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-            ctx.font = "12px monospace";
-            ctx.fillText("Tip: Click screen to cycle modes (Terminal, Matrix, Specs, EQ)", 24, 355);
+            ctx.font = "6px monospace";
+            ctx.fillText("Tip: Click screen to cycle modes (Terminal, Matrix, Specs, EQ)", 12, 178);
           }
         }
 
@@ -835,17 +808,18 @@ export function ActHero({
       id="hero"
       className="relative w-full min-h-screen flex flex-col justify-between px-4 sm:px-8 md:px-12 lg:px-16 pt-24 sm:pt-32 pb-10 overflow-hidden z-10 bg-[#050505]"
     >
-      {/* ─── 3D Geometric Spinning Wireframes & Particle Background (Restored) ─── */}
+      {/* ─── Restored 3D Geometric Spinning Wireframes & Floating Particle Constellation ─── */}
       <Hero3DGeometricBackground />
 
-      {/* Subtle Volumetric Ambient Glow in Background */}
-      <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.06)_0%,transparent_70%)] blur-[140px] pointer-events-none z-0" />
+      {/* Subtle Volumetric Ambient Glow */}
+      <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(255,107,44,0.05)_0%,transparent_70%)] blur-[140px] pointer-events-none z-0" />
+      <div className="absolute bottom-1/3 left-1/4 w-[400px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(0,229,255,0.04)_0%,transparent_70%)] blur-[120px] pointer-events-none z-0" />
 
       {/* Main Hero Layout: 2 Columns (Text on Left, Compact 3D Workstation on Right) */}
       <div className="max-w-7xl mx-auto w-full my-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14 relative z-10">
         
         {/* Left Column: Text & Actions */}
-        <div className="w-full lg:w-[54%] flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
+        <div className="w-full lg:w-[54%] flex flex-col items-center text-center space-y-6">
           
           {/* Status Pill Badge */}
           <motion.div
@@ -855,18 +829,18 @@ export function ActHero({
             className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#0C0C0E] border border-white/10 text-xs font-semibold text-slate-300 shadow-md backdrop-blur-md"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Open to SDE Opportunities</span>
+            <span>Open to SDE Internship / FTE</span>
           </motion.div>
 
           {/* Hero Name Title */}
-          <div className="space-y-2">
+          <div className="space-y-2 w-full">
             <motion.h1
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display text-5xl sm:text-7xl md:text-8xl font-black tracking-tight text-white leading-tight"
+              className="font-display text-5xl sm:text-7xl md:text-8xl font-black tracking-tight text-white leading-tight text-center"
             >
-              Dhruv <span className="text-[#FFFFFF]">Bajaj</span>
+              Dhruv <span className="text-[#FF6B2C]">Bajaj</span>
             </motion.h1>
 
             {/* Typewriter Dynamic Role Subtitle */}
@@ -874,11 +848,11 @@ export function ActHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="h-10 flex items-center justify-center lg:justify-start"
+              className="h-10 flex items-center justify-center"
             >
               <span className="font-display text-lg sm:text-2xl font-semibold text-white tracking-wide">
                 {currentText}
-                <span className="text-[#FFFFFF] animate-pulse ml-0.5">|</span>
+                <span className="text-[#FF6B2C] animate-pulse ml-0.5">|</span>
               </span>
             </motion.div>
           </div>
@@ -888,7 +862,7 @@ export function ActHero({
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.6 }}
-            className="font-sans text-base sm:text-lg text-[#A8A8A8] max-w-xl leading-relaxed font-light"
+            className="font-sans text-base sm:text-lg text-[#A8A8A8] max-w-xl leading-relaxed font-light text-center"
           >
             Software engineer building production-grade full-stack web platforms and autonomous AI systems. Dedicated to algorithms, scalable architecture, and clean code.
           </motion.p>
@@ -898,12 +872,12 @@ export function ActHero({
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.7 }}
-            className="pt-1 flex flex-wrap items-center justify-center lg:justify-start gap-3.5"
+            className="pt-1 flex flex-wrap items-center justify-center gap-3.5"
           >
             {/* Primary CTA: View My Work ↗ */}
             <a
               href="#projects"
-              className="px-7 py-3 rounded-2xl bg-[#FFFFFF] font-sans text-sm font-bold text-black shadow-[0_0_25px_rgba(255,255,255,0.4)] hover:shadow-[0_0_40px_rgba(255,255,255,0.7)] hover:scale-105 transition-all duration-300 flex items-center gap-2"
+              className="px-7 py-3 rounded-2xl bg-[#FF6B2C] font-sans text-sm font-bold text-black shadow-[0_0_25px_rgba(255,107,44,0.4)] hover:shadow-[0_0_40px_rgba(255,107,44,0.7)] hover:scale-105 transition-all duration-300 flex items-center gap-2"
             >
               <span>View My Work</span>
               <ExternalLink className="w-4 h-4" />
@@ -914,16 +888,16 @@ export function ActHero({
               href={RESUME_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-7 py-3 rounded-2xl border border-white/15 text-white font-sans text-sm font-bold hover:border-[#FFFFFF]/60 hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg bg-[#0C0C0E]"
+              className="px-7 py-3 rounded-2xl border border-white/15 text-white font-sans text-sm font-bold hover:border-[#FF6B2C]/60 hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg bg-[#0C0C0E]"
             >
-              <Download className="w-4 h-4 text-[#FFFFFF]" />
+              <Download className="w-4 h-4 text-[#FF6B2C]" />
               <span>Download Résumé</span>
             </a>
 
             {/* Tertiary CTA: Contact */}
             <a
               href="#contact"
-              className="px-6 py-3 rounded-2xl border border-white/10 text-white/70 hover:text-white font-sans text-sm font-medium hover:border-white/30 hover:bg-white/5 transition-all duration-300 flex items-center gap-2"
+              className="px-6 py-3 rounded-2xl border border-white/10 text-white/70 hover:text-white font-sans text-sm font-medium hover:border-[#FF6B2C]/40 hover:bg-white/5 transition-all duration-300 flex items-center gap-2"
             >
               <span>Let&apos;s Talk</span>
             </a>
@@ -934,13 +908,13 @@ export function ActHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="pt-1 flex items-center justify-center lg:justify-start gap-3"
+            className="pt-1 flex items-center justify-center gap-3"
           >
             <a
               href="https://github.com/dhruvbajaj13"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-[#FFFFFF] hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
+              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-[#FF6B2C] hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
               aria-label="GitHub"
             >
               <Github className="w-4 h-4" />
@@ -949,14 +923,14 @@ export function ActHero({
               href="https://www.linkedin.com/in/dhruvbajaj13"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-[#FFFFFF] hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
+              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-[#FF6B2C] hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
               aria-label="LinkedIn"
             >
               <Linkedin className="w-4 h-4" />
             </a>
             <a
               href="mailto:d4bajaj@gmail.com"
-              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-[#FFFFFF] hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
+              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-[#FF6B2C] hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
               aria-label="Email"
             >
               <Mail className="w-4 h-4" />
@@ -970,9 +944,9 @@ export function ActHero({
             transition={{ duration: 1, delay: 0.9 }}
             className="pt-2 w-full max-w-lg"
           >
-            <div className="flex flex-row items-center justify-between px-6 py-3.5 rounded-2xl border border-white/10 bg-[#0C0C0E]/90 shadow-xl backdrop-blur-xl">
+            <div className="flex flex-row items-center justify-between px-6 py-3.5 rounded-2xl border border-[#FF6B2C]/20 bg-[#0C0C0E]/90 shadow-xl backdrop-blur-xl">
               <div className="text-center">
-                <div className="font-display text-xl sm:text-2xl font-extrabold text-[#FFFFFF]">1,000+</div>
+                <div className="font-display text-xl sm:text-2xl font-extrabold text-[#FF6B2C]">1,000+</div>
                 <div className="font-mono text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Solved</div>
               </div>
 
@@ -986,7 +960,7 @@ export function ActHero({
               <div className="w-px h-7 bg-white/10" />
 
               <div className="text-center">
-                <div className="font-display text-xl sm:text-2xl font-extrabold text-[#FFFFFF]">Top 3%</div>
+                <div className="font-display text-xl sm:text-2xl font-extrabold text-[#FF6B2C]">Top 3%</div>
                 <div className="font-mono text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Knight</div>
               </div>
             </div>
@@ -1114,10 +1088,10 @@ export function ActHero({
       >
         <button
           onClick={scrollToNext}
-          className="p-2.5 rounded-full border border-white/10 text-[#A8A8A8] hover:text-[#FFFFFF] hover:border-[#FFFFFF]/60 transition-colors bg-[#080808]"
+          className="p-2.5 rounded-full border border-white/10 text-[#A8A8A8] hover:text-[#FFFFFF] hover:border-[#FF6B2C]/60 transition-colors bg-[#080808]"
           aria-label="Scroll to About"
         >
-          <ArrowDown className="w-4 h-4 animate-bounce text-[#FFFFFF]" />
+          <ArrowDown className="w-4 h-4 animate-bounce text-[#FF6B2C]" />
         </button>
       </motion.div>
     </section>
