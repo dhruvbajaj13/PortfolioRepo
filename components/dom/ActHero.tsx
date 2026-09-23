@@ -105,635 +105,375 @@ const Hero3DGeometricBackground = () => {
   return <div ref={mountRef} className="absolute inset-0 z-0 pointer-events-none opacity-80" />;
 };
 
-// ─── 2. Interactive Feature-Packed Retro Developer Workstation ───
+// ─── 2. Smooth CSS + Canvas2D Developer Terminal Card (Zero WebGL Lag) ───
 export type WorkstationScreenMode = "terminal" | "matrix" | "specs" | "visualizer";
 
-interface RetroWorkstationProps {
+const WorkstationCard: React.FC<{
   currentMode: WorkstationScreenMode;
-  onModeChange: (mode: WorkstationScreenMode) => void;
+  onModeChange: (m: WorkstationScreenMode) => void;
   onDuckQuack?: () => void;
-}
-
-const HeroRetroWorkstation3D: React.FC<RetroWorkstationProps> = ({
-  currentMode,
-  onModeChange,
-  onDuckQuack,
-}) => {
-  const mountRef = useRef<HTMLDivElement>(null);
+}> = ({ currentMode, onModeChange, onDuckQuack }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const modeRef = useRef<WorkstationScreenMode>(currentMode);
+  const animRef = useRef<number>(0);
+  const frameRef = useRef<number>(0);
+  const tiltRef = useRef({ x: 0, y: 0 });
+  const cardRef = useRef<HTMLDivElement>(null);
+
   modeRef.current = currentMode;
 
+  // Mouse tilt for card
   useEffect(() => {
-    const container = mountRef.current;
-    if (!container) return;
+    const card = cardRef.current;
+    if (!card) return;
+    const onMove = (e: MouseEvent) => {
+      const rect = card.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) / (rect.width / 2);
+      const dy = (e.clientY - cy) / (rect.height / 2);
+      tiltRef.current = {
+        x: Math.max(-8, Math.min(8, dy * -6)),
+        y: Math.max(-8, Math.min(8, dx * 6)),
+      };
+    };
+    const onLeave = () => { tiltRef.current = { x: 0, y: 0 }; };
+    window.addEventListener("mousemove", onMove);
+    card.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      card.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
 
-    const width = container.clientWidth || 480;
-    const height = container.clientHeight || 360;
+  // Animation loop using requestAnimationFrame + tilt via CSS var
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    let curX = 0, curY = 0;
+    const applyTilt = () => {
+      curX += (tiltRef.current.x - curX) * 0.08;
+      curY += (tiltRef.current.y - curY) * 0.08;
+      card.style.transform = `perspective(900px) rotateX(${curX}deg) rotateY(${curY}deg) scale3d(1.015,1.015,1.015)`;
+      animRef.current = requestAnimationFrame(applyTilt);
+    };
+    animRef.current = requestAnimationFrame(applyTilt);
+    return () => cancelAnimationFrame(animRef.current);
+  }, []);
 
-    // Scene & Camera
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(44, width / height, 0.1, 100);
-    camera.position.set(0, 1.35, 4.6);
-    camera.lookAt(0, 0.45, 0);
+  // Canvas 2D draw loop
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(1); // Fixed at 1 for smooth perf
-    container.appendChild(renderer.domElement);
+    const W = 480, H = 320;
+    canvas.width = W;
+    canvas.height = H;
 
-    // Root Group for Mouse Parallax
-    const deskGroup = new THREE.Group();
-    deskGroup.position.set(0, -0.4, 0);
-    scene.add(deskGroup);
+    // Matrix state
+    const COLS = 22;
+    const drops = Array.from({ length: COLS }, () => Math.floor(Math.random() * -30));
+    const CHARS = "01XYZΩλπΔ√<>{}[]=/*#!ABCDEF";
 
-    // 1. CRT Screen Canvas (reduced resolution for smooth updates)
-    const screenCanvas = document.createElement("canvas");
-    screenCanvas.width = 256;
-    screenCanvas.height = 192;
-    const ctx = screenCanvas.getContext("2d");
-    const screenTexture = new THREE.CanvasTexture(screenCanvas);
-    screenTexture.minFilter = THREE.LinearFilter;
-
-    // Materials
-    const darkChassisMat = new THREE.MeshStandardMaterial({
-      color: 0x18181b,
-      roughness: 0.5,
-      metalness: 0.25,
-    });
-    const beigeBezelMat = new THREE.MeshStandardMaterial({
-      color: 0x242429,
-      roughness: 0.6,
-      metalness: 0.15,
-    });
-
-    // Monitor Base
-    const baseGeo = new THREE.CylinderGeometry(0.5, 0.6, 0.08, 32);
-    const baseMesh = new THREE.Mesh(baseGeo, darkChassisMat);
-    baseMesh.position.set(0, 0.04, 0);
-    deskGroup.add(baseMesh);
-
-    // Monitor Stem
-    const stemGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.5, 16);
-    const stemMesh = new THREE.Mesh(stemGeo, darkChassisMat);
-    stemMesh.position.set(0, 0.3, 0);
-    deskGroup.add(stemMesh);
-
-    // Monitor Chassis Body
-    const monitorBodyGeo = new THREE.BoxGeometry(2.2, 1.55, 0.52);
-    const monitorBody = new THREE.Mesh(monitorBodyGeo, beigeBezelMat);
-    monitorBody.position.set(0, 1.25, 0);
-    deskGroup.add(monitorBody);
-
-    // CRT Screen Face (Interactive)
-    const screenGeo = new THREE.PlaneGeometry(1.9, 1.24);
-    const screenMat = new THREE.MeshBasicMaterial({ map: screenTexture });
-    const screenMesh = new THREE.Mesh(screenGeo, screenMat);
-    screenMesh.position.set(0, 1.25, 0.265);
-    screenMesh.name = "screen";
-    deskGroup.add(screenMesh);
-
-    // Monitor Power LED (Glows & pulses)
-    const ledGeo = new THREE.SphereGeometry(0.025, 16, 16);
-    const ledMat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
-    const ledMesh = new THREE.Mesh(ledGeo, ledMat);
-    ledMesh.position.set(0.88, 0.58, 0.27);
-    deskGroup.add(ledMesh);
-
-    // Sticky Note on Monitor
-    const noteGeo = new THREE.PlaneGeometry(0.3, 0.3);
-    const noteCanvas = document.createElement("canvas");
-    noteCanvas.width = 128;
-    noteCanvas.height = 128;
-    const nctx = noteCanvas.getContext("2d");
-    if (nctx) {
-      nctx.fillStyle = "#fef08a";
-      nctx.fillRect(0, 0, 128, 128);
-      nctx.fillStyle = "#713f12";
-      nctx.font = "bold 8px monospace";
-      nctx.textAlign = "center";
-      nctx.fillText("BUILD", 64, 42);
-      nctx.fillText("IMPACT", 64, 72);
-      nctx.fillText("// 2025", 64, 102);
-    }
-    const noteTexture = new THREE.CanvasTexture(noteCanvas);
-    const noteMat = new THREE.MeshBasicMaterial({ map: noteTexture });
-    const noteMesh = new THREE.Mesh(noteGeo, noteMat);
-    noteMesh.position.set(0.82, 1.84, 0.27);
-    noteMesh.rotation.z = -0.08;
-    deskGroup.add(noteMesh);
-
-    // 2. Mechanical Keyboard with Coiled Cable
-    const kbBaseGeo = new THREE.BoxGeometry(1.75, 0.08, 0.68);
-    const kbBase = new THREE.Mesh(kbBaseGeo, darkChassisMat);
-    kbBase.position.set(0, 0.05, 1.15);
-    kbBase.rotation.x = 0.08;
-    deskGroup.add(kbBase);
-
-    // Keyboard Keycaps
-    const keyGeo = new THREE.BoxGeometry(0.1, 0.04, 0.085);
-    const keyMatDark = new THREE.MeshStandardMaterial({ color: 0x2e2e33, roughness: 0.5 });
-    const keyMatOrange = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.4 });
-    const keyMatCyan = new THREE.MeshStandardMaterial({ color: 0x06b6d4, roughness: 0.4 });
-
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 12; c++) {
-        const isEsc = r === 3 && c === 0;
-        const isEnter = r === 1 && c === 11;
-        const isSpace = r === 0 && (c >= 4 && c <= 7);
-        if (isSpace && c !== 4) continue;
-        const m = isEsc ? keyMatOrange : isEnter ? keyMatCyan : keyMatDark;
-        const kGeo = isSpace ? new THREE.BoxGeometry(0.48, 0.04, 0.085) : keyGeo;
-        const key = new THREE.Mesh(kGeo, m);
-        const xPos = isSpace ? 0 : (c - 5.5) * 0.125;
-        key.position.set(xPos, 0.08 + (3 - r) * 0.015, 0.9 + r * 0.135);
-        key.rotation.x = 0.08;
-        deskGroup.add(key);
-      }
-    }
-
-    // Coiled Keyboard Cable leading to monitor base
-    const cableCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, 0.06, 0.78),
-      new THREE.Vector3(0.08, 0.07, 0.55),
-      new THREE.Vector3(-0.06, 0.06, 0.35),
-      new THREE.Vector3(0, 0.05, 0.15),
-    ]);
-    const cableGeo = new THREE.TubeGeometry(cableCurve, 24, 0.014, 8, false);
-    const cableMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.6 });
-    const cableMesh = new THREE.Mesh(cableGeo, cableMat);
-    deskGroup.add(cableMesh);
-
-    // Keyboard Underglow RGB Light Strip
-    const underglowGeo = new THREE.BoxGeometry(1.8, 0.01, 0.72);
-    const underglowMat = new THREE.MeshBasicMaterial({
-      color: 0xff6b2c,
-      transparent: true,
-      opacity: 0.35,
-    });
-    const underglowMesh = new THREE.Mesh(underglowGeo, underglowMat);
-    underglowMesh.position.set(0, 0.01, 1.15);
-    deskGroup.add(underglowMesh);
-
-    // 3. Mouse and Mousepad
-    const padGeo = new THREE.BoxGeometry(0.65, 0.01, 0.75);
-    const padMat = new THREE.MeshStandardMaterial({ color: 0x111113, roughness: 0.8 });
-    const pad = new THREE.Mesh(padGeo, padMat);
-    pad.position.set(1.3, 0.005, 1.15);
-    deskGroup.add(pad);
-
-    const mouseGeo = new THREE.BoxGeometry(0.2, 0.075, 0.32);
-    const mouseMat = new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.4 });
-    const mouse = new THREE.Mesh(mouseGeo, mouseMat);
-    mouse.position.set(1.3, 0.045, 1.15);
-    deskGroup.add(mouse);
-
-    // Mouse sensor glow
-    const mouseGlow = new THREE.Mesh(
-      new THREE.SphereGeometry(0.02, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xff6b2c })
-    );
-    mouseGlow.position.set(1.3, 0.075, 1.08);
-    deskGroup.add(mouseGlow);
-
-    // 4. Yellow Rubber Duck Mascot (Clickable!)
-    const duckGroup = new THREE.Group();
-    duckGroup.name = "duck";
-    const duckMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.3 });
-    const duckBody = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), duckMat);
-    duckBody.scale.set(1, 0.8, 1.15);
-    duckGroup.add(duckBody);
-
-    const duckHead = new THREE.Mesh(new THREE.SphereGeometry(0.095, 16, 16), duckMat);
-    duckHead.position.set(0, 0.14, 0.075);
-    duckGroup.add(duckHead);
-
-    const beak = new THREE.Mesh(
-      new THREE.ConeGeometry(0.045, 0.09, 16),
-      new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.4 })
-    );
-    beak.rotation.x = Math.PI / 2;
-    beak.position.set(0, 0.13, 0.18);
-    duckGroup.add(beak);
-
-    // Duck Sunglasses (Cool Developer Touch!)
-    const glassesGeo = new THREE.BoxGeometry(0.14, 0.035, 0.04);
-    const glassesMat = new THREE.MeshBasicMaterial({ color: 0x09090b });
-    const glasses = new THREE.Mesh(glassesGeo, glassesMat);
-    glasses.position.set(0, 0.155, 0.165);
-    duckGroup.add(glasses);
-
-    duckGroup.position.set(-1.25, 0.14, 0.7);
-    duckGroup.rotation.y = 0.45;
-    deskGroup.add(duckGroup);
-
-    // 5. Coffee Mug with Steaming Vapor
-    const mugGeo = new THREE.CylinderGeometry(0.13, 0.11, 0.3, 20);
-    const mugMat = new THREE.MeshStandardMaterial({ color: 0xe4e4e7, roughness: 0.3 });
-    const mug = new THREE.Mesh(mugGeo, mugMat);
-    mug.position.set(-1.28, 0.15, 1.22);
-    deskGroup.add(mug);
-
-    // Coffee surface
-    const coffeeGeo = new THREE.CircleGeometry(0.11, 16);
-    const coffeeMat = new THREE.MeshBasicMaterial({ color: 0x3f2212 });
-    const coffee = new THREE.Mesh(coffeeGeo, coffeeMat);
-    coffee.rotation.x = -Math.PI / 2;
-    coffee.position.set(-1.28, 0.28, 1.22);
-    deskGroup.add(coffee);
-
-    // Steam particles
-    const steamCount = 18;
-    const steamGeo = new THREE.BufferGeometry();
-    const steamPos = new Float32Array(steamCount * 3);
-    for (let i = 0; i < steamCount; i++) {
-      steamPos[i * 3] = -1.28 + (Math.random() - 0.5) * 0.08;
-      steamPos[i * 3 + 1] = 0.32 + Math.random() * 0.35;
-      steamPos[i * 3 + 2] = 1.22 + (Math.random() - 0.5) * 0.08;
-    }
-    steamGeo.setAttribute("position", new THREE.BufferAttribute(steamPos, 3));
-    const steamMat = new THREE.PointsMaterial({
-      size: 0.035,
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.3,
-    });
-    const steam = new THREE.Points(steamGeo, steamMat);
-    deskGroup.add(steam);
-
-    // 6. Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
-    scene.add(ambientLight);
-
-    const screenLight = new THREE.PointLight(0xff6b2c, 2.2, 4.5);
-    screenLight.position.set(0, 1.25, 0.7);
-    deskGroup.add(screenLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.1);
-    dirLight.position.set(3, 4, 3);
-    scene.add(dirLight);
-
-    const rimLight = new THREE.PointLight(0xa855f7, 1.4, 5);
-    rimLight.position.set(-3, 2, -2);
-    scene.add(rimLight);
-
-    // 7. Floating Ambient Particles
-    const dustCount = 100;
-    const dustGeo = new THREE.BufferGeometry();
-    const dustPos = new Float32Array(dustCount * 3);
-    for (let i = 0; i < dustCount; i++) {
-      dustPos[i * 3] = (Math.random() - 0.5) * 6;
-      dustPos[i * 3 + 1] = Math.random() * 3.5;
-      dustPos[i * 3 + 2] = (Math.random() - 0.5) * 5;
-    }
-    dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
-    const dustMat = new THREE.PointsMaterial({
-      size: 0.02,
-      color: 0xff6b2c,
-      transparent: true,
-      opacity: 0.45,
-    });
-    const dust = new THREE.Points(dustGeo, dustMat);
-    scene.add(dust);
-
-    // Matrix Rain State Variables
-    const matrixCols = 28;
-    const matrixDrops: number[] = [];
-    for (let i = 0; i < matrixCols; i++) {
-      matrixDrops[i] = Math.floor(Math.random() * -30);
-    }
-    const matrixChars = "01010101XYZΩλπ∑Δ√<>{}[]=/*#@!ABCDEF";
-
-    // Terminal Lines
-    const terminalLines = [
-      "> DHRUV_BAJAJ.sh --mode=production",
-      "> LeetCode Knight · Rating 1933 [TOP 3%]",
-      "> Full-Stack MERN & Next.js [INITIALIZED]",
-      "> Agentic RAG & LangChain AI [ONLINE]",
-      "> CleanCity SIH IoT System [READY]",
-      "> Systems Operational. Ready to build_",
+    // Terminal lines
+    const termLines = [
+      { text: "$ dhruv_bajaj --mode=sde-ready", color: "#4ade80" },
+      { text: "  LeetCode Knight · 1933 Rating [TOP 3%]", color: "#a78bfa" },
+      { text: "  Full-Stack: Next.js MERN [ONLINE]", color: "#7dd3fc" },
+      { text: "  Agentic RAG + LangChain AI [READY]", color: "#f9a8d4" },
+      { text: "  SIH Winner · CleanCity IoT [DEPLOYED]", color: "#6ee7b7" },
+      { text: "  6+ Production Apps [ACTIVE]", color: "#fcd34d" },
+      { text: "> Systems operational. Ready to ship_", color: "#e2e8f0" },
     ];
 
-    // Duck Animation State
-    let duckHop = 0;
-    let duckHopSpeed = 0;
+    // Spec lines
+    const specLines = [
+      { k: "HANDLE", v: "dhruv@nsut · github.com/dhruvbajaj13", c: "#38bdf8" },
+      { k: "ROLE", v: "Full Stack & AI Engineer", c: "#c084fc" },
+      { k: "LEETCODE", v: "Knight · 1933 · Top 3%", c: "#fbbf24" },
+      { k: "DSA", v: "1,000+ Problems Solved", c: "#34d399" },
+      { k: "STACK", v: "Next.js · MERN · PyTorch · RAG", c: "#7dd3fc" },
+      { k: "HACKATHON", v: "SIH Grand Winner — CleanCity", c: "#fb7185" },
+      { k: "STATUS", v: "Open to SDE Internship / FTE 🟢", c: "#4ade80" },
+    ];
 
-    // Raycaster for 3D clicks on Screen & Duck
-    const raycaster = new THREE.Raycaster();
-    const mouseCoord = new THREE.Vector2();
+    // Typing state
+    let termVisible = 0;
+    let termCharVisible = 0;
 
-    const onPointerDown = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      mouseCoord.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouseCoord.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-      raycaster.setFromCamera(mouseCoord, camera);
-
-      const intersects = raycaster.intersectObjects(deskGroup.children, true);
-      if (intersects.length > 0) {
-        let hitObject: THREE.Object3D | null = intersects[0].object;
-        while (hitObject && hitObject !== deskGroup) {
-          if (hitObject.name === "duck") {
-            duckHopSpeed = 0.08;
-            if (onDuckQuack) onDuckQuack();
-            return;
-          }
-          if (hitObject.name === "screen") {
-            // Cycle modes on screen click
-            const modes: WorkstationScreenMode[] = ["terminal", "matrix", "specs", "visualizer"];
-            const nextIdx = (modes.indexOf(modeRef.current) + 1) % modes.length;
-            onModeChange(modes[nextIdx]);
-            return;
-          }
-          hitObject = hitObject.parent;
-        }
-      }
-    };
-    container.addEventListener("pointerdown", onPointerDown);
-
-    // Mouse Tracking for Smooth 3D Tilt
-    let targetRotY = 0;
-    let targetRotX = 0;
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const normY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-      targetRotY = Math.max(-0.28, Math.min(0.28, normX * 0.22));
-      targetRotX = Math.max(-0.18, Math.min(0.18, -normY * 0.14));
-    };
-    window.addEventListener("mousemove", onMouseMove);
-
-    // Main Animation Loop
     let frame = 0;
-    let animId: number;
 
-    const animate = () => {
-      animId = requestAnimationFrame(animate);
+    const draw = () => {
+      frameRef.current = requestAnimationFrame(draw);
       frame++;
-
-      // Lerp mouse tilt
-      deskGroup.rotation.y += (targetRotY - deskGroup.rotation.y) * 0.06;
-      deskGroup.rotation.x += (targetRotX - deskGroup.rotation.x) * 0.06;
-
-      // Underglow color pulse
-      underglowMat.opacity = 0.28 + Math.sin(frame * 0.05) * 0.12;
-
-      // Duck bounce physics
-      if (duckHopSpeed !== 0 || duckHop > 0) {
-        duckHop += duckHopSpeed;
-        duckHopSpeed -= 0.007; // Gravity
-        if (duckHop <= 0) {
-          duckHop = 0;
-          duckHopSpeed = 0;
-        }
-        duckGroup.position.y = 0.14 + duckHop;
-        duckGroup.rotation.y = 0.45 + duckHop * 4.0;
-      }
-
-      // Steam animation
-      const sPos = steamGeo.attributes.position.array as Float32Array;
-      for (let i = 1; i < steamCount * 3; i += 3) {
-        sPos[i] += 0.003;
-        sPos[i - 1] += Math.sin(frame * 0.05 + i) * 0.001;
-        if (sPos[i] > 0.7) {
-          sPos[i] = 0.32;
-          sPos[i - 1] = -1.28 + (Math.random() - 0.5) * 0.06;
-        }
-      }
-      steamGeo.attributes.position.needsUpdate = true;
-
-      // Dust float
-      const positions = dustGeo.attributes.position.array as Float32Array;
-      for (let i = 1; i < dustCount * 3; i += 3) {
-        positions[i] += 0.002;
-        if (positions[i] > 3.5) positions[i] = 0;
-      }
-      dustGeo.attributes.position.needsUpdate = true;
-
-      // ── CRT Canvas Drawing by Mode ──
       const mode = modeRef.current;
+      ctx.clearRect(0, 0, W, H);
 
-      if (ctx) {
-        if (mode === "matrix") {
-          // ── MATRIX DIGITAL RAIN ──
-          ctx.fillStyle = "rgba(4, 9, 14, 0.2)";
-          ctx.fillRect(0, 0, 256, 192);
+      // ── TERMINAL ──
+      if (mode === "terminal") {
+        ctx.fillStyle = "#070b12";
+        ctx.fillRect(0, 0, W, H);
 
-          ctx.font = "bold 7px monospace";
-          for (let i = 0; i < matrixCols; i++) {
-            const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-            const x = 8 + i * 9;
-            const y = matrixDrops[i] * 18;
+        // Scanlines
+        ctx.fillStyle = "rgba(0,0,0,0.18)";
+        for (let y = 0; y < H; y += 3) ctx.fillRect(0, y, W, 1.5);
 
-            // Head character is glowing white/cyan, body is matrix green
-            ctx.fillStyle = "#e0f2fe";
-            ctx.fillText(char, x, y);
+        // Title bar
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "bold 11px 'Courier New', monospace";
+        ctx.fillText("● ● ●  bash — dhruv@nsut", 14, 20);
+        ctx.strokeStyle = "rgba(56,189,248,0.2)";
+        ctx.beginPath(); ctx.moveTo(12, 28); ctx.lineTo(W - 12, 28); ctx.stroke();
 
-            ctx.fillStyle = "#22c55e";
-            const prevChar = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-            ctx.fillText(prevChar, x, y - 18);
+        // Reveal lines over time
+        if (frame % 14 === 0 && termVisible < termLines.length) termVisible++;
+        ctx.font = "11px 'Courier New', monospace";
 
-            if (y > 192 && Math.random() > 0.96) {
-              matrixDrops[i] = 0;
-            }
-            matrixDrops[i]++;
-          }
-
-          // Matrix Title Banner
-          ctx.fillStyle = "rgba(2, 6, 23, 0.85)";
-          ctx.fillRect(5, 5, 246, 14);
-          ctx.strokeStyle = "rgba(34, 197, 94, 0.4)";
-          ctx.strokeRect(5, 5, 246, 14);
-          ctx.fillStyle = "#4ade80";
-          ctx.font = "bold 7px monospace";
-          ctx.fillText("● MATRIX STREAM // DHRUV.SYS ACTIVE", 12, 14);
-
-        } else if (mode === "specs") {
-          // ── NEOFETCH / SYSTEM SPECS ──
-          if (frame % 4 === 0) {
-            ctx.fillStyle = "#0a0e17";
-            ctx.fillRect(0, 0, 256, 192);
-
-            // Scanlines
-            ctx.fillStyle = "rgba(0, 0, 0, 0.22)";
-            for (let y = 0; y < 384; y += 2) {
-              ctx.fillRect(0, y, 256, 1);
-            }
-
-            // Top Bar
-            ctx.fillStyle = "#38bdf8";
-            ctx.font = "bold 8px monospace";
-            ctx.fillText("● ● ●  neofetch - dhruv@nsut", 12, 16);
-
-            ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
-            ctx.beginPath();
-            ctx.moveTo(20, 44);
-            ctx.lineTo(492, 44);
-            ctx.stroke();
-
-            // ASCII Art Mascot (Left)
-            ctx.fillStyle = "#38bdf8";
-            ctx.font = "7px monospace";
-            const asciiArt = [
-              "    /\\_/\\    ",
-              "   ( o.o )   ",
-              "    > ^ <    ",
-              "  /|     |\\  ",
-              " (_|     |_) ",
-              "   ^^   ^^   ",
-            ];
-            for (let a = 0; a < asciiArt.length; a++) {
-              ctx.fillText(asciiArt[a], 12, 44 + a * 12);
-            }
-
-            // Neofetch Specs List (Right)
-            ctx.font = "7px monospace";
-            const specs = [
-              { label: "USER", val: "dhruv@nsut.ac.in", col: "#38bdf8" },
-              { label: "OS", val: "DhruvOS v2.5 (x86_64)", col: "#e2e8f0" },
-              { label: "ROLE", val: "Full Stack & AI Engineer", col: "#a855f7" },
-              { label: "LEETCODE", val: "Knight · Rating 1933 [Top 3%]", col: "#f59e0b" },
-              { label: "DSA SOLVED", val: "1,000+ Algorithmic Problems", col: "#10b981" },
-              { label: "STACK", val: "Next.js / MERN / PyTorch / RAG", col: "#06b6d4" },
-              { label: "HACKATHON", val: "SIH Winner (CleanCity Smart IoT)", col: "#ec4899" },
-              { label: "STATUS", val: "Open to SDE Opportunities", col: "#22c55e" },
-            ];
-
-            for (let s = 0; s < specs.length; s++) {
-              ctx.fillStyle = "#94a3b8";
-              ctx.fillText(`${specs[s].label}: `, 95, 39 + s * 14);
-              ctx.fillStyle = specs[s].col;
-              ctx.fillText(specs[s].val, 140, 39 + s * 14);
-            }
-
-            // Memory Bar
-            ctx.fillStyle = "#94a3b8";
-            ctx.fillText("MEMORY: [██████████████░░] 88%", 95, 155);
-
-            // Color Palette squares at bottom
-            const palette = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#a855f7"];
-            for (let p = 0; p < palette.length; p++) {
-              ctx.fillStyle = palette[p];
-              ctx.fillRect(95 + p * 17, 166, 13, 7);
-            }
-          }
-
-        } else if (mode === "visualizer") {
-          // ── CYBERPUNK AUDIO & CPU EQUALIZER ──
-          if (frame % 2 === 0) {
-            ctx.fillStyle = "#090d16";
-            ctx.fillRect(0, 0, 256, 192);
-
-            // Header
-            ctx.fillStyle = "#a855f7";
-            ctx.font = "bold 8px monospace";
-            ctx.fillText("● SPECTRUM AUDIO & CORE TELEMETRY", 12, 17);
-
-            // EQ Bars
-            const numBars = 16;
-            const barWidth = 7;
-            const barGap = 3;
-            const startX = 10;
-
-            for (let b = 0; b < numBars; b++) {
-              const freq = Math.sin(frame * 0.1 + b * 0.45) * 0.5 + 0.5;
-              const barHeight = 20 + freq * 90 + Math.sin(frame * 0.04 * b) * 15;
-              const y = 145 - barHeight;
-
-              // Gradient bar
-              const grad = ctx.createLinearGradient(0, y, 0, 290);
-              grad.addColorStop(0, "#38bdf8");
-              grad.addColorStop(0.5, "#a855f7");
-              grad.addColorStop(1, "#22c55e");
-              ctx.fillStyle = grad;
-              ctx.fillRect(startX + b * (barWidth + barGap), y, barWidth, barHeight);
-
-              // Cap
-              ctx.fillStyle = "#ffffff";
-              ctx.fillRect(startX + b * (barWidth + barGap), y - 2, barWidth, 1);
-            }
-
-            // Realtime CPU Stats below
-            ctx.fillStyle = "#38bdf8";
-            ctx.font = "7px monospace";
-            ctx.fillText(`CPU: ${(24 + Math.sin(frame * 0.08) * 8).toFixed(1)}%   RAM: 4.8 / 16 GB   LATENCY: 12ms`, 12, 170);
-            ctx.fillText(`CORES: 8 ACTIVE   SYS LOAD: OPTIMAL`, 12, 182);
-          }
-
-        } else {
-          // ── TERMINAL BASH (Default) ──
-          if (frame % 3 === 0) {
-            ctx.fillStyle = "#090c13";
-            ctx.fillRect(0, 0, 256, 192);
-
-            // CRT Scanlines
-            ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
-            for (let y = 0; y < 384; y += 2) {
-              ctx.fillRect(0, y, 256, 1);
-            }
-
-            // Window Title Bar
-            ctx.fillStyle = "#38bdf8";
-            ctx.font = "bold 9px monospace";
-            ctx.fillText("● ● ●  bash - 80x24", 12, 17);
-
-            ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
-            ctx.beginPath();
-            ctx.moveTo(10, 24);
-            ctx.lineTo(246, 24);
-            ctx.stroke();
-
-            // Lines
-            ctx.font = "8px monospace";
-            const visibleLines = Math.min(Math.floor(frame / 36) + 1, terminalLines.length);
-            for (let l = 0; l < visibleLines; l++) {
-              const isPrompt = l === 0;
-              const isHighlight = l === 1 || l === 3;
-              ctx.fillStyle = isPrompt ? "#34d399" : isHighlight ? "#a855f7" : "#e2e8f0";
-              const text = terminalLines[l];
-              if (l === visibleLines - 1 && visibleLines < terminalLines.length) {
-                const charCount = Math.floor(((frame % 36) / 36) * text.length);
-                ctx.fillText(text.slice(0, charCount) + "█", 24, 41 + l * 17);
-              } else {
-                ctx.fillText(text, 24, 41 + l * 17);
-              }
-            }
-
-            // Command Hint
-            ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-            ctx.font = "6px monospace";
-            ctx.fillText("Tip: Click screen to cycle modes (Terminal, Matrix, Specs, EQ)", 12, 178);
+        for (let i = 0; i < termVisible; i++) {
+          const line = termLines[i];
+          const y = 50 + i * 35;
+          ctx.fillStyle = line.color;
+          if (i === termVisible - 1) {
+            if (frame % 2 === 0 && termCharVisible < line.text.length) termCharVisible++;
+            ctx.fillText(line.text.slice(0, termCharVisible) + (frame % 16 < 8 ? "█" : ""), 14, y);
+          } else {
+            ctx.fillText(line.text, 14, y);
           }
         }
 
-        screenTexture.needsUpdate = true;
+        // Reset after full reveal
+        if (termVisible >= termLines.length && termCharVisible >= termLines[termLines.length - 1].text.length) {
+          if (frame % 240 === 0) { termVisible = 0; termCharVisible = 0; }
+        }
+
+      // ── MATRIX ──
+      } else if (mode === "matrix") {
+        ctx.fillStyle = "rgba(4,9,14,0.18)";
+        ctx.fillRect(0, 0, W, H);
+        ctx.font = "bold 13px 'Courier New', monospace";
+
+        for (let i = 0; i < COLS; i++) {
+          const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+          const x = 10 + i * 21;
+          const y = drops[i] * 17;
+          // Head char glows bright
+          ctx.fillStyle = "#e0f9ff";
+          ctx.fillText(ch, x, y);
+          // Trail
+          ctx.fillStyle = "#22c55e";
+          ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - 17);
+          ctx.fillStyle = "rgba(34,197,94,0.5)";
+          ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - 34);
+          if (y > H && Math.random() > 0.96) drops[i] = 0;
+          else drops[i] += 0.5;
+        }
+
+        // Header overlay
+        ctx.fillStyle = "rgba(2,8,20,0.82)";
+        ctx.fillRect(8, 6, W - 16, 22);
+        ctx.strokeStyle = "rgba(34,197,94,0.35)";
+        ctx.strokeRect(8, 6, W - 16, 22);
+        ctx.fillStyle = "#4ade80";
+        ctx.font = "bold 9px 'Courier New', monospace";
+        ctx.fillText("● MATRIX STREAM v2.0 // DHRUV.SYS ACTIVE", 16, 20);
+
+      // ── SPECS (NEOFETCH) ──
+      } else if (mode === "specs") {
+        if (frame % 3 !== 0) return;
+        ctx.fillStyle = "#080d16";
+        ctx.fillRect(0, 0, W, H);
+
+        // Scanlines
+        ctx.fillStyle = "rgba(0,0,0,0.15)";
+        for (let y = 0; y < H; y += 3) ctx.fillRect(0, y, W, 1.5);
+
+        // Title
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "bold 10px 'Courier New', monospace";
+        ctx.fillText("● ● ●  neofetch — dhruv@nsut:~", 14, 20);
+        ctx.strokeStyle = "rgba(56,189,248,0.2)";
+        ctx.beginPath(); ctx.moveTo(12, 27); ctx.lineTo(W - 12, 27); ctx.stroke();
+
+        // ASCII art (left side)
+        const art = [
+          "   /\\_____/\\",
+          "  ( ◕   ◕ )",
+          "   > ^ < ",
+          "  /|      |\\",
+          " (_|      |_)",
+        ];
+        ctx.font = "10px 'Courier New', monospace";
+        ctx.fillStyle = "#38bdf8";
+        for (let a = 0; a < art.length; a++) ctx.fillText(art[a], 14, 46 + a * 18);
+
+        // Spec list (right side)
+        ctx.font = "9.5px 'Courier New', monospace";
+        for (let s = 0; s < specLines.length; s++) {
+          const sp = specLines[s];
+          const y = 40 + s * 26;
+          ctx.fillStyle = "#64748b";
+          ctx.fillText(sp.k + ":", 140, y);
+          ctx.fillStyle = sp.c;
+          ctx.fillText(sp.v, 200, y);
+        }
+
+        // Color palette bar
+        const palette = ["#ef4444","#f97316","#eab308","#22c55e","#06b6d4","#3b82f6","#a855f7"];
+        for (let p = 0; p < palette.length; p++) {
+          ctx.fillStyle = palette[p];
+          ctx.fillRect(140 + p * 22, H - 28, 18, 10);
+        }
+
+        // Memory bar
+        ctx.fillStyle = "#475569";
+        ctx.font = "8px 'Courier New', monospace";
+        ctx.fillText("MEM [████████████░░░] 78%   DISK [████░░░] 56%", 14, H - 14);
+
+      // ── VISUALIZER (EQ) ──
+      } else if (mode === "visualizer") {
+        if (frame % 2 !== 0) return;
+        ctx.fillStyle = "#060a14";
+        ctx.fillRect(0, 0, W, H);
+
+        // Header
+        ctx.fillStyle = "#a855f7";
+        ctx.font = "bold 10px 'Courier New', monospace";
+        ctx.fillText("● SPECTRUM VISUALIZER // CORE TELEMETRY", 14, 20);
+        ctx.strokeStyle = "rgba(168,85,247,0.2)";
+        ctx.beginPath(); ctx.moveTo(12, 27); ctx.lineTo(W - 12, 27); ctx.stroke();
+
+        // EQ Bars (18 bars)
+        const NUM = 18;
+        const bw = 18, gap = 6, startX = 16;
+        for (let b = 0; b < NUM; b++) {
+          const freq = (Math.sin(frame * 0.1 + b * 0.6) * 0.5 + 0.5);
+          const bh = 24 + freq * 155 + Math.sin(frame * 0.05 * b) * 24;
+          const y = 260 - bh;
+          const grad = ctx.createLinearGradient(0, y, 0, 260);
+          grad.addColorStop(0, "#38bdf8");
+          grad.addColorStop(0.45, "#a855f7");
+          grad.addColorStop(1, "#22c55e");
+          ctx.fillStyle = grad;
+          ctx.fillRect(startX + b * (bw + gap), y, bw, bh);
+          // Cap
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(startX + b * (bw + gap), y - 3, bw, 2);
+        }
+
+        // Waveform line
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(251,191,36,0.7)";
+        ctx.lineWidth = 2;
+        for (let x = 0; x < W; x += 2) {
+          const y = H - 40 + Math.sin((x + frame * 2) * 0.04) * 12 + Math.sin((x + frame) * 0.09) * 6;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.lineWidth = 1;
+
+        // Stats
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "8.5px 'Courier New', monospace";
+        const cpu = (24 + Math.sin(frame * 0.08) * 9).toFixed(1);
+        const lat = (8 + Math.sin(frame * 0.06) * 4).toFixed(0);
+        ctx.fillText(`CPU ${cpu}%   RAM 4.8/16 GB   LATENCY ${lat}ms   CORES 8   LOAD OK`, 14, H - 10);
       }
-
-      renderer.render(scene, camera);
     };
-    animate();
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener("resize", handleResize);
+    frameRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(frameRef.current);
+  }, []);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", onMouseMove);
-      container.removeEventListener("pointerdown", onPointerDown);
-      cancelAnimationFrame(animId);
-      if (container && renderer.domElement) {
-        container.removeChild(renderer.domElement);
-      }
-      renderer.dispose();
-    };
-  }, [onDuckQuack, onModeChange]);
+  const modes: WorkstationScreenMode[] = ["terminal", "matrix", "specs", "visualizer"];
+  const modeLabels: Record<WorkstationScreenMode, { label: string; color: string; activeClass: string }> = {
+    terminal: { label: "TERM", color: "#ffffff", activeClass: "bg-white text-black" },
+    matrix: { label: "MATRIX", color: "#22c55e", activeClass: "bg-emerald-500 text-black" },
+    specs: { label: "SPECS", color: "#38bdf8", activeClass: "bg-cyan-400 text-black" },
+    visualizer: { label: "EQ", color: "#a855f7", activeClass: "bg-purple-500 text-white" },
+  };
 
-  return <div ref={mountRef} className="w-full h-full cursor-pointer" />;
+  return (
+    <div
+      ref={cardRef}
+      style={{ transition: "transform 0.05s linear", willChange: "transform", transformStyle: "preserve-3d" }}
+      className="relative w-full max-w-[480px] rounded-2xl border border-white/10 bg-[#0a0a0f] shadow-[0_24px_80px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col"
+    >
+      {/* Window Chrome */}
+      <div className="flex items-center justify-between px-3.5 py-2 bg-[#111118] border-b border-white/8 shrink-0 select-none">
+        {/* Traffic lights */}
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_6px_#FF5F57]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_6px_#FEBC2E]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_6px_#28C840]" />
+        </div>
+
+        {/* Mode tabs */}
+        <div className="flex items-center gap-0.5 bg-black/60 p-0.5 rounded-md border border-white/8">
+          {modes.map((m) => {
+            const meta = modeLabels[m];
+            return (
+              <button
+                key={m}
+                onClick={() => onModeChange(m)}
+                className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold transition-all duration-150 flex items-center gap-1 ${
+                  currentMode === m ? meta.activeClass + " shadow-sm" : "text-white/40 hover:text-white/80"
+                }`}
+              >
+                {m === "terminal" && <Terminal className="w-2 h-2" />}
+                {m === "matrix" && <Code2 className="w-2 h-2" />}
+                {m === "specs" && <Cpu className="w-2 h-2" />}
+                {m === "visualizer" && <Activity className="w-2 h-2" />}
+                <span>{meta.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Live badge */}
+        <div className="flex items-center gap-1 text-[8.5px] font-mono text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          LIVE
+        </div>
+      </div>
+
+      {/* Canvas Screen */}
+      <div className="relative bg-[#070b12] overflow-hidden" style={{ aspectRatio: "3/2" }}>
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full"
+          onClick={() => {
+            const next = modes[(modes.indexOf(currentMode) + 1) % modes.length];
+            onModeChange(next);
+          }}
+          style={{ cursor: "pointer", imageRendering: "pixelated" }}
+        />
+        {/* CRT vignette overlay */}
+        <div className="absolute inset-0 pointer-events-none rounded-b-none"
+          style={{ background: "radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.55) 100%)" }} />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(rgba(0,229,255,0.015) 0%, transparent 100%)" }} />
+      </div>
+
+      {/* Bottom hint bar */}
+      <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#0d0d15] border-t border-white/8 text-[8px] font-mono text-white/35 select-none">
+        <span>Click screen to cycle modes • Move mouse to tilt</span>
+        <span className="text-cyan-500/70 font-bold">{currentMode.toUpperCase()}</span>
+      </div>
+
+      {/* Duck mascot (clickable!) */}
+      <button
+        onClick={onDuckQuack}
+        className="absolute bottom-10 right-3.5 text-xl select-none hover:scale-125 transition-transform duration-200 active:scale-90"
+        title="Rubber Duck Debug!"
+        aria-label="Click rubber duck"
+        style={{ filter: "drop-shadow(0 0 6px rgba(250,204,21,0.6))" }}
+      >
+        🦆
+      </button>
+    </div>
+  );
 };
 
 // Roles for Typewriter Text Loop
@@ -987,94 +727,11 @@ export function ActHero({
             </motion.div>
           )}
 
-          <div className="relative w-full max-w-[460px] lg:max-w-[490px] aspect-[4/3] rounded-3xl border border-white/15 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden backdrop-blur-2xl flex flex-col group/terminal">
-            
-            {/* Window Header Chrome with Interactive Mode Switcher */}
-            <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#141418] border-b border-white/10 shrink-0 select-none">
-              {/* Mac Traffic Lights */}
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_5px_rgba(255,95,87,0.5)]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_5px_rgba(254,188,46,0.4)]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_5px_rgba(40,200,64,0.4)]" />
-              </div>
-
-              {/* Mode Switcher Tabs */}
-              <div className="flex items-center gap-1 bg-black/50 p-0.5 rounded-lg border border-white/10">
-                <button
-                  onClick={() => setScreenMode("terminal")}
-                  className={`px-2 py-0.5 rounded text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "terminal"
-                      ? "bg-white text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Terminal className="w-2.5 h-2.5" />
-                  <span>TERM</span>
-                </button>
-
-                <button
-                  onClick={() => setScreenMode("matrix")}
-                  className={`px-2 py-0.5 rounded text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "matrix"
-                      ? "bg-emerald-500 text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Code2 className="w-2.5 h-2.5" />
-                  <span>MATRIX</span>
-                </button>
-
-                <button
-                  onClick={() => setScreenMode("specs")}
-                  className={`px-2 py-0.5 rounded text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "specs"
-                      ? "bg-cyan-400 text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Cpu className="w-2.5 h-2.5" />
-                  <span>SPECS</span>
-                </button>
-
-                <button
-                  onClick={() => setScreenMode("visualizer")}
-                  className={`px-2 py-0.5 rounded text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "visualizer"
-                      ? "bg-purple-500 text-white font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Activity className="w-2.5 h-2.5" />
-                  <span>EQ</span>
-                </button>
-              </div>
-
-              {/* Live Status Indicator */}
-              <span className="flex items-center gap-1 text-[9px] font-mono text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                60FPS
-              </span>
-            </div>
-
-            {/* 3D Canvas Viewport */}
-            <div className="relative flex-1 w-full h-full overflow-hidden">
-              <HeroRetroWorkstation3D
-                currentMode={screenMode}
-                onModeChange={setScreenMode}
-                onDuckQuack={handleDuckQuack}
-              />
-              
-              {/* Interaction Hints Pill */}
-              <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between font-mono text-[8.5px] text-white/50 pointer-events-none select-none">
-                <span className="bg-black/75 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm">
-                  Click Screen or Duck · Move Mouse to Tilt
-                </span>
-                <span className="bg-black/75 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm text-cyan-400">
-                  {screenMode.toUpperCase()}
-                </span>
-              </div>
-            </div>
-          </div>
+          <WorkstationCard
+            currentMode={screenMode}
+            onModeChange={setScreenMode}
+            onDuckQuack={handleDuckQuack}
+          />
         </motion.div>
 
       </div>
