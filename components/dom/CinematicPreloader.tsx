@@ -38,25 +38,25 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
       exit={{ opacity: 0, transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
       className="fixed inset-0 z-50 flex flex-col items-center justify-between p-6 sm:p-12 bg-black text-white select-none overflow-hidden"
     >
-      {/* CSS-Only Animated Background (replaces Three.js globe) */}
+      {/* CSS-Only Animated Background */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Floating gradient orbs */}
         <div
-          className="absolute top-1/3 left-1/4 w-[350px] h-[350px] rounded-full blur-[140px] opacity-[0.06]"
+          className="absolute top-1/3 left-1/4 w-[350px] h-[350px] rounded-full blur-[140px] opacity-[0.05]"
           style={{
-            background: 'radial-gradient(circle, #FF6B2C 0%, transparent 70%)',
+            background: 'radial-gradient(circle, #ffffff 0%, transparent 70%)',
             animation: 'preloaderFloat1 6s ease-in-out infinite',
           }}
         />
         <div
-          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[160px] opacity-[0.04]"
+          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[160px] opacity-[0.03]"
           style={{
-            background: 'radial-gradient(circle, #FF8F5E 0%, transparent 70%)',
+            background: 'radial-gradient(circle, #ffffff 0%, transparent 70%)',
             animation: 'preloaderFloat2 8s ease-in-out infinite',
           }}
         />
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[120px] opacity-[0.03]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[120px] opacity-[0.02]"
           style={{
             background: 'radial-gradient(circle, #ffffff 0%, transparent 70%)',
             animation: 'preloaderFloat3 10s ease-in-out infinite',
@@ -67,7 +67,7 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
         <div
           className="absolute left-0 right-0 h-[1px] opacity-[0.08]"
           style={{
-            background: 'linear-gradient(90deg, transparent 0%, #FF6B2C 50%, transparent 100%)',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%)',
             animation: 'scanLine 3s linear infinite',
           }}
         />
@@ -84,8 +84,8 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
           50% { transform: translate(-25px, 15px) scale(1.05); }
         }
         @keyframes preloaderFloat3 {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; }
-          50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.06; }
+          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.02; }
+          50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.05; }
         }
         @keyframes scanLine {
           0% { top: -2%; }
@@ -94,24 +94,24 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
       `}</style>
 
       {/* Subtle Ambient Vignette */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,107,44,0.04)_0%,transparent_65%)] pointer-events-none z-[1]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_0%,transparent_65%)] pointer-events-none z-[1]" />
 
       {/* Top Bar Indicators */}
       <div className="w-full flex items-center justify-between font-mono text-[10px] text-white/40 tracking-widest uppercase z-10">
         <span className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B2C] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
           DHRUV BAJAJ
         </span>
         <span>PORTFOLIO // 2025</span>
       </div>
 
       {/* Dead-Center Minimalist 0-100 Counter */}
-      <div className="relative z-10 flex flex-col items-center justify-center my-auto space-y-5">
+      <div className="relative z-10 flex flex-col items-center justify-center my-auto space-y-5 px-4 text-center">
         {/* Large Cinematic Number */}
         <div className="flex items-baseline justify-center">
           <motion.span
             key={progress}
-            className="font-display font-black text-7xl sm:text-9xl text-white tracking-tighter tabular-nums"
+            className="font-display font-black text-6xl sm:text-8xl md:text-9xl text-white tracking-tighter tabular-nums"
           >
             {progress < 10 ? `0${progress}` : progress}
           </motion.span>
@@ -121,9 +121,9 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
         </div>
 
         {/* Minimalist Glowing Progress Line */}
-        <div className="w-48 sm:w-64 h-[2px] bg-white/10 rounded-full overflow-hidden relative shadow-inner">
+        <div className="w-44 sm:w-64 h-[2px] bg-white/10 rounded-full overflow-hidden relative shadow-inner">
           <motion.div
-            className="h-full bg-[#FF6B2C] shadow-[0_0_12px_rgba(255,107,44,0.9)]"
+            className="h-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)]"
             style={{ width: `${progress}%` }}
           />
         </div>

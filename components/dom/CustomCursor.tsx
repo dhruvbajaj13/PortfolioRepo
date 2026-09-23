@@ -66,7 +66,7 @@ export function CustomCursor() {
   const { x, y, hovered, clicked } = renderState;
 
   return (
-    <>
+    <div className="hidden md:block">
       {/* Outer Sleek Ring */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-50 rounded-full border border-white/20 mix-blend-difference"
@@ -76,15 +76,15 @@ export function CustomCursor() {
           width: hovered ? 40 : 24,
           height: hovered ? 40 : 24,
           scale: clicked ? 0.8 : 1,
-          backgroundColor: hovered ? 'rgba(255, 107, 44, 0.15)' : 'rgba(255, 255, 255, 0)',
-          borderColor: hovered ? 'rgba(255, 107, 44, 0.7)' : 'rgba(255, 255, 255, 0.2)',
+          backgroundColor: hovered ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0)',
+          borderColor: hovered ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.2)',
         }}
         transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.4 }}
       />
 
       {/* Inner Classic Center Dot */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-50 w-1.5 h-1.5 bg-[#FF6B2C] rounded-full mix-blend-difference"
+        className="fixed top-0 left-0 pointer-events-none z-50 w-1.5 h-1.5 bg-white rounded-full mix-blend-difference shadow-[0_0_8px_rgba(255,255,255,0.8)]"
         animate={{
           x: x - 3,
           y: y - 3,
@@ -92,6 +92,6 @@ export function CustomCursor() {
         }}
         transition={{ type: 'spring', damping: 30, stiffness: 500, mass: 0.1 }}
       />
-    </>
+    </div>
   );
 }

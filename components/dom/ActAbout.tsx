@@ -64,7 +64,7 @@ export function ActAbout() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="flex-1 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-8 md:p-10 flex flex-col justify-between gap-8"
+            className="flex-1 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-8 md:p-10 flex flex-col justify-between gap-8"
           >
             {/* Bio text */}
             <div className="pb-6 border-b border-white/10">
@@ -85,7 +85,7 @@ export function ActAbout() {
             </div>
 
             {/* Stats row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               {STATS.map((s, i) => (
                 <motion.div
                   key={s.label}
@@ -93,7 +93,7 @@ export function ActAbout() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.3 + i * 0.07 }}
-                  className="flex flex-col gap-1 p-4 rounded-xl border border-white/8 bg-white/[0.02] hover:border-[#FF6B2C]/30 transition-colors"
+                  className="flex flex-col gap-1 p-3.5 sm:p-4 rounded-xl border border-white/8 bg-white/[0.02] hover:border-white/30 transition-colors"
                 >
                   <span className="font-display font-black text-white text-2xl md:text-3xl tracking-tight">
                     {s.value}

@@ -47,7 +47,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative bg-[#050505] bg-noise min-h-screen text-white overflow-x-hidden selection:bg-[#FF6B2C]/30 selection:text-[#FFFFFF]">
+    <main className="relative bg-[#050505] bg-noise min-h-screen text-white overflow-x-hidden selection:bg-white/30 selection:text-[#FFFFFF]">
       {/* Preloader */}
       <AnimatePresence>
         {isLoading && (

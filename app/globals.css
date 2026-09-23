@@ -7,7 +7,7 @@
     --color-bg: #050505;
     --color-surface-dark: #080808;
     --color-surface-card: #0A0A0A;
-    --color-accent: #FF6B2C;
+    --color-accent: #FFFFFF;
     --color-text: #FFFFFF;
     --color-text-secondary: #A8A8A8;
   }
@@ -27,9 +27,9 @@
   }
 
   ::selection {
-    background: rgba(255, 107, 44, 0.25);
+    background: rgba(255, 255, 255, 0.25);
     color: #ffffff;
-    text-shadow: 0 0 10px rgba(255, 107, 44, 0.6);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
   }
 }
 
@@ -72,21 +72,21 @@ html.lenis, html.lenis body {
   background: rgba(12, 12, 12, 0.85);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 107, 44, 0.3);
-  box-shadow: 0 0 40px rgba(255, 107, 44, 0.15), inset 0 0 20px rgba(255, 107, 44, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.08), inset 0 0 20px rgba(255, 255, 255, 0.03);
 }
 
-/* Refined Orange Gradient Highlights */
+/* Refined White Gradient Highlights */
 .text-gradient-cyan,
 .text-gradient-accent {
-  background: linear-gradient(135deg, #FFFFFF 0%, #FF6B2C 60%, #FF8F5E 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 60%, #94A3B8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .glow-cyan,
 .glow-accent {
-  box-shadow: 0 0 30px rgba(255, 107, 44, 0.25);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
 }
 
 /* Clean Matte Scrollbar */

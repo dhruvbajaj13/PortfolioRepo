@@ -42,7 +42,7 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                   key={link.label}
                   href={link.href}
                   className={`relative py-1.5 font-sans text-base font-semibold transition-colors duration-300 group ${
-                    isActive ? 'text-[#FF6B2C] font-bold' : 'text-[#A8A8A8] hover:text-white'
+                    isActive ? 'text-white font-bold' : 'text-[#A8A8A8] hover:text-white'
                   }`}
                 >
                   <span>{link.label}</span>
@@ -51,11 +51,11 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                   {isActive ? (
                     <motion.div
                       layoutId="navUnderline"
-                      className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#FF6B2C] rounded-full shadow-[0_0_10px_#FF6B2C]"
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)]"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   ) : (
-                    <span className="absolute bottom-0 left-0 w-0 h-[2.5px] bg-[#FF6B2C]/60 rounded-full group-hover:w-full transition-all duration-300 ease-out" />
+                    <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-white/60 rounded-full group-hover:w-full transition-all duration-300 ease-out" />
                   )}
                 </a>
               );
@@ -63,16 +63,16 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
           </div>
 
           {/* Mobile Menu Toggle & Brand Name */}
-          <div className="flex md:hidden items-center justify-between w-full gap-6 px-2">
+          <div className="flex md:hidden items-center justify-between w-full gap-6 px-1">
             <a href="#hero" className="font-display text-base font-bold text-white tracking-wider">
-              Dhruv <span className="text-[#FF6B2C]">Bajaj</span>
+              Dhruv <span className="text-white">Bajaj</span>
             </a>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 rounded-full text-white hover:text-[#FF6B2C] transition-colors"
+              className="p-1.5 rounded-full text-white hover:text-white/80 transition-colors"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </nav>
@@ -85,14 +85,14 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-24 left-4 right-4 z-40 p-6 rounded-3xl bg-[#0A0A0A]/95 backdrop-blur-2xl border border-white/10 shadow-2xl flex flex-col gap-4 pointer-events-auto md:hidden"
+            className="fixed top-20 left-4 right-4 z-40 p-6 rounded-3xl bg-[#0A0A0A]/95 backdrop-blur-2xl border border-white/10 shadow-2xl flex flex-col gap-4 pointer-events-auto md:hidden"
           >
             {NAV_LINKS.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="font-display text-lg font-semibold text-[#A8A8A8] hover:text-[#FF6B2C] transition-colors"
+                className="font-display text-lg font-semibold text-[#A8A8A8] hover:text-white transition-colors"
               >
                 {link.label}
               </a>

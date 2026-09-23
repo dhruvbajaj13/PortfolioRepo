@@ -106,14 +106,14 @@ export function ActExperience() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 onClick={() => setActiveIdx(i)}
-                className={`group text-left w-full px-6 py-5 rounded-2xl border transition-all duration-300 flex justify-between items-start gap-4 ${
+                className={`group text-left w-full px-5 sm:px-6 py-4 sm:py-5 rounded-2xl border transition-all duration-300 flex justify-between items-start gap-4 ${
                   activeIdx === i
-                    ? 'bg-[#FF6B2C]/5 border-[#FF6B2C]/40 shadow-[0_0_20px_rgba(255,107,44,0.08)]'
+                    ? 'bg-white/5 border-white/40 shadow-[0_0_20px_rgba(255,255,255,0.08)]'
                     : 'bg-white/[0.02] border-white/8 hover:border-white/20 hover:bg-white/[0.04]'
                 }`}
               >
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className={`font-mono text-[10px] tracking-widest uppercase transition-colors ${activeIdx === i ? 'text-[#FF6B2C]' : 'text-white/25 group-hover:text-white/40'}`}>
+                  <span className={`font-mono text-[10px] tracking-widest uppercase transition-colors ${activeIdx === i ? 'text-white' : 'text-white/25 group-hover:text-white/40'}`}>
                     {exp.year} · {exp.location}
                   </span>
                   <span className={`font-display font-bold text-lg md:text-xl tracking-tight transition-colors leading-tight ${activeIdx === i ? 'text-white' : 'text-white/50 group-hover:text-white/80'}`}>
@@ -125,7 +125,7 @@ export function ActExperience() {
                 </div>
 
                 {/* Active indicator line on right */}
-                <div className={`w-0.5 self-stretch rounded-full flex-shrink-0 transition-all duration-300 ${activeIdx === i ? 'bg-[#FF6B2C] shadow-[0_0_8px_#FF6B2C]' : 'bg-white/10'}`} />
+                <div className={`w-0.5 self-stretch rounded-full flex-shrink-0 transition-all duration-300 ${activeIdx === i ? 'bg-white shadow-[0_0_8px_#ffffff]' : 'bg-white/10'}`} />
               </motion.button>
             ))}
           </div>
@@ -139,7 +139,7 @@ export function ActExperience() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-                className="h-full rounded-2xl border border-white/10 bg-white/[0.03] p-8 md:p-10 flex flex-col gap-7"
+                className="h-full rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-8 md:p-10 flex flex-col gap-6 sm:gap-7"
               >
                 {/* Role header */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-white/10">
@@ -149,8 +149,8 @@ export function ActExperience() {
                     </h3>
                     <p className="text-white/60 font-light text-base">{active.company}</p>
                   </div>
-                  <div className="flex flex-col items-end gap-2 shrink-0">
-                    <div className="flex items-center gap-1.5 font-mono text-xs text-[#FF6B2C]/90">
+                  <div className="flex flex-col items-start sm:items-end gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1.5 font-mono text-xs text-white/90">
                       <Calendar className="w-3 h-3" />
                       {active.duration}
                     </div>
@@ -171,7 +171,7 @@ export function ActExperience() {
                       transition={{ duration: 0.3, delay: bi * 0.08 }}
                       className="flex items-start gap-3 text-sm md:text-base text-white/70 leading-relaxed"
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B2C] mt-2 shrink-0 shadow-[0_0_6px_#FF6B2C]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-white mt-2 shrink-0 shadow-[0_0_6px_#ffffff]" />
                       {b}
                     </motion.li>
                   ))}
@@ -182,7 +182,7 @@ export function ActExperience() {
                   {active.tech.map(t => (
                     <span
                       key={t}
-                      className="px-3 py-1 rounded-full border border-[#FF6B2C]/20 bg-[#FF6B2C]/5 font-mono text-xs text-white/80 hover:border-[#FF6B2C]/50 hover:text-white transition-colors"
+                      className="px-3 py-1 rounded-full border border-white/20 bg-white/5 font-mono text-xs text-white/80 hover:border-white/50 hover:text-white transition-colors"
                     >
                       {t}
                     </span>

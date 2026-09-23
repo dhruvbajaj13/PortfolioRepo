@@ -167,13 +167,13 @@ export function ActCPStats() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   onClick={() => setActiveIdx(i)}
-                  className={`group text-left w-full px-6 py-5 rounded-2xl border transition-all duration-300 flex justify-between items-center gap-4 ${
+                  className={`group text-left w-full px-5 sm:px-6 py-4 sm:py-5 rounded-2xl border transition-all duration-300 flex justify-between items-center gap-4 ${
                     activeIdx === i
-                      ? 'bg-[#FF6B2C]/5 border-[#FF6B2C]/40 shadow-[0_0_20px_rgba(255,107,44,0.08)]'
+                      ? 'bg-white/5 border-white/40 shadow-[0_0_20px_rgba(255,255,255,0.08)]'
                       : 'bg-white/[0.02] border-white/8 hover:border-white/20 hover:bg-white/[0.04]'
                   }`}
                 >
-                  <div className="flex items-center gap-4 min-w-0">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                     <div className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center shrink-0 bg-white/5">
                       <Logo />
                     </div>
@@ -181,14 +181,14 @@ export function ActCPStats() {
                       <span className={`font-display font-bold text-lg md:text-xl tracking-tight transition-colors leading-tight ${activeIdx === i ? 'text-white' : 'text-white/50 group-hover:text-white/85'}`}>
                         {plat.name}
                       </span>
-                      <span className={`text-xs font-light transition-colors ${activeIdx === i ? 'text-[#FF6B2C]' : 'text-white/35 group-hover:text-white/50'}`}>
+                      <span className={`text-xs font-light transition-colors ${activeIdx === i ? 'text-white' : 'text-white/35 group-hover:text-white/50'}`}>
                         {plat.tagline}
                       </span>
                     </div>
                   </div>
 
                   {/* Active indicator line on right */}
-                  <div className={`w-0.5 h-10 rounded-full flex-shrink-0 transition-all duration-300 ${activeIdx === i ? 'bg-[#FF6B2C] shadow-[0_0_8px_#FF6B2C]' : 'bg-white/10'}`} />
+                  <div className={`w-0.5 h-10 rounded-full flex-shrink-0 transition-all duration-300 ${activeIdx === i ? 'bg-white shadow-[0_0_8px_#ffffff]' : 'bg-white/10'}`} />
                 </motion.button>
               );
             })}
@@ -203,16 +203,16 @@ export function ActCPStats() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.4 }}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 md:p-10 flex flex-col justify-between h-full gap-8 min-h-[300px]"
+                className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-8 md:p-10 flex flex-col justify-between h-full gap-6 sm:gap-8 min-h-[300px]"
               >
                 {/* Brand + Badge Title */}
                 <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-11 sm:w-12 h-11 sm:h-12 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center">
                       <active.Logo />
                     </div>
                     <div>
-                      <h3 className="font-display font-black text-2xl md:text-3xl text-white tracking-tight">
+                      <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl text-white tracking-tight">
                         {active.name}
                       </h3>
                       <p className="text-white/40 text-xs font-mono tracking-wider uppercase mt-0.5">
@@ -221,19 +221,19 @@ export function ActCPStats() {
                     </div>
                   </div>
 
-                  <span className="text-xs font-bold font-mono px-3.5 py-1.5 rounded-full border border-[#FF6B2C]/25 bg-[#FF6B2C]/10 text-[#FF6B2C] shadow-sm">
+                  <span className="text-xs font-bold font-mono px-3.5 py-1.5 rounded-full border border-white/25 bg-white/10 text-white shadow-sm">
                     {active.badge}
                   </span>
                 </div>
 
                 {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-4 py-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 py-2">
                   {active.stats.map((s, idx) => (
-                    <div key={s.label} className="flex flex-col gap-1 p-4 rounded-xl border border-white/8 bg-white/[0.02] text-center hover:border-[#FF6B2C]/30 transition-colors">
+                    <div key={s.label} className="flex flex-col gap-1 p-3.5 sm:p-4 rounded-xl border border-white/8 bg-white/[0.02] text-center hover:border-white/30 transition-colors">
                       <span className="font-display font-black text-2xl md:text-3xl text-white tracking-tight">
                         <AnimatedCounter target={s.value} />
                       </span>
-                      <span className="font-mono text-[10px] tracking-widest text-[#FF6B2C]/70 uppercase">
+                      <span className="font-mono text-[10px] tracking-widest text-white/70 uppercase">
                         {s.label}
                       </span>
                     </div>
@@ -276,7 +276,7 @@ export function ActCPStats() {
                     href={active.profileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl border border-white/10 hover:border-[#FF6B2C] text-white font-semibold uppercase tracking-wider text-xs bg-white/5 hover:bg-[#FF6B2C] hover:text-black transition-all duration-300 shadow-lg hover:scale-105"
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl border border-white/10 hover:border-white text-white font-semibold uppercase tracking-wider text-xs bg-white/5 hover:bg-white hover:text-black transition-all duration-300 shadow-lg hover:scale-105"
                   >
                     <span>View Profile</span>
                     <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

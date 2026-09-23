@@ -86,7 +86,7 @@ export function ActTechStack() {
         </div>
 
         {/* Top Horizontal Filter Tabs (Zero Empty Space) */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-8">
+        <div className="flex items-center gap-2 sm:gap-3 mb-8 overflow-x-auto no-scrollbar pb-2 sm:pb-0">
           {TABS.map((tab) => {
             const count = tab === 'All' ? ALL_TECH.length : ALL_TECH.filter(t => t.category === tab).length;
             const isActive = activeTab === tab;
@@ -94,10 +94,10 @@ export function ActTechStack() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 sm:px-5 py-2 rounded-full font-mono text-xs transition-all duration-300 flex items-center gap-2 border ${
+                className={`px-3.5 sm:px-5 py-2 rounded-full font-mono text-xs transition-all duration-300 flex items-center gap-2 border whitespace-nowrap shrink-0 ${
                   isActive
-                    ? 'bg-[#FF6B2C] text-black font-bold border-[#FF6B2C] shadow-[0_0_20px_rgba(255,107,44,0.35)] scale-105'
-                    : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-[#FF6B2C]/40 hover:text-white hover:bg-white/[0.06]'
+                    ? 'bg-white text-black font-bold border-white shadow-[0_0_20px_rgba(255,255,255,0.35)] scale-105'
+                    : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-white/40 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
                 <span>{tab}</span>
@@ -139,10 +139,10 @@ function TechCard({ tech, index }: { tech: typeof ALL_TECH[0]; index: number }) 
       exit={{ opacity: 0, scale: 0.85 }}
       transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.3) }}
       whileHover={{ y: -4, scale: 1.04 }}
-      className="group relative flex flex-col items-center justify-center gap-2.5 p-4 rounded-2xl border border-white/8 bg-white/[0.02] hover:border-[#FF6B2C]/35 hover:bg-[#FF6B2C]/[0.03] transition-all duration-300 cursor-default shadow-md hover:shadow-xl"
+      className="group relative flex flex-col items-center justify-center gap-2.5 p-3.5 sm:p-4 rounded-2xl border border-white/8 bg-white/[0.02] hover:border-white/35 hover:bg-white/[0.03] transition-all duration-300 cursor-default shadow-md hover:shadow-xl"
     >
       {/* Icon container with vibrant colored logo */}
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 transition-all duration-300 group-hover:scale-110 group-hover:border-[#FF6B2C]/40 shadow-inner">
+      <div className="w-11 sm:w-12 h-11 sm:h-12 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 transition-all duration-300 group-hover:scale-110 group-hover:border-white/40 shadow-inner">
         {!imgError ? (
           <img
             src={tech.logo}
