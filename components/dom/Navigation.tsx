@@ -62,6 +62,18 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                 </a>
               );
             })}
+
+            {/* Quick Command Palette Trigger (Cmd+K) */}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+              className="ml-2 pl-3 border-l border-white/15 flex items-center gap-1.5 py-1 text-white/40 hover:text-white transition-colors group"
+              title="Search & Quick Actions (⌘K)"
+            >
+              <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 group-hover:border-white/30 group-hover:bg-white/10 transition-all">
+                ⌘K
+              </span>
+            </button>
           </div>
 
           {/* Mobile Menu Toggle & Brand Name */}

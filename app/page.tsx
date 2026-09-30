@@ -7,6 +7,7 @@ import { useLenis } from '@/hooks/useLenis';
 import { CustomCursor } from '@/components/dom/CustomCursor';
 import { CinematicPreloader } from '@/components/dom/CinematicPreloader';
 import { Navigation } from '@/components/dom/Navigation';
+import { CommandPalette } from '@/components/dom/CommandPalette';
 
 import { ActHero } from '@/components/dom/ActHero';
 import { ActAbout } from '@/components/dom/ActAbout';
@@ -58,6 +59,9 @@ export default function Home() {
 
       {/* Premium Magnetic Cursor */}
       <CustomCursor />
+
+      {/* Global Interactive Command Palette (Cmd+K) */}
+      <CommandPalette />
 
       {/* Top Floating Pill Navigation */}
       <Navigation activeScene={activeScene} />

@@ -741,24 +741,25 @@ export function ActHero({
         {/* Left Column: Text & Actions */}
         <div className="w-full lg:w-[52%] flex flex-col items-center lg:items-start text-center lg:text-left space-y-5 sm:space-y-6">
           
-          {/* Status Pill Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="inline-flex items-center gap-2.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#0C0C0E] border border-white/10 text-xs font-semibold text-slate-300 shadow-md backdrop-blur-md"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Open to SDE Opportunities / Internship</span>
-          </motion.div>
+          {/* Header Title Lockup: Badge & Typewriter Centered relative to Name */}
+          <div className="flex flex-col items-center lg:items-center max-w-fit w-full lg:w-auto">
+            {/* Status Pill Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#0C0C0E] border border-white/10 text-xs font-semibold text-slate-300 shadow-md backdrop-blur-md mb-2.5"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Open to SDE Opportunities / Internship</span>
+            </motion.div>
 
-          {/* Hero Name Title */}
-          <div className="space-y-2 w-full">
+            {/* Hero Name Title */}
             <motion.h1
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-tight"
+              className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-tight text-center"
             >
               Dhruv <span className="text-[#FFFFFF]">Bajaj</span>
             </motion.h1>
@@ -768,9 +769,9 @@ export function ActHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="h-9 sm:h-10 flex items-center justify-center lg:justify-start"
+              className="h-9 sm:h-10 flex items-center justify-center mt-1"
             >
-              <span className="font-display text-base sm:text-xl md:text-2xl font-semibold text-white tracking-wide">
+              <span className="font-display text-base sm:text-xl md:text-2xl font-semibold text-white tracking-wide text-center">
                 {currentText}
                 <span className="text-white animate-pulse ml-0.5">|</span>
               </span>
@@ -821,6 +822,19 @@ export function ActHero({
             >
               <span>Let&apos;s Talk</span>
             </a>
+
+            {/* Recruiter / Interviewer Quick Command Palette Button */}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+              className="hidden xl:inline-flex items-center gap-2 px-3.5 py-3 rounded-2xl border border-white/15 bg-white/[0.04] hover:bg-white/10 hover:border-white/40 text-white/60 hover:text-white transition-all duration-300 text-xs font-mono group"
+              title="Open Command Palette (⌘K)"
+            >
+              <span>Quick Menu</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 group-hover:bg-white group-hover:text-black font-semibold text-[10px] transition-colors">
+                ⌘K
+              </kbd>
+            </button>
           </motion.div>
 
           {/* Social Icons Row */}
