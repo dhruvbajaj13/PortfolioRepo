@@ -151,7 +151,7 @@ function ProjectCardMedia({
 
   return (
     <div
-      className="relative w-full aspect-[16/9] overflow-hidden bg-[#070707] border-b border-white/8 group/img select-none"
+      className="relative w-full aspect-[16/7] overflow-hidden bg-[#070707] border-b border-white/8 group/img select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -241,7 +241,7 @@ export function ActProjects() {
         </div>
 
         {/* 3 Rows × 2 Columns Responsive Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {PROJECTS_DATA.map((proj, i) => (
             <motion.div
               key={proj.id}
@@ -297,9 +297,9 @@ export function ActProjects() {
               <ProjectCardMedia project={proj} index={i} />
 
               {/* Card Body Details */}
-              <div className="p-3.5 sm:p-4 flex flex-col gap-3 flex-1 justify-between">
-                <div className="space-y-1">
-                  <h3 className="font-display font-black text-lg sm:text-xl text-white tracking-tight uppercase">
+              <div className="p-2.5 sm:p-3.5 flex flex-col gap-2.5 flex-1 justify-between">
+                <div className="space-y-0.5">
+                  <h3 className="font-display font-black text-base sm:text-lg text-white tracking-tight uppercase">
                     {proj.title}
                   </h3>
                   <p className="text-white/50 text-[11px] font-light leading-snug">

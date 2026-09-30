@@ -20,8 +20,10 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
     { label: 'Home', href: '#hero', index: 0 },
     { label: 'About', href: '#about', index: 1 },
     { label: 'Journey', href: '#experience', index: 2 },
-    { label: 'Projects', href: '#projects', index: 4 },
-    { label: 'Contact', href: '#contact', index: 6 },
+    { label: 'CP Profile', href: '#cp-stats', index: 3 },
+    { label: 'Achievements', href: '#achievements', index: 4 },
+    { label: 'Projects', href: '#projects', index: 6 },
+    { label: 'Contact', href: '#contact', index: 7 },
   ];
 
   return (
@@ -29,19 +31,19 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
       {/* Top Floating Glass Pill Navbar (Comfortable Size & Padding) */}
       <header className="fixed top-6 left-0 right-0 z-40 flex justify-center px-4 pointer-events-auto">
         <nav
-          className={`flex items-center justify-center px-8 sm:px-12 py-3.5 sm:py-4 rounded-full transition-all duration-500 max-w-fit border border-white/10 bg-[#0A0A0A]/90 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.9)] ${
+          className={`flex items-center justify-center px-6 sm:px-10 py-3 sm:py-3.5 rounded-full transition-all duration-500 max-w-fit border border-white/10 bg-[#0A0A0A]/90 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.9)] ${
             scrolled ? 'scale-95 border-white/15' : 'scale-100'
           }`}
         >
           {/* Desktop Centered Navigation Links */}
-          <div className="hidden md:flex items-center gap-8 sm:gap-10">
+          <div className="hidden md:flex items-center gap-5 lg:gap-7">
             {NAV_LINKS.map((link) => {
               const isActive = activeScene === link.index;
               return (
                 <a
                   key={link.label}
                   href={link.href}
-                  className={`relative py-1.5 font-sans text-base font-semibold transition-colors duration-300 group ${
+                  className={`relative py-1 font-sans text-sm lg:text-[15px] font-medium tracking-wide transition-colors duration-300 group ${
                     isActive ? 'text-white font-bold' : 'text-[#A8A8A8] hover:text-white'
                   }`}
                 >

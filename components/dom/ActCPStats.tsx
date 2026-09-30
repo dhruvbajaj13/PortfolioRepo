@@ -75,7 +75,7 @@ const PLATFORMS_DATA = [
     profileUrl: 'https://leetcode.com/u/nobodyknowswhy/',
     stats: [
       { label: 'Solved', value: '1000+' },
-      { label: 'Rating', value: '1933' },
+      { label: 'Max Rating', value: '1951' },
       { label: 'Contests', value: '42' },
     ],
     Logo: LeetCodeLogo,
@@ -110,11 +110,11 @@ const PLATFORMS_DATA = [
     id: 'codechef',
     name: 'CodeChef',
     tagline: 'Long & Starters Contests',
-    badge: '3★ Division',
+    badge: '3★ Division · Max 1605',
     profileUrl: 'https://www.codechef.com/users/dhruvvv_1307',
     stats: [
       { label: 'Solved', value: '70+' },
-      { label: 'Rating', value: '1605' },
+      { label: 'Max Rating', value: '1605' },
       { label: 'Contests', value: '17' },
     ],
     Logo: CodeChefLogo,
@@ -250,13 +250,13 @@ export function ActCPStats() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="font-mono text-xs font-semibold text-white/90">
-                          366-Day Problem Solving Streak
+                        <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                        <span className="font-mono text-xs font-semibold text-white">
+                          365+ Day Unbroken Coding Streak
                         </span>
                       </div>
-                      <span className="font-mono text-[10px] text-emerald-400/90 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
-                        Daily Active
+                      <span className="font-mono text-[10px] text-white border border-white/30 bg-white/10 px-2.5 py-0.5 rounded-full font-bold">
+                        Knight · Max 1951
                       </span>
                     </div>
 

@@ -11,9 +11,10 @@ import { Navigation } from '@/components/dom/Navigation';
 import { ActHero } from '@/components/dom/ActHero';
 import { ActAbout } from '@/components/dom/ActAbout';
 import { ActExperience } from '@/components/dom/ActExperience';
+import { ActCPStats } from '@/components/dom/ActCPStats';
+import { ActAchievements } from '@/components/dom/ActAchievements';
 import { ActTechStack } from '@/components/dom/ActTechStack';
 import { ActProjects } from '@/components/dom/ActProjects';
-import { ActCPStats } from '@/components/dom/ActCPStats';
 import { ActContact } from '@/components/dom/ActContact';
 
 export default function Home() {
@@ -26,7 +27,7 @@ export default function Home() {
   // Track active scene in viewport for Navigation scroll-spy
   useEffect(() => {
     const handleScroll = () => {
-      const sceneIds = ['hero', 'about', 'experience', 'skills', 'projects', 'cp-stats', 'contact'];
+      const sceneIds = ['hero', 'about', 'experience', 'cp-stats', 'achievements', 'skills', 'projects', 'contact'];
       const scrollPos = window.scrollY + window.innerHeight / 2;
 
       for (let i = 0; i < sceneIds.length; i++) {
@@ -66,9 +67,10 @@ export default function Home() {
         <ActHero />
         <ActAbout />
         <ActExperience />
+        <ActCPStats />
+        <ActAchievements />
         <ActTechStack />
         <ActProjects />
-        <ActCPStats />
         <ActContact />
       </div>
     </main>
