@@ -144,7 +144,7 @@ export type WorkstationScreenMode = "terminal" | "matrix" | "specs" | "visualize
 interface RetroWorkstation3DProps {
   currentMode: WorkstationScreenMode;
   onModeChange: (mode: WorkstationScreenMode) => void;
-  onDuckQuack?: () => void;
+  onDuckQuack?: (msg?: string) => void;
 }
 
 const HeroRetroWorkstation3D: React.FC<RetroWorkstation3DProps> = ({
@@ -339,9 +339,10 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstation3DProps> = ({
     duckGroup.rotation.y = 0.45;
     deskGroup.add(duckGroup);
 
-    // Coffee Mug with Steam
+    // Coffee Mug with Steam (Clickable!)
     const mugGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.28, 16);
     const mug = new THREE.Mesh(mugGeo, new THREE.MeshLambertMaterial({ color: 0xe4e4e7 }));
+    mug.name = "mug";
     mug.position.set(-1.26, 0.14, 1.22);
     deskGroup.add(mug);
 
@@ -371,6 +372,81 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstation3DProps> = ({
     });
     const steam = new THREE.Points(steamGeo, steamMat);
     deskGroup.add(steam);
+
+    // ── NEW: Retro 3.5" Floppy Disk (Clickable!) ──
+    const floppyGroup = new THREE.Group();
+    floppyGroup.name = "floppy";
+    const diskBase = new THREE.Mesh(
+      new THREE.BoxGeometry(0.36, 0.02, 0.36),
+      new THREE.MeshLambertMaterial({ color: 0x18181b })
+    );
+    floppyGroup.add(diskBase);
+
+    const shutter = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.025, 0.14),
+      new THREE.MeshLambertMaterial({ color: 0xa1a1aa })
+    );
+    shutter.position.set(0, 0.005, -0.11);
+    floppyGroup.add(shutter);
+
+    const floppyLabel = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.022, 0.16),
+      new THREE.MeshLambertMaterial({ color: 0xf4f4f5 })
+    );
+    floppyLabel.position.set(0, 0.005, 0.07);
+    floppyGroup.add(floppyLabel);
+
+    floppyGroup.position.set(1.42, 0.015, 0.62);
+    floppyGroup.rotation.y = -0.32;
+    deskGroup.add(floppyGroup);
+
+    // ── NEW: Retro Gooseneck Architect Desk Lamp ──
+    const lampGroup = new THREE.Group();
+    const lampBase = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.13, 0.15, 0.04, 16),
+      darkMat
+    );
+    lampBase.position.set(-1.42, 0.02, 0.25);
+    lampGroup.add(lampBase);
+
+    const lampCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-1.42, 0.04, 0.25),
+      new THREE.Vector3(-1.38, 0.65, 0.3),
+      new THREE.Vector3(-1.08, 1.2, 0.4),
+      new THREE.Vector3(-0.68, 1.3, 0.5),
+    ]);
+    const lampArm = new THREE.Mesh(
+      new THREE.TubeGeometry(lampCurve, 16, 0.018, 6, false),
+      chassisMat
+    );
+    lampGroup.add(lampArm);
+
+    const lampHead = new THREE.Mesh(
+      new THREE.ConeGeometry(0.15, 0.22, 16, 1, true),
+      darkMat
+    );
+    lampHead.position.set(-0.68, 1.3, 0.5);
+    lampHead.rotation.z = Math.PI / 4;
+    lampHead.rotation.x = -Math.PI / 6;
+    lampGroup.add(lampHead);
+
+    const bulb = new THREE.Mesh(
+      new THREE.SphereGeometry(0.055, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0xfef08a })
+    );
+    bulb.position.set(-0.66, 1.28, 0.5);
+    lampGroup.add(bulb);
+    deskGroup.add(lampGroup);
+
+    // ── NEW: Sticky Note on Monitor Bezel (Clickable!) ──
+    const stickyGeo = new THREE.BoxGeometry(0.18, 0.18, 0.01);
+    const stickyMat = new THREE.MeshBasicMaterial({ color: 0xfde047 });
+    const sticky = new THREE.Mesh(stickyGeo, stickyMat);
+    sticky.name = "sticky";
+    sticky.position.set(-0.84, 0.84, 0.12);
+    sticky.rotation.z = 0.12;
+    sticky.rotation.y = 0.06;
+    deskGroup.add(sticky);
 
     // Lighting (Simple & Fast)
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
@@ -434,6 +510,18 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstation3DProps> = ({
           if (hit.name === "duck") {
             duckHopSpeed = 0.08;
             if (onDuckQuack) onDuckQuack();
+            return;
+          }
+          if (hit.name === "floppy") {
+            if (onDuckQuack) onDuckQuack("Floppy Loaded: SDE_2026.bin 💾");
+            return;
+          }
+          if (hit.name === "sticky") {
+            if (onDuckQuack) onDuckQuack("Sticky: 1,100+ LeetCode solved! ⚔️");
+            return;
+          }
+          if (hit.name === "mug") {
+            if (onDuckQuack) onDuckQuack("Caffeine Refill: 100% ☕");
             return;
           }
           if (hit.name === "screen") {
@@ -536,8 +624,8 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstation3DProps> = ({
           const specs = [
             { k: "OS", v: "DhruvOS v2.5 (x86_64)", c: "#e2e8f0" },
             { k: "ROLE", v: "Full Stack & AI Engineer", c: "#ffffff" },
-            { k: "LEETCODE", v: "Knight 1933 · Top 3%", c: "#facc15" },
-            { k: "DSA", v: "1,000+ Problems Solved", c: "#22c55e" },
+            { k: "LEETCODE", v: "Knight 1951 · Top 3%", c: "#facc15" },
+            { k: "DSA", v: "1,100+ Problems Solved", c: "#22c55e" },
             { k: "STACK", v: "Next.js / MERN / AI RAG", c: "#38bdf8" },
             { k: "STATUS", v: "Open to SDE Roles / FTE", c: "#4ade80" },
           ];
@@ -678,16 +766,16 @@ export function ActHero({
   const [screenMode, setScreenMode] = useState<WorkstationScreenMode>("terminal");
   const [duckNotification, setDuckNotification] = useState<string | null>(null);
 
-  const handleDuckQuack = () => {
+  const handleDuckQuack = (customMsg?: string) => {
     const quips = [
       "Quack! 0 bugs in production! 🦆",
       "Rubber Duck Debugging: Approved! 💻",
       "LeetCode Knight vibes only! ⚔️",
       "Quack! Clean code detected! ✨",
     ];
-    const picked = quips[Math.floor(Math.random() * quips.length)];
+    const picked = customMsg || quips[Math.floor(Math.random() * quips.length)];
     setDuckNotification(picked);
-    setTimeout(() => setDuckNotification(null), 2500);
+    setTimeout(() => setDuckNotification(null), 2600);
   };
 
   // Typewriter Loop Logic
@@ -822,19 +910,6 @@ export function ActHero({
             >
               <span>Let&apos;s Talk</span>
             </a>
-
-            {/* Recruiter / Interviewer Quick Command Palette Button */}
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-              className="hidden xl:inline-flex items-center gap-2 px-3.5 py-3 rounded-2xl border border-white/15 bg-white/[0.04] hover:bg-white/10 hover:border-white/40 text-white/60 hover:text-white transition-all duration-300 text-xs font-mono group"
-              title="Open Command Palette (⌘K)"
-            >
-              <span>Quick Menu</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-white/10 group-hover:bg-white group-hover:text-black font-semibold text-[10px] transition-colors">
-                ⌘K
-              </kbd>
-            </button>
           </motion.div>
 
           {/* Social Icons Row */}
@@ -880,7 +955,7 @@ export function ActHero({
           >
             <div className="flex flex-row items-center justify-between px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl border border-white/10 bg-[#0C0C0E]/90 shadow-xl backdrop-blur-xl">
               <div className="text-center">
-                <div className="font-display text-lg sm:text-2xl font-extrabold text-[#FFFFFF]">1,000+</div>
+                <div className="font-display text-lg sm:text-2xl font-extrabold text-[#FFFFFF]">1,100+</div>
                 <div className="font-mono text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Solved</div>
               </div>
 

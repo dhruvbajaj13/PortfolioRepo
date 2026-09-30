@@ -296,55 +296,47 @@ export function ActProjects() {
               {/* Project Screenshot Media with Carousel Animation */}
               <ProjectCardMedia project={proj} index={i} />
 
-              {/* Card Body Details */}
-              <div className="p-2.5 sm:p-3.5 flex flex-col gap-2.5 flex-1 justify-between">
-                <div className="space-y-0.5">
-                  <h3 className="font-display font-black text-base sm:text-lg text-white tracking-tight uppercase">
+              {/* Compact Card Body: Name, Tech Stack & Action Links Only */}
+              <div className="p-3 sm:p-4 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-white tracking-tight uppercase">
                     {proj.title}
                   </h3>
-                  <p className="text-white/50 text-[11px] font-light leading-snug">
-                    {proj.tagline}
-                  </p>
 
-                  {/* Problem & Solution Block */}
-                  <div className="pt-1 space-y-1.5 text-[10.5px] text-white/65 leading-relaxed font-light">
-                    <div>
-                      <span className="font-mono text-[8px] tracking-widest text-white/80 uppercase block mb-0.5 font-bold">
-                        // Problem
-                      </span>
-                      <p className="line-clamp-2">{proj.problem}</p>
-                    </div>
-                    <div>
-                      <span className="font-mono text-[8px] tracking-widest text-white/80 uppercase block mb-0.5 font-bold">
-                        // Solution
-                      </span>
-                      <p className="line-clamp-2">{proj.solution}</p>
-                    </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <a
+                      href={proj.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2.5 py-1 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 hover:border-white/40 text-[10px] font-mono text-white/70 hover:text-white transition-all flex items-center gap-1"
+                      title="GitHub Repository"
+                    >
+                      <Github className="w-3 h-3" />
+                      <span>Code</span>
+                    </a>
+                    <a
+                      href={proj.liveDemo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2.5 py-1 rounded-lg bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1 shadow-sm"
+                      title="Open Live App"
+                    >
+                      <span>Live</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
 
                 {/* Tech Stack Badges */}
-                <div className="pt-2 border-t border-white/8 space-y-2">
-                  <div className="flex flex-wrap gap-1">
-                    {proj.techStack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.04] text-[9px] font-mono text-white/70 hover:border-white/40 hover:text-white transition-colors"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Key Highlights */}
-                  <ul className="grid grid-cols-2 gap-1 pt-0.5">
-                    {proj.features.slice(0, 4).map((f) => (
-                      <li key={f} className="flex items-center gap-1.5 text-[9px] text-white/40 truncate">
-                        <span className="w-1 h-1 rounded-full bg-white/40 shrink-0" />
-                        <span className="truncate">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="flex flex-wrap gap-1">
+                  {proj.techStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-2 py-0.5 rounded-full border border-white/8 bg-white/[0.03] text-[9px] font-mono text-white/60"
+                    >
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
 

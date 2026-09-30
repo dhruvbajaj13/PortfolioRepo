@@ -20,8 +20,6 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
     { label: 'Home', href: '#hero', index: 0 },
     { label: 'About', href: '#about', index: 1 },
     { label: 'Journey', href: '#experience', index: 2 },
-    { label: 'CP Profile', href: '#cp-stats', index: 3 },
-    { label: 'Achievements', href: '#achievements', index: 4 },
     { label: 'Projects', href: '#projects', index: 6 },
     { label: 'Contact', href: '#contact', index: 7 },
   ];

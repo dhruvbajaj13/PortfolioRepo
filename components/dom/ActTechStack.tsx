@@ -114,7 +114,7 @@ export function ActTechStack() {
         {/* Full-width Responsive Tech Grid */}
         <motion.div
           layout
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5"
         >
           <AnimatePresence mode="popLayout">
             {filtered.map((tech, i) => (
@@ -138,31 +138,31 @@ function TechCard({ tech, index }: { tech: typeof ALL_TECH[0]; index: number }) 
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.85 }}
       transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.3) }}
-      whileHover={{ y: -4, scale: 1.04 }}
-      className="group relative flex flex-col items-center justify-center gap-2.5 p-3.5 sm:p-4 rounded-2xl border border-white/8 bg-white/[0.02] hover:border-white/35 hover:bg-white/[0.03] transition-all duration-300 cursor-default shadow-md hover:shadow-xl"
+      whileHover={{ y: -3, scale: 1.03 }}
+      className="group relative flex flex-col items-center justify-center gap-1.5 p-2.5 sm:p-3 rounded-xl border border-white/8 bg-white/[0.02] hover:border-white/35 hover:bg-white/[0.04] transition-all duration-300 cursor-default shadow-sm hover:shadow-lg"
     >
       {/* Icon container with vibrant colored logo */}
-      <div className="w-11 sm:w-12 h-11 sm:h-12 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 transition-all duration-300 group-hover:scale-110 group-hover:border-white/40 shadow-inner">
+      <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-lg flex items-center justify-center border border-white/10 bg-white/5 transition-all duration-300 group-hover:scale-110 group-hover:border-white/40 shadow-inner">
         {!imgError ? (
           <img
             src={tech.logo}
             alt={tech.name}
-            className="w-6 h-6 object-contain opacity-100 transition-transform duration-300"
+            className="w-4 sm:w-4.5 h-4 sm:h-4.5 object-contain opacity-100 transition-transform duration-300"
             onError={() => setImgError(true)}
             loading="lazy"
           />
         ) : (
-          <span className="text-base font-extrabold font-mono text-white/80 group-hover:text-white transition-colors">
+          <span className="text-sm font-extrabold font-mono text-white/80 group-hover:text-white transition-colors">
             {tech.name[0]}
           </span>
         )}
       </div>
 
       <div className="text-center space-y-0.5">
-        <span className="text-xs font-semibold text-white/70 group-hover:text-white transition-colors block leading-tight">
+        <span className="text-[11px] sm:text-xs font-semibold text-white/70 group-hover:text-white transition-colors block leading-tight">
           {tech.name}
         </span>
-        <span className="text-[9px] font-mono text-white/30 group-hover:text-white/50 block">
+        <span className="text-[8px] sm:text-[8.5px] font-mono text-white/30 group-hover:text-white/50 block">
           {tech.category}
         </span>
       </div>

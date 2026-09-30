@@ -19,7 +19,7 @@ const MARQUEE_ITEMS = [
     id: "leetcode",
     title: "LeetCode Knight",
     tag: "Top 3%",
-    highlight: "Rating 1933 · 1,000+ Solved",
+    highlight: "Rating 1951 · 1,100+ Solved",
     sub: "DSA in Java · 366-Day Max Streak",
     icon: Flame,
     colorClass: "group-hover:border-[#FFA116]/60 group-hover:bg-[#120D06] group-hover:shadow-[0_0_25px_rgba(255,161,22,0.2)]",

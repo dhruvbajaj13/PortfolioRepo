@@ -102,7 +102,7 @@ export function CommandPalette() {
       id: 'nav-achieve',
       category: 'Navigation',
       title: 'Achievements',
-      subtitle: '1000+ DSA, GSSOC, CodeX & AlgoUniversity finalists',
+      subtitle: '1100+ DSA, GSSOC, CodeX & AlgoUniversity finalists',
       icon: Trophy,
       action: () => scrollTo('achievements'),
       shortcut: 'M',
@@ -297,10 +297,11 @@ export function CommandPalette() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-[#0C0C0E]/95 backdrop-blur-2xl shadow-[0_20px_70px_rgba(0,0,0,0.95)] overflow-hidden z-10 flex flex-col max-h-[75vh]"
+              data-lenis-prevent="true"
+              className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-[#0C0C0E]/95 backdrop-blur-2xl shadow-[0_20px_70px_rgba(0,0,0,0.95)] overflow-hidden z-10 flex flex-col max-h-[80vh]"
             >
               {/* Search Bar Input */}
-              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-[#121215]">
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-[#121215] shrink-0">
                 <Search className="w-4 h-4 text-white/50 shrink-0" />
                 <input
                   ref={inputRef}
@@ -319,7 +320,10 @@ export function CommandPalette() {
               </div>
 
               {/* Command List */}
-              <div className="overflow-y-auto p-2 divide-y divide-white/5 space-y-1">
+              <div
+                data-lenis-prevent="true"
+                className="flex-1 min-h-0 overflow-y-auto max-h-[55vh] p-2 divide-y divide-white/5 space-y-1 overscroll-contain"
+              >
                 {filtered.length === 0 ? (
                   <div className="py-12 text-center text-white/40 text-xs font-mono">
                     No results found for &quot;{search}&quot;

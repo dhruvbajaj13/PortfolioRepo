@@ -3,13 +3,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const STATS = [
-  { value: '10+', label: 'Projects Shipped' },
-  { value: '3+', label: 'Internships' },
-  { value: '1000+', label: 'Problems Solved' },
-  { value: '2027', label: 'Graduating' },
-];
-
 export function ActAbout() {
   return (
     <section
@@ -18,7 +11,7 @@ export function ActAbout() {
     >
       <div className="max-w-6xl mx-auto">
 
-        {/* Header — same massive style as Experience */}
+        {/* Header */}
         <div className="mb-16 md:mb-20">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -38,7 +31,7 @@ export function ActAbout() {
           </motion.h2>
         </div>
 
-        {/* Two-column layout — same as Experience */}
+        {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-stretch">
 
           {/* Left — profile photo */}
@@ -58,53 +51,28 @@ export function ActAbout() {
             </motion.div>
           </div>
 
-          {/* Right — detail panel */}
+          {/* Right — detail panel (Bio info only, no stats boxes) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="flex-1 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-8 md:p-10 flex flex-col justify-between gap-8"
+            className="flex-1 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 md:p-10 flex flex-col justify-center gap-4"
           >
-            {/* Bio text */}
-            <div className="pb-6 border-b border-white/10">
-              <h3 className="font-display font-black text-white text-2xl md:text-3xl tracking-tight mb-4">
-                Dhruv Bajaj
-              </h3>
-              <div className="flex flex-col gap-4 text-white/65 text-sm md:text-base leading-relaxed font-light">
-                <p>
-                  I’m a <span className="text-white font-medium">final year B.Tech student</span> at <span className="text-white font-medium">NSUT</span> pursuing <span className="text-white font-medium">Electronics &amp; Communication Engineering</span> with a specialization in <span className="text-white font-medium">IoT</span>. I’m passionate about software development and enjoy building solutions that solve real-world problems.
-                </p>
-                <p>
-                  I have a strong foundation in <span className="text-white font-medium">Data Structures &amp; Algorithms using Java</span> and hands-on experience in full-stack web development using <span className="text-white font-medium">React.js, Node.js, Express.js, and MongoDB</span>. Recently, I’ve also been exploring AI technologies and building applications using <span className="text-white font-medium">LangChain, LangGraph, RAG, Embeddings, Vector DB</span>, and LLM-based systems to create intelligent and practical solutions.
-                </p>
-                <p>
-                  I’m always eager to learn new technologies, work on impactful projects, and grow as a software engineer. Currently, I’m looking for <span className="text-white font-medium">internship opportunities</span> where I can contribute, learn from experienced developers, and gain industry experience.
-                </p>
-              </div>
+            <h3 className="font-display font-black text-white text-2xl md:text-3xl tracking-tight mb-2">
+              Dhruv Bajaj
+            </h3>
+            <div className="flex flex-col gap-4 text-white/70 text-sm md:text-base leading-relaxed font-light">
+              <p>
+                I’m a <span className="text-white font-medium">final year B.Tech student</span> at <span className="text-white font-medium">NSUT</span> pursuing <span className="text-white font-medium">Electronics &amp; Communication Engineering</span> with a specialization in <span className="text-white font-medium">IoT</span>. I’m passionate about software development and enjoy building solutions that solve real-world problems.
+              </p>
+              <p>
+                I have a strong foundation in <span className="text-white font-medium">Data Structures &amp; Algorithms using Java</span> and hands-on experience in full-stack web development using <span className="text-white font-medium">React.js, Node.js, Express.js, and MongoDB</span>. Recently, I’ve also been exploring AI technologies and building applications using <span className="text-white font-medium">LangChain, LangGraph, RAG, Embeddings, Vector DB</span>, and LLM-based systems to create intelligent and practical solutions.
+              </p>
+              <p>
+                I’m always eager to learn new technologies, work on impactful projects, and grow as a software engineer. Currently, I’m looking for <span className="text-white font-medium">internship opportunities</span> where I can contribute, learn from experienced developers, and gain industry experience.
+              </p>
             </div>
-
-            {/* Stats row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              {STATS.map((s, i) => (
-                <motion.div
-                  key={s.label}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.3 + i * 0.07 }}
-                  className="flex flex-col gap-1 p-3.5 sm:p-4 rounded-xl border border-white/8 bg-white/[0.02] hover:border-white/30 transition-colors"
-                >
-                  <span className="font-display font-black text-white text-2xl md:text-3xl tracking-tight">
-                    {s.value}
-                  </span>
-                  <span className="font-mono text-[10px] tracking-widest text-white/40 uppercase">
-                    {s.label}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-
           </motion.div>
 
         </div>
