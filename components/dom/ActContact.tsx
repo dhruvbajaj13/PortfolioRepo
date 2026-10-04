@@ -128,10 +128,10 @@ export function ActContact() {
       id="contact"
       className="relative w-full flex flex-col justify-center px-4 sm:px-8 md:px-16 py-16 md:py-24 overflow-hidden pointer-events-none bg-[#050505]"
     >
-      <div className="max-w-5xl mx-auto w-full">
+      <div className="max-w-4xl mx-auto w-full">
 
         {/* Section Header */}
-        <div className="text-center space-y-3 mb-12 pointer-events-auto">
+        <div className="text-center space-y-3 mb-8 pointer-events-auto">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -188,7 +188,7 @@ export function ActContact() {
           </div>
 
           {/* Form Content */}
-          <div className="px-6 pb-8 pt-4">
+          <div className="px-5 pb-6 pt-3">
             <AnimatePresence mode="wait">
               {!isSubmitted ? (
                 <motion.form

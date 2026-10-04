@@ -4,34 +4,41 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
-function LeetCodeLogo() {
+const PLATFORM_ICON_COLORS: Record<string, string> = {
+  leetcode: '#FFA116',
+  geeksforgeeks: '#2F8D46',
+  codeforces: '#318CE7',
+  codechef: '#B97D4B',
+};
+
+function LeetCodeLogo({ color }: { color?: string }) {
   return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill={color || 'currentColor'}>
       <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .666-1.607L9.4 8.447l4.77-4.676c.54-.54.54-1.414.003-1.955A1.374 1.374 0 0 0 13.483 0z" />
       <path d="M16.517 7.915a1.378 1.378 0 0 0-1.375 1.378v4.945c0 .762.614 1.378 1.375 1.378.762 0 1.378-.616 1.378-1.378V9.293c0-.762-.616-1.378-1.378-1.378z" />
     </svg>
   );
 }
 
-function GeeksforGeeksLogo() {
+function GeeksforGeeksLogo({ color }: { color?: string }) {
   return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill={color || 'currentColor'}>
       <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 15.344c-.75.75-1.781 1.156-2.844 1.156-1.062 0-2.094-.406-2.844-1.156l-.375-.375-.375.375c-.75.75-1.781 1.156-2.844 1.156-1.062 0-2.094-.406-2.844-1.156-1.562-1.562-1.562-4.125 0-5.688l3.219-3.219c.75-.75 1.781-1.156 2.844-1.156 1.062 0 2.094.406 2.844 1.156l.375.375.375-.375c.75-.75 1.781-1.156 2.844-1.156 1.062 0 2.094.406 2.844 1.156 1.562 1.562 1.562 4.125 0 5.688l-3.219 3.219z" />
     </svg>
   );
 }
 
-function CodeforcesLogo() {
+function CodeforcesLogo({ color }: { color?: string }) {
   return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill={color || 'currentColor'}>
       <path d="M4.5 7.5A1.5 1.5 0 0 1 6 9v10.5A1.5 1.5 0 0 1 4.5 21h-3A1.5 1.5 0 0 1 0 19.5V9a1.5 1.5 0 0 1 1.5-1.5h3zm7.5-4.5A1.5 1.5 0 0 1 13.5 4.5v15a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 7.5 19.5V4.5A1.5 1.5 0 0 1 9 3h3zm7.5 9a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-3a1.5 1.5 0 0 1-1.5-1.5v-6a1.5 1.5 0 0 1 1.5-1.5h3z" />
     </svg>
   );
 }
 
-function CodeChefLogo() {
+function CodeChefLogo({ color }: { color?: string }) {
   return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill={color || 'currentColor'}>
       <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12c0-5.523-4.477-10-10-10z" />
     </svg>
   );
@@ -74,6 +81,10 @@ const PLATFORMS_DATA = [
       { label: 'Max Rating', value: '1951' },
       { label: 'Contests', value: '42' },
     ],
+    graphs: [
+      { src: '/images/leetcode_rating.png', alt: 'LeetCode Rating Graph — Knight 1951' },
+      { src: '/images/leetcode_streak.png', alt: 'LeetCode 365+ Day Streak & 4000+ Submissions' },
+    ],
     Logo: LeetCodeLogo,
   },
   {
@@ -87,6 +98,7 @@ const PLATFORMS_DATA = [
       { label: 'Score', value: '180+' },
       { label: 'Streak', value: 'Active' },
     ],
+    graphs: [] as { src: string; alt: string }[],
     Logo: GeeksforGeeksLogo,
   },
   {
@@ -100,6 +112,9 @@ const PLATFORMS_DATA = [
       { label: 'Rating', value: '1198' },
       { label: 'Contests', value: '10+' },
     ],
+    graphs: [
+      { src: '/images/codeforces_graph.png', alt: 'Codeforces Rating Graph' },
+    ],
     Logo: CodeforcesLogo,
   },
   {
@@ -112,6 +127,9 @@ const PLATFORMS_DATA = [
       { label: 'Solved', value: '70+' },
       { label: 'Max Rating', value: '1605' },
       { label: 'Contests', value: '17' },
+    ],
+    graphs: [
+      { src: '/images/codechef_graph.png', alt: 'CodeChef Rating Graph — 3★ 1605' },
     ],
     Logo: CodeChefLogo,
   },
@@ -153,35 +171,31 @@ export function ActCPStats() {
           </div>
         </div>
 
-        {/* Top Horizontal Tabs (Single Line - Same pattern as TechStack) */}
-        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-4 mb-6 no-scrollbar">
+        {/* Top Horizontal Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 no-scrollbar">
           {PLATFORMS_DATA.map((plat, i) => {
             const { Logo } = plat;
             const isSelected = activeIdx === i;
+            const iconColor = PLATFORM_ICON_COLORS[plat.id];
             return (
               <button
                 key={plat.id}
                 type="button"
                 onClick={() => setActiveIdx(i)}
-                className={`flex items-center gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-sans transition-all duration-300 shrink-0 border ${
+                className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-sans transition-all duration-300 shrink-0 border ${
                   isSelected
-                    ? 'bg-white text-black font-bold border-white shadow-[0_0_20px_rgba(255,255,255,0.4)] scale-105'
+                    ? 'bg-white text-black font-bold border-white shadow-[0_0_16px_rgba(255,255,255,0.35)] scale-105'
                     : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
-                <div className={`w-4 h-4 ${isSelected ? 'text-black' : 'text-white/60'}`}>
-                  <Logo />
-                </div>
+                <Logo color={isSelected ? '#000' : iconColor} />
                 <span>{plat.name}</span>
-                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${isSelected ? 'bg-black/10 text-black' : 'bg-white/5 text-white/40'}`}>
-                  {plat.badge}
-                </span>
               </button>
             );
           })}
         </div>
 
-        {/* Full-Width Platform Details Container (Left-to-Right layout) */}
+        {/* Full-Width Platform Details Container */}
         <AnimatePresence mode="wait">
           <motion.div
             key={active.id}
@@ -189,26 +203,29 @@ export function ActCPStats() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.35 }}
-            className="rounded-2xl border border-white/10 bg-[#0C0C0E]/95 p-6 sm:p-8 md:p-10 shadow-2xl flex flex-col gap-6"
+            className="rounded-2xl border border-white/10 bg-[#0C0C0E]/95 p-5 sm:p-7 shadow-2xl flex flex-col gap-5"
           >
             {/* Header: Platform Branding & Direct Profile Link Button */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10">
-              <div className="flex items-center gap-3.5 sm:gap-4">
-                <div className="w-12 h-12 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center text-white">
-                  <active.Logo />
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-xl border border-white/15 bg-white/5 flex items-center justify-center"
+                  style={{ color: PLATFORM_ICON_COLORS[active.id] }}
+                >
+                  <active.Logo color={PLATFORM_ICON_COLORS[active.id]} />
                 </div>
                 <div>
-                  <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight">
+                  <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight">
                     {active.name}
                   </h3>
-                  <p className="text-white/50 text-xs font-mono tracking-wider uppercase mt-0.5">
+                  <p className="text-white/50 text-[10px] font-mono tracking-wider uppercase mt-0.5">
                     {active.tagline}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-bold font-mono px-3.5 py-1.5 rounded-full border border-white/20 bg-white/10 text-white shadow-sm">
+              <div className="flex items-center gap-2.5">
+                <span className="text-[10px] font-bold font-mono px-3 py-1 rounded-full border border-white/20 bg-white/10 text-white shadow-sm">
                   {active.badge}
                 </span>
 
@@ -216,58 +233,52 @@ export function ActCPStats() {
                   href={active.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-xl border border-white/15 bg-white text-black font-sans font-bold text-xs uppercase tracking-wider hover:scale-105 transition-all shadow-md"
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg border border-white/15 bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:scale-105 transition-all shadow-md"
                 >
                   <span>Profile</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <ArrowUpRight className="w-3 h-3" />
                 </a>
               </div>
             </div>
 
-            {/* Stats Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            {/* Stats Row — compact */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {active.stats.map((s) => (
                 <div
                   key={s.label}
-                  className="flex flex-col gap-1 p-4 rounded-xl border border-white/8 bg-white/[0.02] text-center hover:border-white/25 transition-colors"
+                  className="flex flex-col gap-0.5 p-2.5 rounded-xl border border-white/8 bg-white/[0.02] text-center hover:border-white/25 transition-colors"
                 >
-                  <span className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight">
+                  <span className="font-display font-black text-xl sm:text-2xl text-white tracking-tight">
                     <AnimatedCounter target={s.value} />
                   </span>
-                  <span className="font-mono text-[10px] tracking-widest text-white/50 uppercase">
+                  <span className="font-mono text-[9px] tracking-widest text-white/50 uppercase">
                     {s.label}
                   </span>
                 </div>
               ))}
             </div>
 
-            {/* LeetCode Consistency Streak Banner (Prominent Full Width) */}
-            {active.id === 'leetcode' && (
+            {/* Platform Graph Images */}
+            {active.graphs.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="p-4 sm:p-6 rounded-2xl border border-white/10 bg-[#070709] space-y-4"
+                className="space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-mono text-xs sm:text-sm font-semibold text-white">
-                      365+ Day Unbroken Coding Streak &amp; 4,000+ Submissions
-                    </span>
+                {active.graphs.map((g) => (
+                  <div
+                    key={g.src}
+                    className="rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0c] p-2"
+                  >
+                    <img
+                      src={g.src}
+                      alt={g.alt}
+                      className="w-full h-auto object-contain rounded-lg"
+                      loading="lazy"
+                    />
                   </div>
-                  <span className="font-mono text-[11px] text-white border border-white/30 bg-white/10 px-3 py-1 rounded-full font-bold">
-                    Knight (1951 Rating)
-                  </span>
-                </div>
-
-                <div className="rounded-xl overflow-hidden border border-white/10 bg-[#121214] p-2 sm:p-3">
-                  <img
-                    src="/images/leetcode_streak.png"
-                    alt="LeetCode 4,000 Submissions with 366 Max Streak"
-                    className="w-full h-auto object-contain rounded-lg"
-                  />
-                </div>
+                ))}
               </motion.div>
             )}
 

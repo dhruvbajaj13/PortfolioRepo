@@ -26,7 +26,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
   // ─── Row 1 ───────────────────────────────────────────────────────────
   {
     id: 'splitr',
-    title: 'Splitr',
+    title: 'SPLITR – AI Based Expense Splitting Platform',
     tagline: 'AI-Powered Expense Sharing & Bill Splitting',
     category: 'Full-Stack & AI',
     image: '/images/splitr_home.png',
@@ -42,7 +42,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
   },
   {
     id: 'rag-agent',
-    title: 'RAG AI Agent',
+    title: 'RAG AI Agent with Web Search',
     tagline: 'Autonomous Document Intelligence & Live Search',
     category: 'GenAI & Agents',
     image: '/images/rag_agent.png',
@@ -72,7 +72,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
   },
   {
     id: 'codecraft',
-    title: 'CodeCraft',
+    title: 'CODECRAY – SaaS Code Editor & IDE',
     tagline: 'SaaS Cloud IDE & Multi-Language Runner',
     category: 'Cloud DevTools',
     image: '/images/codecraft_home.png',
@@ -90,7 +90,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
   // ─── Row 3 ───────────────────────────────────────────────────────────
   {
     id: 'synthex',
-    title: 'Synthex',
+    title: 'SYNTHEX AI Chrome Extension',
     tagline: 'AI Web Productivity Chrome Extension',
     category: 'Browser Extensions',
     image: '/images/synthex.png',
@@ -104,15 +104,15 @@ export const PROJECTS_DATA: ProjectItem[] = [
   },
   {
     id: 'cleancity',
-    title: 'CleanCity (SIH)',
-    tagline: 'Smart Waste Management & Eco-Reward Platform',
+    title: 'CleanCity',
+    tagline: 'Smart Waste Management Platform with IoT Telemetry',
     category: 'IoT & Smart Cities',
     image: '/images/cleancity_home.png',
     images: ['/images/cleancity_home.png', '/images/cleancity_about.png', '/images/cleancity_dashboard.png'],
     imageLabels: ['Home', 'About', 'Dashboard'],
     browserUrl: 'https://clean-city-sih.vercel.app',
     problem: 'Overflowing municipal bins and unaddressed illegal waste dumping cause severe sanitation hazards and delayed municipal intervention.',
-    solution: 'Smart India Hackathon project connecting citizen AI waste reporting, gamified token rewards, municipal dispatch routing, and smart bin telemetry.',
+    solution: 'Smart platform connecting citizen AI waste reporting, gamified token rewards, municipal dispatch routing, and IoT smart bin telemetry for real-time monitoring.',
     features: ['AI Waste Report Verification', 'Gamified Token Rewards', 'Impact Leaderboard', 'Municipal Dispatch Map'],
     techStack: ['React.js', 'Node.js', 'Express', 'MongoDB', 'IoT Sensors', 'Leaflet Maps'],
     github: 'https://github.com/dhruvbajaj13/CleanCity-SIH',
@@ -299,7 +299,7 @@ export function ActProjects() {
               {/* Compact Card Body: Name, Tech Stack & Action Links Only */}
               <div className="p-3 sm:p-4 flex flex-col gap-2.5">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-white tracking-tight uppercase">
+                  <h3 className="font-display font-black text-sm sm:text-base text-white tracking-tight uppercase leading-tight">
                     {proj.title}
                   </h3>
 

@@ -675,43 +675,113 @@ const HeroRetroWorkstation3D: React.FC<RetroWorkstation3DProps> = ({
           ctx.fillText(`CPU: ${(24 + Math.sin(frame * 0.08) * 8).toFixed(1)}%   RAM: 4.8 GB   LATENCY: 12ms`, 16, 255);
 
         } else {
-          // Terminal mode (default)
-          ctx.fillStyle = "#080b12";
+          // ── Authentic macOS Desktop & Terminal Screen ──
+          // 1. macOS Wallpaper Gradient (Dark Sequoia / Cosmic Nebula)
+          const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+          bgGrad.addColorStop(0, "#0c0d16");
+          bgGrad.addColorStop(0.4, "#141528");
+          bgGrad.addColorStop(0.8, "#0a0a10");
+          bgGrad.addColorStop(1, "#050508");
+          ctx.fillStyle = bgGrad;
           ctx.fillRect(0, 0, W, H);
 
-          // Scanlines
-          ctx.fillStyle = "rgba(0, 0, 0, 0.22)";
-          for (let y = 0; y < H; y += 4) {
-            ctx.fillRect(0, y, W, 2);
-          }
+          // Subtle wallpaper ambient curve glow
+          ctx.fillStyle = "rgba(56, 189, 248, 0.08)";
+          ctx.beginPath();
+          ctx.arc(W * 0.7, H * 0.35, 120, 0, Math.PI * 2);
+          ctx.fill();
 
-          // Title
+          ctx.fillStyle = "rgba(168, 85, 247, 0.06)";
+          ctx.beginPath();
+          ctx.arc(W * 0.3, H * 0.7, 100, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 2. macOS Top Menu Bar
+          ctx.fillStyle = "rgba(20, 20, 28, 0.85)";
+          ctx.fillRect(0, 0, W, 18);
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+          ctx.beginPath(); ctx.moveTo(0, 18); ctx.lineTo(W, 18); ctx.stroke();
+
           ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 12px monospace";
-          ctx.fillText("● ● ●  bash - 80x24", 16, 24);
+          ctx.font = "bold 9px -apple-system, BlinkMacSystemFont, sans-serif";
+          ctx.fillText("", 8, 12);
 
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-          ctx.beginPath(); ctx.moveTo(12, 32); ctx.lineTo(W - 12, 32); ctx.stroke();
+          ctx.fillStyle = "#cbd5e1";
+          ctx.font = "8px -apple-system, BlinkMacSystemFont, sans-serif";
+          ctx.fillText("Finder   File   Edit   View   Terminal   Window   Help", 24, 12);
 
-          // Lines
-          ctx.font = "11px monospace";
-          const visible = Math.min(Math.floor(frame / 28) + 1, termLines.length);
+          // Right menu items
+          ctx.fillStyle = "#94a3b8";
+          ctx.fillText("94% [⚡]   Wed 11:42 PM", W - 94, 12);
+
+          // 3. Floating macOS Terminal Window
+          const twX = 14;
+          const twY = 26;
+          const twW = W - 28;
+          const twH = H - 56;
+
+          // Terminal window shadow & backdrop
+          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+          ctx.fillRect(twX + 3, twY + 4, twW, twH);
+
+          ctx.fillStyle = "rgba(12, 13, 18, 0.95)";
+          ctx.fillRect(twX, twY, twW, twH);
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(twX, twY, twW, twH);
+
+          // Window Title Bar
+          ctx.fillStyle = "rgba(28, 29, 38, 0.98)";
+          ctx.fillRect(twX, twY, twW, 18);
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+          ctx.beginPath(); ctx.moveTo(twX, twY + 18); ctx.lineTo(twX + twW, twY + 18); ctx.stroke();
+
+          // Traffic light dots
+          ctx.fillStyle = "#ff5f57";
+          ctx.beginPath(); ctx.arc(twX + 10, twY + 9, 3.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#febc2e";
+          ctx.beginPath(); ctx.arc(twX + 20, twY + 9, 3.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#28c840";
+          ctx.beginPath(); ctx.arc(twX + 30, twY + 9, 3.5, 0, Math.PI * 2); ctx.fill();
+
+          // Window Title text
+          ctx.fillStyle = "#94a3b8";
+          ctx.font = "bold 8.5px -apple-system, BlinkMacSystemFont, monospace";
+          ctx.fillText("dhruv@macbook-pro: ~ (zsh)", twX + twW / 2 - 58, twY + 12);
+
+          // Terminal content lines
+          ctx.font = "9.5px monospace";
+          const visible = Math.min(Math.floor(frame / 26) + 1, termLines.length);
           for (let l = 0; l < visible; l++) {
             const isPrompt = l === 0;
             const isHigh = l === 1 || l === 4;
-            ctx.fillStyle = isPrompt ? "#4ade80" : isHigh ? "#ffffff" : "#cbd5e1";
+            ctx.fillStyle = isPrompt ? "#4ade80" : isHigh ? "#ffffff" : "#94a3b8";
             const line = termLines[l];
             if (l === visible - 1 && visible < termLines.length) {
-              const chars = Math.floor(((frame % 28) / 28) * line.length);
-              ctx.fillText(line.slice(0, chars) + "█", 16, 56 + l * 26);
+              const chars = Math.floor(((frame % 26) / 26) * line.length);
+              ctx.fillText(line.slice(0, chars) + "█", twX + 10, twY + 34 + l * 20);
             } else {
-              ctx.fillText(line, 16, 56 + l * 26);
+              ctx.fillText(line, twX + 10, twY + 34 + l * 20);
             }
           }
 
-          ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
-          ctx.font = "9.5px monospace";
-          ctx.fillText("Tip: Click screen to cycle modes • Click duck", 16, 268);
+          // 4. macOS Bottom Floating Dock
+          const dockW = 140;
+          const dockH = 18;
+          const dockX = (W - dockW) / 2;
+          const dockY = H - 22;
+
+          ctx.fillStyle = "rgba(28, 30, 42, 0.75)";
+          ctx.fillRect(dockX, dockY, dockW, dockH);
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+          ctx.strokeRect(dockX, dockY, dockW, dockH);
+
+          // Mini Dock App Icons
+          const dockIcons = ["📁", "🧭", "⚡", "💻", "📝", "⚙️"];
+          ctx.font = "10px sans-serif";
+          dockIcons.forEach((icon, i) => {
+            ctx.fillText(icon, dockX + 10 + i * 21, dockY + 13);
+          });
         }
 
         screenTexture.needsUpdate = true;
@@ -912,12 +982,12 @@ export function ActHero({
             </a>
           </motion.div>
 
-          {/* Social Icons Row */}
+          {/* Social Icons Row (Centered) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="pt-1 flex items-center justify-center lg:justify-start gap-3"
+            className="pt-1 flex items-center justify-center gap-3 w-full max-w-lg"
           >
             <a
               href="https://github.com/dhruvbajaj13"

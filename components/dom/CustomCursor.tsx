@@ -71,24 +71,24 @@ export function CustomCursor() {
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-50 rounded-full border border-white/20 mix-blend-difference"
         animate={{
-          x: x - (hovered ? 20 : 12),
-          y: y - (hovered ? 20 : 12),
-          width: hovered ? 40 : 24,
-          height: hovered ? 40 : 24,
+          x: x - (hovered ? 14 : 8),
+          y: y - (hovered ? 14 : 8),
+          width: hovered ? 28 : 16,
+          height: hovered ? 28 : 16,
           scale: clicked ? 0.8 : 1,
           backgroundColor: hovered ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0)',
-          borderColor: hovered ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+          borderColor: hovered ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.25)',
         }}
-        transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.4 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 320, mass: 0.35 }}
       />
 
       {/* Inner Classic Center Dot */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-50 w-1.5 h-1.5 bg-white rounded-full mix-blend-difference shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+        className="fixed top-0 left-0 pointer-events-none z-50 w-1 h-1 bg-white rounded-full mix-blend-difference shadow-[0_0_6px_rgba(255,255,255,0.9)]"
         animate={{
-          x: x - 3,
-          y: y - 3,
-          scale: hovered ? 1.4 : 1,
+          x: x - 2,
+          y: y - 2,
+          scale: hovered ? 1.3 : 1,
         }}
         transition={{ type: 'spring', damping: 30, stiffness: 500, mass: 0.1 }}
       />
