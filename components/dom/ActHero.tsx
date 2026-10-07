@@ -831,7 +831,7 @@ export function ActHero({
   selectedProject?: any;
   setSelectedProject?: (proj: any) => void;
 }) {
-  const RESUME_URL = "https://drive.google.com/file/d/1F0QmpaQFUWuysUn1V8pO1E9kHdVS_BCZ/view";
+  const RESUME_URL = "https://drive.google.com/file/d/1muHU96RCNS1iCxL6H6SonHjeL6nJlkrA/view";
 
   const [screenMode, setScreenMode] = useState<WorkstationScreenMode>("terminal");
   const [duckNotification, setDuckNotification] = useState<string | null>(null);

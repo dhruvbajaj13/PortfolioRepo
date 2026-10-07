@@ -143,7 +143,7 @@ export function CommandPalette() {
       subtitle: 'Open latest CV in Google Drive',
       icon: FileDown,
       action: () => {
-        window.open('https://drive.google.com/file/d/1F0QmpaQFUWuysUn1V8pO1E9kHdVS_BCZ/view', '_blank');
+        window.open('https://drive.google.com/file/d/1muHU96RCNS1iCxL6H6SonHjeL6nJlkrA/view', '_blank');
         setIsOpen(false);
       },
       shortcut: 'R',
