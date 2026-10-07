@@ -163,7 +163,7 @@ export function ActCPStats() {
               viewport={{ once: true }}
               className="font-display text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tighter uppercase leading-none"
             >
-              CP Profile
+              Coding Stats
             </motion.h2>
             <span className="font-mono text-xs text-white/40 tracking-wider">
               [ 1100+ Solved · Knight 1951 · 3★ 1605 ]
