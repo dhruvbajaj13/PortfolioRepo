@@ -88,18 +88,20 @@ const PLATFORMS_DATA = [
     Logo: LeetCodeLogo,
   },
   {
-    id: 'geeksforgeeks',
-    name: 'GeeksforGeeks',
-    tagline: 'DSA & Core Problem Solving',
-    badge: 'Consistent Problem Solver',
-    profileUrl: 'https://www.geeksforgeeks.org/profile/d4ba0ewg',
+    id: 'codechef',
+    name: 'CodeChef',
+    tagline: 'Long & Starters Contests',
+    badge: '3★ Division · Max 1605',
+    profileUrl: 'https://www.codechef.com/users/dhruvvv_1307',
     stats: [
-      { label: 'Solved', value: '60+' },
-      { label: 'Score', value: '180+' },
-      { label: 'Streak', value: 'Active' },
+      { label: 'Solved', value: '70+' },
+      { label: 'Max Rating', value: '1605' },
+      { label: 'Contests', value: '17' },
     ],
-    graphs: [] as { src: string; alt: string }[],
-    Logo: GeeksforGeeksLogo,
+    graphs: [
+      { src: '/images/codechef_graph.png', alt: 'CodeChef Rating Graph — 3★ 1605' },
+    ],
+    Logo: CodeChefLogo,
   },
   {
     id: 'codeforces',
@@ -118,20 +120,18 @@ const PLATFORMS_DATA = [
     Logo: CodeforcesLogo,
   },
   {
-    id: 'codechef',
-    name: 'CodeChef',
-    tagline: 'Long & Starters Contests',
-    badge: '3★ Division · Max 1605',
-    profileUrl: 'https://www.codechef.com/users/dhruvvv_1307',
+    id: 'geeksforgeeks',
+    name: 'GeeksforGeeks',
+    tagline: 'DSA & Core Problem Solving',
+    badge: 'Consistent Problem Solver',
+    profileUrl: 'https://www.geeksforgeeks.org/profile/d4ba0ewg',
     stats: [
-      { label: 'Solved', value: '70+' },
-      { label: 'Max Rating', value: '1605' },
-      { label: 'Contests', value: '17' },
+      { label: 'Solved', value: '60+' },
+      { label: 'Score', value: '180+' },
+      { label: 'Streak', value: 'Active' },
     ],
-    graphs: [
-      { src: '/images/codechef_graph.png', alt: 'CodeChef Rating Graph — 3★ 1605' },
-    ],
-    Logo: CodeChefLogo,
+    graphs: [] as { src: string; alt: string }[],
+    Logo: GeeksforGeeksLogo,
   },
 ];
 
@@ -144,10 +144,10 @@ export function ActCPStats() {
       id="cp-stats"
       className="relative w-full px-4 sm:px-8 md:px-16 py-20 md:py-28 bg-[#050505]"
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
 
         {/* Section Header */}
-        <div className="mb-10 md:mb-14">
+        <div className="mb-8 md:mb-10">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -203,10 +203,10 @@ export function ActCPStats() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.35 }}
-            className="rounded-2xl border border-white/10 bg-[#0C0C0E]/95 p-5 sm:p-7 shadow-2xl flex flex-col gap-5"
+            className="rounded-2xl border border-white/10 bg-[#0C0C0E]/95 p-4 sm:p-6 shadow-2xl flex flex-col gap-4"
           >
             {/* Header: Platform Branding & Direct Profile Link Button */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-white/10">
               <div className="flex items-center gap-3">
                 <div
                   className="w-10 h-10 rounded-xl border border-white/15 bg-white/5 flex items-center justify-center"
@@ -258,19 +258,29 @@ export function ActCPStats() {
               ))}
             </div>
 
-            {/* Platform Graph Images - Compact & Neat */}
+            {/* Platform Graph Images - Compact & Balanced */}
             {active.graphs.length > 0 && (
-              <div className={`grid grid-cols-1 ${active.graphs.length > 1 ? 'sm:grid-cols-2' : 'max-w-md mx-auto w-full'} gap-3 pt-1`}>
+              <div
+                className={`grid grid-cols-1 ${
+                  active.graphs.length > 1
+                    ? 'sm:grid-cols-2 gap-3'
+                    : 'max-w-2xl mx-auto w-full'
+                } pt-1`}
+              >
                 {active.graphs.map((g) => (
                   <div
                     key={g.src}
-                    className="rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0c] p-2.5 flex items-center justify-center hover:border-white/25 transition-all group"
+                    className="rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0c] p-2 sm:p-2.5 flex items-center justify-center hover:border-white/25 transition-all group"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={g.src}
                       alt={g.alt}
-                      className="w-auto max-w-full rounded-lg object-contain max-h-[150px] sm:max-h-[175px] group-hover:scale-[1.02] transition-transform duration-300"
+                      className={`w-auto max-w-full rounded-lg object-contain ${
+                        active.graphs.length > 1
+                          ? 'max-h-[175px] sm:max-h-[200px]'
+                          : 'max-h-[230px] sm:max-h-[270px]'
+                      } group-hover:scale-[1.01] transition-transform duration-300`}
                     />
                   </div>
                 ))}

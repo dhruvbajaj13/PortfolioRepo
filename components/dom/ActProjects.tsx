@@ -72,7 +72,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
   },
   {
     id: 'codecraft',
-    title: 'CODECRAFT – SaaS Code Editor & IDE',
+    title: 'CODECRAFT – SAAS CODE EDITOR AND IDE',
     tagline: 'SaaS Cloud IDE & Multi-Language Runner',
     category: 'Cloud DevTools',
     image: '/images/codecraft_home.png',
