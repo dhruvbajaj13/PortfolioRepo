@@ -258,28 +258,23 @@ export function ActCPStats() {
               ))}
             </div>
 
-            {/* Platform Graph Images */}
+            {/* Platform Graph Images - Compact & Neat */}
             {active.graphs.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="space-y-3"
-              >
+              <div className={`grid grid-cols-1 ${active.graphs.length > 1 ? 'sm:grid-cols-2' : 'max-w-md mx-auto w-full'} gap-3 pt-1`}>
                 {active.graphs.map((g) => (
                   <div
                     key={g.src}
-                    className="rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0c] p-2"
+                    className="rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0c] p-2.5 flex items-center justify-center hover:border-white/25 transition-all group"
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={g.src}
                       alt={g.alt}
-                      className="w-full h-auto object-contain rounded-lg"
-                      loading="lazy"
+                      className="w-auto max-w-full rounded-lg object-contain max-h-[150px] sm:max-h-[175px] group-hover:scale-[1.02] transition-transform duration-300"
                     />
                   </div>
                 ))}
-              </motion.div>
+              </div>
             )}
 
           </motion.div>
