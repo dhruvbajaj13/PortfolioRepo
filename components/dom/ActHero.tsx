@@ -27,46 +27,87 @@ const Hero3DGeometricBackground = () => {
       precision: "lowp",
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(1);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
-    // Left spinning wireframe icosahedron
+    // 1. Left spinning wireframe icosahedron — Vibrant Cyan (0x00f0ff)
     const icoGeo1 = new THREE.IcosahedronGeometry(1.6, 1);
     const icoMat1 = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
+      color: 0x00f0ff,
       wireframe: true,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.18,
     });
     const icoMesh1 = new THREE.Mesh(icoGeo1, icoMat1);
     icoMesh1.position.set(-3.5, 0.5, -2);
     scene.add(icoMesh1);
 
-    // Right spinning wireframe icosahedron
-    const icoGeo2 = new THREE.IcosahedronGeometry(2.2, 1);
+    // 2. Right spinning wireframe icosahedron — Electric Violet (0xa855f7)
+    const icoGeo2 = new THREE.IcosahedronGeometry(2.0, 1);
     const icoMat2 = new THREE.MeshBasicMaterial({
-      color: 0x00e5ff,
+      color: 0xa855f7,
       wireframe: true,
       transparent: true,
-      opacity: 0.15,
+      opacity: 0.18,
     });
     const icoMesh2 = new THREE.Mesh(icoGeo2, icoMat2);
     icoMesh2.position.set(3.8, -0.2, -3);
     scene.add(icoMesh2);
 
-    // 250 Floating Ambient Particles
-    const count = 250;
+    // 3. Top-Right floating wireframe Torus — Neon Emerald (0x10b981)
+    const torusGeo = new THREE.TorusGeometry(1.1, 0.22, 8, 20);
+    const torusMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.16,
+    });
+    const torusMesh = new THREE.Mesh(torusGeo, torusMat);
+    torusMesh.position.set(2.4, 2.2, -2.5);
+    scene.add(torusMesh);
+
+    // 4. Bottom-Left floating wireframe Octahedron — Warm Amber (0xf59e0b)
+    const octGeo = new THREE.OctahedronGeometry(1.1, 0);
+    const octMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.18,
+    });
+    const octMesh = new THREE.Mesh(octGeo, octMat);
+    octMesh.position.set(-2.8, -2.2, -2);
+    scene.add(octMesh);
+
+    // 5. Far Top-Left floating wireframe Dodecahedron — Radiant Blue (0x3b82f6)
+    const dodecGeo = new THREE.DodecahedronGeometry(0.95, 0);
+    const dodecMat = new THREE.MeshBasicMaterial({
+      color: 0x3b82f6,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.16,
+    });
+    const dodecMesh = new THREE.Mesh(dodecGeo, dodecMat);
+    dodecMesh.position.set(-1.8, 2.4, -3.2);
+    scene.add(dodecMesh);
+
+    // 260 Ambient Multicolor Floating Particles
+    const count = 260;
     const pGeo = new THREE.BufferGeometry();
     const pos = new Float32Array(count * 3);
     const cols = new Float32Array(count * 3);
-    const cyan = new THREE.Color(0x00e5ff);
-    const white = new THREE.Color(0xffffff);
+    const palette = [
+      new THREE.Color(0x00f0ff), // Cyan
+      new THREE.Color(0xa855f7), // Violet
+      new THREE.Color(0x10b981), // Emerald
+      new THREE.Color(0xf59e0b), // Amber
+      new THREE.Color(0x3b82f6), // Blue
+    ];
 
     for (let i = 0; i < count; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 16;
       pos[i * 3 + 1] = (Math.random() - 0.5) * 12;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 8;
-      const c = Math.random() > 0.4 ? cyan : white;
+      const c = palette[i % palette.length];
       cols[i * 3] = c.r;
       cols[i * 3 + 1] = c.g;
       cols[i * 3 + 2] = c.b;
@@ -74,10 +115,10 @@ const Hero3DGeometricBackground = () => {
     pGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     pGeo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
     const pMat = new THREE.PointsMaterial({
-      size: 0.03,
+      size: 0.035,
       vertexColors: true,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.55,
       blending: THREE.AdditiveBlending,
     });
     const particles = new THREE.Points(pGeo, pMat);
@@ -92,14 +133,29 @@ const Hero3DGeometricBackground = () => {
     window.addEventListener("mousemove", onMouseMove, { passive: true });
 
     let animId: number;
-    let frame = 0;
+    let clock = 0;
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      frame++;
+      clock += 0.015;
+
+      // Subtle rotation and gentle bobbing
       icoMesh1.rotation.y += 0.0025;
       icoMesh1.rotation.x += 0.0015;
+      icoMesh1.position.y = 0.5 + Math.sin(clock * 0.8) * 0.08;
+
       icoMesh2.rotation.y -= 0.002;
       icoMesh2.rotation.x -= 0.001;
+      icoMesh2.position.y = -0.2 + Math.cos(clock * 0.7) * 0.08;
+
+      torusMesh.rotation.x += 0.003;
+      torusMesh.rotation.y += 0.004;
+
+      octMesh.rotation.x -= 0.004;
+      octMesh.rotation.y += 0.003;
+
+      dodecMesh.rotation.y += 0.0035;
+      dodecMesh.rotation.x += 0.002;
+
       particles.rotation.y += 0.0004;
 
       camera.position.x += (mouseX * 0.3 - camera.position.x) * 0.04;
@@ -129,13 +185,19 @@ const Hero3DGeometricBackground = () => {
       icoMat1.dispose();
       icoGeo2.dispose();
       icoMat2.dispose();
+      torusGeo.dispose();
+      torusMat.dispose();
+      octGeo.dispose();
+      octMat.dispose();
+      dodecGeo.dispose();
+      dodecMat.dispose();
       pGeo.dispose();
       pMat.dispose();
       renderer.dispose();
     };
   }, []);
 
-  return <div ref={mountRef} className="absolute inset-0 z-0 pointer-events-none opacity-70" />;
+  return <div ref={mountRef} className="absolute inset-0 z-0 pointer-events-none opacity-80" />;
 };
 
 // ─── 2. Ultra-Smooth 60FPS 3D Retro Developer Workstation with Rubber Duck ───
