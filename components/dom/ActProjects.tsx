@@ -130,14 +130,22 @@ function ProjectCardMedia({
   const images = project.images && project.images.length > 1 ? project.images : [project.image];
   const [activeIdx, setActiveIdx] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
 
   useEffect(() => {
     if (isHovered || images.length <= 1) return;
     const interval = setInterval(() => {
       setActiveIdx((prev) => (prev + 1) % images.length);
-    }, 2800);
+    }, 3200);
     return () => clearInterval(interval);
   }, [images.length, isHovered]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePos({ x, y });
+  };
 
   const hasMultiple = images.length > 1;
 
@@ -151,37 +159,86 @@ function ProjectCardMedia({
 
   return (
     <div
-      className="relative w-full aspect-[16/7] overflow-hidden bg-[#070707] border-b border-white/8 group/img select-none"
+      className="relative w-full aspect-[16/8] overflow-hidden bg-[#070707] border-b border-white/8 group/img select-none cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
+      onClick={() => {
+        if (hasMultiple) {
+          setActiveIdx((prev) => (prev + 1) % images.length);
+        }
+      }}
     >
-      <AnimatePresence mode="wait">
+      {/* Top Segmented Story Progress Bar for Multi-Image Projects */}
+      {hasMultiple && (
+        <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 px-3 pt-2 pb-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+          {images.map((_, idx) => (
+            <div
+              key={idx}
+              className="h-[2px] flex-1 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm"
+            >
+              <div
+                className={`h-full bg-white transition-all duration-500 rounded-full ${
+                  idx === activeIdx
+                    ? 'w-full shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+                    : idx < activeIdx
+                    ? 'w-full opacity-40'
+                    : 'w-0'
+                }`}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Main Image with Cinematic Zoom-Blur Reveal Animation */}
+      <AnimatePresence mode="popLayout">
         <motion.img
           key={images[activeIdx]}
           src={images[activeIdx]}
           alt={`${project.title} preview ${activeIdx + 1}`}
-          initial={{ opacity: 0, scale: 1.03 }}
-          animate={{ opacity: 0.95, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          transition={{ duration: 0.45, ease: 'easeInOut' }}
+          initial={{ opacity: 0, scale: 1.06, filter: 'blur(6px)' }}
+          animate={{ opacity: 0.95, scale: 1, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 0.97, filter: 'blur(4px)' }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className={`w-full h-full object-cover ${objectPosition} group-hover/img:opacity-100 group-hover/img:scale-105 transition-all duration-700 ease-out`}
           loading="lazy"
         />
       </AnimatePresence>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0C0C0C] via-transparent to-transparent pointer-events-none" />
+      {/* Interactive Cursor Spotlight Glow Effect */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity duration-500 z-10"
+        style={{
+          background: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, rgba(255, 255, 255, 0.14), transparent 75%)`,
+        }}
+      />
 
-      {/* Subtle shine sweep overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/img:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
+      {/* Vignette Gradients */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0C0C0C] via-transparent to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent pointer-events-none z-10" />
 
-      {/* Subtle project index pill */}
-      <div className="absolute top-2.5 left-3 font-mono text-[9px] font-bold text-white/80 bg-black/75 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 z-10 shadow-sm">
+      {/* Futuristic Hologram Scanline Sweeper on Hover */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.04] to-transparent -translate-y-full group-hover/img:translate-y-full transition-transform duration-1000 ease-in-out pointer-events-none z-10" />
+
+      {/* Project Category Tag */}
+      <div className="absolute top-3 left-3 font-mono text-[9px] font-bold text-white/90 bg-black/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/15 z-20 shadow-md">
         0{index + 1} // {project.category}
+      </div>
+
+      {/* Center Interactive Preview Badge on Hover */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all duration-300 pointer-events-none z-20">
+        <div className="px-3.5 py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/25 text-white font-mono text-[10px] tracking-wider uppercase flex items-center gap-2 shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-90 group-hover/img:scale-100 transition-transform duration-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-semibold text-white/90">
+            {hasMultiple ? `VIEW [${activeIdx + 1}/${images.length}]` : 'INSPECT'}
+          </span>
+        </div>
       </div>
 
       {/* Multi-Image Interactive Indicator Pills */}
       {hasMultiple && (
-        <div className="absolute bottom-2.5 right-3 flex items-center gap-1.5 z-10">
+        <div className="absolute bottom-2.5 right-3 flex items-center gap-1.5 z-20">
           {images.map((img, idx) => {
             const label = project.imageLabels?.[idx] || `View ${idx + 1}`;
             const isActive = idx === activeIdx;
@@ -193,10 +250,10 @@ function ProjectCardMedia({
                   e.stopPropagation();
                   setActiveIdx(idx);
                 }}
-                className={`px-2 py-0.5 rounded-full text-[8.5px] font-mono transition-all backdrop-blur-md border ${
+                className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono transition-all backdrop-blur-md border ${
                   isActive
-                    ? 'bg-white text-black font-bold border-white shadow-[0_0_8px_rgba(255,255,255,0.4)] scale-105'
-                    : 'bg-black/60 text-white/50 border-white/10 hover:text-white hover:border-white/30'
+                    ? 'bg-white text-black font-bold border-white shadow-[0_0_10px_rgba(255,255,255,0.5)] scale-105'
+                    : 'bg-black/70 text-white/60 border-white/15 hover:text-white hover:border-white/40'
                 }`}
                 title={`Switch to ${label}`}
               >
