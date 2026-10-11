@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Linkedin, Mail, ArrowDown, ExternalLink, Download, Terminal, Code2, Cpu, Activity } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowDown, ExternalLink, Download, RotateCcw, Sparkles } from "lucide-react";
 import * as THREE from "three";
 
 // ─── 1. Ultra-Lightweight 3D Geometric Spinning Wireframe & Particle Background ───
@@ -30,144 +30,488 @@ const Hero3DGeometricBackground = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
-    // 1. Left spinning wireframe icosahedron — Vibrant Cyan (0x00f0ff)
-    const icoGeo1 = new THREE.IcosahedronGeometry(1.6, 1);
-    const icoMat1 = new THREE.MeshBasicMaterial({
-      color: 0x00f0ff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.18,
-    });
-    const icoMesh1 = new THREE.Mesh(icoGeo1, icoMat1);
-    icoMesh1.position.set(-3.5, 0.5, -2);
-    scene.add(icoMesh1);
-
-    // 2. Right spinning wireframe icosahedron — Electric Violet (0xa855f7)
-    const icoGeo2 = new THREE.IcosahedronGeometry(2.0, 1);
-    const icoMat2 = new THREE.MeshBasicMaterial({
-      color: 0xa855f7,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.18,
-    });
-    const icoMesh2 = new THREE.Mesh(icoGeo2, icoMat2);
-    icoMesh2.position.set(3.8, -0.2, -3);
-    scene.add(icoMesh2);
-
-    // 3. Top-Right floating wireframe Torus — Neon Emerald (0x10b981)
-    const torusGeo = new THREE.TorusGeometry(1.1, 0.22, 8, 20);
-    const torusMat = new THREE.MeshBasicMaterial({
-      color: 0x10b981,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.16,
-    });
-    const torusMesh = new THREE.Mesh(torusGeo, torusMat);
-    torusMesh.position.set(2.4, 2.2, -2.5);
-    scene.add(torusMesh);
-
-    // 4. Bottom-Left floating wireframe Octahedron — Warm Amber (0xf59e0b)
-    const octGeo = new THREE.OctahedronGeometry(1.1, 0);
-    const octMat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.18,
-    });
-    const octMesh = new THREE.Mesh(octGeo, octMat);
-    octMesh.position.set(-2.8, -2.2, -2);
-    scene.add(octMesh);
-
-    // 5. Far Top-Left floating wireframe Dodecahedron — Radiant Blue (0x3b82f6)
-    const dodecGeo = new THREE.DodecahedronGeometry(0.95, 0);
-    const dodecMat = new THREE.MeshBasicMaterial({
-      color: 0x3b82f6,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.16,
-    });
-    const dodecMesh = new THREE.Mesh(dodecGeo, dodecMat);
-    dodecMesh.position.set(-1.8, 2.4, -3.2);
-    scene.add(dodecMesh);
-
-    // 260 Ambient Multicolor Floating Particles
-    const count = 260;
-    const pGeo = new THREE.BufferGeometry();
-    const pos = new Float32Array(count * 3);
-    const cols = new Float32Array(count * 3);
-    const palette = [
-      new THREE.Color(0x00f0ff), // Cyan
-      new THREE.Color(0xa855f7), // Violet
-      new THREE.Color(0x10b981), // Emerald
-      new THREE.Color(0xf59e0b), // Amber
-      new THREE.Color(0x3b82f6), // Blue
+    // Colorful wireframe shapes
+    const shapeConfigs = [
+      { geo: new THREE.IcosahedronGeometry(1.1, 1), color: 0x00e5ff, x: -2.5, y: 1.2, z: -2, rspeed: { x: 0.003, y: 0.005 } },
+      { geo: new THREE.IcosahedronGeometry(0.8, 1), color: 0x7c3aed, x: 2.8, y: -0.8, z: -3, rspeed: { x: 0.004, y: 0.003 } },
+      { geo: new THREE.TorusGeometry(0.9, 0.25, 8, 24), color: 0x10b981, x: -1.2, y: -2.2, z: -1.5, rspeed: { x: 0.005, y: 0.004 } },
+      { geo: new THREE.OctahedronGeometry(0.9), color: 0xf59e0b, x: 3.2, y: 2.0, z: -2.5, rspeed: { x: 0.006, y: 0.002 } },
+      { geo: new THREE.DodecahedronGeometry(0.75), color: 0x3b82f6, x: 0.5, y: 2.8, z: -3.5, rspeed: { x: 0.003, y: 0.006 } },
+      // Extra meshes
+      { geo: new THREE.TorusGeometry(0.6, 0.18, 8, 20), color: 0xf43f5e, x: -3.5, y: -1.5, z: -3, rspeed: { x: 0.007, y: 0.003 } },
+      { geo: new THREE.OctahedronGeometry(0.65), color: 0x06b6d4, x: 1.8, y: -2.8, z: -2, rspeed: { x: 0.004, y: 0.007 } },
+      { geo: new THREE.DodecahedronGeometry(0.55), color: 0xa78bfa, x: -2.8, y: 2.5, z: -4, rspeed: { x: 0.005, y: 0.004 } },
     ];
 
-    for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 16;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 12;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 8;
-      const c = palette[i % palette.length];
-      cols[i * 3] = c.r;
-      cols[i * 3 + 1] = c.g;
-      cols[i * 3 + 2] = c.b;
-    }
-    pGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    pGeo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
-    const pMat = new THREE.PointsMaterial({
-      size: 0.035,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.55,
-      blending: THREE.AdditiveBlending,
+    const meshes: THREE.Mesh[] = [];
+    shapeConfigs.forEach(cfg => {
+      const mat = new THREE.MeshBasicMaterial({ color: cfg.color, wireframe: true, transparent: true, opacity: 0.55 });
+      const mesh = new THREE.Mesh(cfg.geo, mat);
+      mesh.position.set(cfg.x, cfg.y, cfg.z);
+      (mesh as any)._rspeed = cfg.rspeed;
+      scene.add(mesh);
+      meshes.push(mesh);
     });
+
+    // Multicolor particles
+    const particleCount = 260;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(particleCount * 3);
+    const pColors = new Float32Array(particleCount * 3);
+    const pOffsets = new Float32Array(particleCount);
+    const techColors = [
+      [0, 0.9, 1], [0.48, 0.23, 0.93], [0.063, 0.72, 0.506],
+      [0.96, 0.62, 0.04], [0.23, 0.51, 0.96], [0.96, 0.25, 0.37],
+    ];
+    for (let i = 0; i < particleCount; i++) {
+      pPos[i * 3] = (Math.random() - 0.5) * 18;
+      pPos[i * 3 + 1] = (Math.random() - 0.5) * 12;
+      pPos[i * 3 + 2] = (Math.random() - 0.5) * 8 - 2;
+      pOffsets[i] = Math.random() * Math.PI * 2;
+      const c = techColors[Math.floor(Math.random() * techColors.length)];
+      pColors[i * 3] = c[0]; pColors[i * 3 + 1] = c[1]; pColors[i * 3 + 2] = c[2];
+    }
+    pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
+    pGeo.setAttribute("color", new THREE.BufferAttribute(pColors, 3));
+    const pMat = new THREE.PointsMaterial({ size: 0.07, vertexColors: true, transparent: true, opacity: 0.75 });
     const particles = new THREE.Points(pGeo, pMat);
     scene.add(particles);
 
-    let mouseX = 0;
-    let mouseY = 0;
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-    };
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-
     let animId: number;
-    let clock = 0;
+    let t = 0;
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      clock += 0.015;
+      t += 0.01;
+      meshes.forEach(m => {
+        const rs = (m as any)._rspeed;
+        m.rotation.x += rs.x;
+        m.rotation.y += rs.y;
+      });
+      // Gentle particle bob
+      const pos = pGeo.attributes.position.array as Float32Array;
+      for (let i = 0; i < particleCount; i++) {
+        pos[i * 3 + 1] = pPos[i * 3 + 1] + Math.sin(t + pOffsets[i]) * 0.12;
+      }
+      pGeo.attributes.position.needsUpdate = true;
+      renderer.render(scene, camera);
+    };
+    animate();
 
-      // Subtle rotation and gentle bobbing
-      icoMesh1.rotation.y += 0.0025;
-      icoMesh1.rotation.x += 0.0015;
-      icoMesh1.position.y = 0.5 + Math.sin(clock * 0.8) * 0.08;
+    const handleResize = () => {
+      const w = container.clientWidth || window.innerWidth;
+      const h = container.clientHeight || window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+    window.addEventListener("resize", handleResize);
 
-      icoMesh2.rotation.y -= 0.002;
-      icoMesh2.rotation.x -= 0.001;
-      icoMesh2.position.y = -0.2 + Math.cos(clock * 0.7) * 0.08;
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(animId);
+      if (container && renderer.domElement.parentNode === container) {
+        container.removeChild(renderer.domElement);
+      }
+      renderer.dispose();
+    };
+  }, []);
 
-      torusMesh.rotation.x += 0.003;
-      torusMesh.rotation.y += 0.004;
+  return <div ref={mountRef} className="absolute inset-0 z-0 pointer-events-none opacity-80" />;
+};
 
-      octMesh.rotation.x -= 0.004;
-      octMesh.rotation.y += 0.003;
+// ─── 2. Golden Knight Tech Scene — 360° Turntable with Newton's Cradle ───
+interface KnightTechScene3DProps {
+  autoSpin: boolean;
+  onAutoSpinToggle: () => void;
+  onInteract: (msg: string | null) => void;
+  resetTrigger?: number;
+}
 
-      dodecMesh.rotation.y += 0.0035;
-      dodecMesh.rotation.x += 0.002;
+const HeroKnightTechScene3D: React.FC<KnightTechScene3DProps> = ({
+  autoSpin,
+  onInteract,
+}) => {
+  const mountRef = useRef<HTMLDivElement>(null);
+  const autoSpinRef = useRef(autoSpin);
+  autoSpinRef.current = autoSpin;
 
-      particles.rotation.y += 0.0004;
+  useEffect(() => {
+    const container = mountRef.current;
+    if (!container) return;
 
-      camera.position.x += (mouseX * 0.3 - camera.position.x) * 0.04;
-      camera.position.y += (mouseY * 0.2 - camera.position.y) * 0.04;
-      camera.lookAt(0, 0, 0);
+    const W = container.clientWidth || 460;
+    const H = container.clientHeight || 345;
+
+    // ── Scene & Renderer ──
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(46, W / H, 0.1, 100);
+    camera.position.set(0, 2.8, 6.5);
+    camera.lookAt(0, 0.5, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: "high-performance", precision: "mediump" });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(1);
+    renderer.shadowMap.enabled = false;
+    container.appendChild(renderer.domElement);
+
+    // ── Turntable group (everything rotates together) ──
+    const turntable = new THREE.Group();
+    scene.add(turntable);
+
+    // ── Lighting ──
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const sun = new THREE.DirectionalLight(0xfff8e1, 1.8);
+    sun.position.set(4, 7, 5);
+    scene.add(sun);
+    const rimLight = new THREE.DirectionalLight(0x00e5ff, 0.6);
+    rimLight.position.set(-5, 3, -4);
+    scene.add(rimLight);
+    const fillLight = new THREE.PointLight(0xa855f7, 1.2, 12);
+    fillLight.position.set(0, 4, 0);
+    scene.add(fillLight);
+
+    // ── Circuit Board Ground Platform ──
+    const groundGeo = new THREE.CylinderGeometry(3.2, 3.2, 0.12, 64);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x0a1628, roughness: 0.8, metalness: 0.2 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.position.y = -0.06;
+    turntable.add(ground);
+
+    // Circuit traces (rings)
+    const ringColors = [0x00e5ff, 0x7c3aed, 0x10b981];
+    [1.2, 2.0, 2.9].forEach((r, i) => {
+      const ringGeo = new THREE.TorusGeometry(r, 0.02, 8, 64);
+      const ringMat = new THREE.MeshBasicMaterial({ color: ringColors[i], transparent: true, opacity: 0.55 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = 0.01;
+      turntable.add(ring);
+    });
+
+    // ── Golden Chess Knight (Main Centerpiece) ──
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xffd700, roughness: 0.25, metalness: 0.95, emissive: 0xb8860b, emissiveIntensity: 0.12 });
+    const hornGlowMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, roughness: 0.1, metalness: 0.9, emissive: 0x00e5ff, emissiveIntensity: 0.8 });
+    const darkGoldMat = new THREE.MeshStandardMaterial({ color: 0xb8860b, roughness: 0.4, metalness: 0.8 });
+
+    const knightGroup = new THREE.Group();
+    knightGroup.name = "knight";
+    knightGroup.position.set(0, 0, 0);
+
+    // Base pedestal
+    const pedestalGeo = new THREE.CylinderGeometry(0.55, 0.65, 0.18, 24);
+    knightGroup.add(new THREE.Mesh(pedestalGeo, darkGoldMat));
+
+    // Body
+    const bodyGeo = new THREE.CylinderGeometry(0.38, 0.48, 0.9, 18);
+    const body = new THREE.Mesh(bodyGeo, goldMat);
+    body.position.y = 0.54;
+    knightGroup.add(body);
+
+    // Neck
+    const neckGeo = new THREE.CylinderGeometry(0.2, 0.35, 0.35, 14);
+    const neck = new THREE.Mesh(neckGeo, goldMat);
+    neck.position.y = 1.17;
+    knightGroup.add(neck);
+
+    // Head (horse-like elongated)
+    const headGeo = new THREE.BoxGeometry(0.32, 0.55, 0.55);
+    const head = new THREE.Mesh(headGeo, goldMat);
+    head.position.set(0.08, 1.6, 0.06);
+    head.rotation.z = -0.18;
+    knightGroup.add(head);
+
+    // Snout
+    const snoutGeo = new THREE.BoxGeometry(0.22, 0.28, 0.42);
+    const snout = new THREE.Mesh(snoutGeo, goldMat);
+    snout.position.set(0.18, 1.44, 0.12);
+    knightGroup.add(snout);
+
+    // Ears
+    [-0.08, 0.08].forEach(xo => {
+      const earGeo = new THREE.ConeGeometry(0.07, 0.22, 10);
+      const ear = new THREE.Mesh(earGeo, goldMat);
+      ear.position.set(xo, 1.92, -0.08);
+      knightGroup.add(ear);
+    });
+
+    // Unicorn Horn (glows cyan)
+    const hornGeo = new THREE.ConeGeometry(0.05, 0.45, 10);
+    const horn = new THREE.Mesh(hornGeo, hornGlowMat);
+    horn.position.set(0.26, 2.0, 0.1);
+    horn.rotation.z = Math.PI / 5;
+    knightGroup.add(horn);
+
+    // Mane strands
+    for (let i = 0; i < 5; i++) {
+      const maneGeo = new THREE.SphereGeometry(0.07 - i * 0.008, 8, 6);
+      const mane = new THREE.Mesh(maneGeo, darkGoldMat);
+      mane.position.set(-0.14, 1.75 - i * 0.14, -0.1 - i * 0.05);
+      knightGroup.add(mane);
+    }
+
+    // Crown
+    for (let i = 0; i < 5; i++) {
+      const spikeGeo = new THREE.ConeGeometry(0.045, 0.18, 8);
+      const spike = new THREE.Mesh(spikeGeo, new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xffa000, emissiveIntensity: 0.5, metalness: 0.9, roughness: 0.1 }));
+      const angle = (i / 5) * Math.PI * 2;
+      spike.position.set(Math.cos(angle) * 0.32, 1.04, Math.sin(angle) * 0.32);
+      knightGroup.add(spike);
+    }
+
+    // Chess board base tile
+    const tileGeo = new THREE.BoxGeometry(1.1, 0.06, 1.1);
+    const tileMat = new THREE.MeshStandardMaterial({ color: 0x1a0a00, roughness: 0.6 });
+    const tile = new THREE.Mesh(tileGeo, tileMat);
+    tile.position.y = -0.09;
+    knightGroup.add(tile);
+
+    turntable.add(knightGroup);
+
+    // ── Dual Server Racks (left & right on IC chip pedestals) ──
+    const makeServerRack = (xPos: number) => {
+      const rackGroup = new THREE.Group();
+      rackGroup.position.set(xPos, 0, 0.3);
+
+      // IC chip pedestal
+      const chipGeo = new THREE.BoxGeometry(0.9, 0.08, 0.75);
+      const chipMat = new THREE.MeshStandardMaterial({ color: 0x1a2a1a, roughness: 0.5, metalness: 0.6 });
+      const chip = new THREE.Mesh(chipGeo, chipMat);
+      chip.position.y = 0.04;
+      rackGroup.add(chip);
+
+      // Chip pins
+      for (let i = 0; i < 5; i++) {
+        for (const zSide of [-0.38, 0.38]) {
+          const pinGeo = new THREE.BoxGeometry(0.05, 0.06, 0.03);
+          const pinMat = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, metalness: 0.9, roughness: 0.1 });
+          const pin = new THREE.Mesh(pinGeo, pinMat);
+          pin.position.set(-0.3 + i * 0.14, 0.04, zSide);
+          rackGroup.add(pin);
+        }
+      }
+
+      // Server rack chassis
+      const chassisGeo = new THREE.BoxGeometry(0.78, 1.6, 0.55);
+      const chassisMat = new THREE.MeshStandardMaterial({ color: 0x1c1c22, roughness: 0.6, metalness: 0.4 });
+      const chassis = new THREE.Mesh(chassisGeo, chassisMat);
+      chassis.name = "server";
+      chassis.position.y = 0.88;
+      rackGroup.add(chassis);
+
+      // Server units (blades)
+      for (let u = 0; u < 6; u++) {
+        const bladeGeo = new THREE.BoxGeometry(0.72, 0.19, 0.5);
+        const bladeMat = new THREE.MeshStandardMaterial({ color: u % 2 === 0 ? 0x252530 : 0x1a1a24, roughness: 0.7 });
+        const blade = new THREE.Mesh(bladeGeo, bladeMat);
+        blade.position.y = 0.08 + u * 0.24;
+        rackGroup.add(blade);
+
+        // LED indicator per blade
+        const ledGeo = new THREE.SphereGeometry(0.025, 8, 6);
+        const ledColors = [0x00ff88, 0x00e5ff, 0xff6600, 0x00ff88, 0x7c3aed, 0x00e5ff];
+        const ledMat = new THREE.MeshBasicMaterial({ color: ledColors[u] });
+        const led = new THREE.Mesh(ledGeo, ledMat);
+        led.position.set(0.3, 0.08 + u * 0.24, 0.27);
+        rackGroup.add(led);
+        (led as any)._ledBase = ledColors[u];
+        (led as any)._isLed = true;
+      }
+
+      turntable.add(rackGroup);
+      return rackGroup;
+    };
+
+    const leftRack = makeServerRack(-2.3);
+    const rightRack = makeServerRack(2.3);
+
+    // ── Newton's Cradle Overhead ──
+    const cradleGroup = new THREE.Group();
+    cradleGroup.position.set(0, 3.4, 0);
+    cradleGroup.name = "cradle";
+    turntable.add(cradleGroup);
+
+    // Frame
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, metalness: 0.9, roughness: 0.15 });
+    const frameBar = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 2.2, 10), frameMat);
+    [-0.9, 0.9].forEach(x => {
+      const v = frameBar.clone();
+      v.position.set(x, 0, 0);
+      cradleGroup.add(v);
+    });
+    const crossBar = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.9, 10), frameMat);
+    crossBar.rotation.z = Math.PI / 2;
+    crossBar.position.y = 0;
+    cradleGroup.add(crossBar);
+    const topBar = crossBar.clone();
+    topBar.position.y = -1.0;
+    cradleGroup.add(topBar);
+
+    // 5 balls on strings
+    const ballMats = [
+      new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.95, roughness: 0.1 }),
+      new THREE.MeshStandardMaterial({ color: 0x00e5ff, metalness: 0.9, roughness: 0.1, emissive: 0x00e5ff, emissiveIntensity: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: 0xc0c0c0, metalness: 0.95, roughness: 0.1 }),
+      new THREE.MeshStandardMaterial({ color: 0xa855f7, metalness: 0.9, roughness: 0.1, emissive: 0xa855f7, emissiveIntensity: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.95, roughness: 0.1 }),
+    ];
+    const cradleBalls: THREE.Mesh[] = [];
+    const stringLen = 0.95;
+    for (let i = 0; i < 5; i++) {
+      const x = -0.72 + i * 0.36;
+      const ballGeo = new THREE.SphereGeometry(0.155, 16, 14);
+      const ball = new THREE.Mesh(ballGeo, ballMats[i]);
+      ball.position.set(x, -stringLen, 0);
+      cradleGroup.add(ball);
+      cradleBalls.push(ball);
+
+      // String lines (two thin cylinders per ball)
+      for (const zs of [-0.06, 0.06]) {
+        const strGeo = new THREE.CylinderGeometry(0.008, 0.008, stringLen, 6);
+        const strMat = new THREE.MeshBasicMaterial({ color: 0x888888 });
+        const str = new THREE.Mesh(strGeo, strMat);
+        str.position.set(x, -stringLen / 2, zs);
+        cradleGroup.add(str);
+      }
+    }
+
+    // ── 120 Ambient Dust Particles ──
+    const dustGeo = new THREE.BufferGeometry();
+    const dustCount = 120;
+    const dPos = new Float32Array(dustCount * 3);
+    const dColors = new Float32Array(dustCount * 3);
+    const dustOffsets = new Float32Array(dustCount);
+    const dustPalette = [[0, 0.9, 1], [0.48, 0.23, 0.93], [1, 0.85, 0], [0.063, 0.72, 0.5]];
+    for (let i = 0; i < dustCount; i++) {
+      const r = 1.5 + Math.random() * 2.5;
+      const angle = Math.random() * Math.PI * 2;
+      dPos[i * 3] = Math.cos(angle) * r;
+      dPos[i * 3 + 1] = Math.random() * 3.5 - 0.5;
+      dPos[i * 3 + 2] = Math.sin(angle) * r;
+      dustOffsets[i] = Math.random() * Math.PI * 2;
+      const c = dustPalette[Math.floor(Math.random() * dustPalette.length)];
+      dColors[i * 3] = c[0]; dColors[i * 3 + 1] = c[1]; dColors[i * 3 + 2] = c[2];
+    }
+    dustGeo.setAttribute("position", new THREE.BufferAttribute(dPos.slice(), 3));
+    dustGeo.setAttribute("color", new THREE.BufferAttribute(dColors, 3));
+    const dustMat = new THREE.PointsMaterial({ size: 0.055, vertexColors: true, transparent: true, opacity: 0.65 });
+    const dust = new THREE.Points(dustGeo, dustMat);
+    turntable.add(dust);
+
+    // ── Raycaster for click interaction ──
+    const raycaster = new THREE.Raycaster();
+    const mouse2d = new THREE.Vector2();
+
+    const onPointerDown = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      mouse2d.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse2d.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      raycaster.setFromCamera(mouse2d, camera);
+
+      const hits = raycaster.intersectObjects(turntable.children, true);
+      if (hits.length > 0) {
+        let obj: THREE.Object3D | null = hits[0].object;
+        while (obj && obj !== turntable) {
+          if (obj.name === "knight") {
+            const msgs = ["👑 LeetCode Knight · Rating 1951 · Top 3%", "⚔️ 1,100+ problems solved!", "🦄 Unicorn Engineer — rare combo of AI + DSA"];
+            onInteract(msgs[Math.floor(Math.random() * msgs.length)]);
+            return;
+          }
+          if (obj.name === "server") {
+            const msgs = ["🖥️ Next.js + MERN stack deployed!", "⚡ CleanCity IoT — SIH 2024 Winner!", "🤖 RAG AI Agent with LangChain running..."];
+            onInteract(msgs[Math.floor(Math.random() * msgs.length)]);
+            return;
+          }
+          if (obj.name === "cradle") {
+            const msgs = ["🔁 Newton's Cradle = Momentum Transfer Algorithms", "💡 Every action has an equal reaction — just like recursion!", "📐 Physics + CS = Magic ✨"];
+            onInteract(msgs[Math.floor(Math.random() * msgs.length)]);
+            return;
+          }
+          obj = obj.parent;
+        }
+      }
+    };
+    container.addEventListener("pointerdown", onPointerDown);
+
+    // ── Drag-to-rotate ──
+    let isDragging = false;
+    let prevX = 0;
+    let dragVelocity = 0;
+    const onMouseDown = (e: MouseEvent) => { isDragging = true; prevX = e.clientX; dragVelocity = 0; };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const dx = e.clientX - prevX;
+      dragVelocity = dx * 0.012;
+      turntable.rotation.y += dragVelocity;
+      prevX = e.clientX;
+    };
+    const onMouseUp = () => { isDragging = false; };
+    container.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    // ── Animation Loop ──
+    let animId: number;
+    let t = 0;
+    let ledFlicker = 0;
+
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      t += 0.016;
+      ledFlicker++;
+
+      // Auto-spin
+      if (autoSpinRef.current && !isDragging) {
+        turntable.rotation.y += 0.006;
+      } else if (!isDragging && Math.abs(dragVelocity) > 0.001) {
+        turntable.rotation.y += dragVelocity;
+        dragVelocity *= 0.96;
+      }
+
+      // Knight subtle bob
+      knightGroup.position.y = Math.sin(t * 0.8) * 0.04;
+
+      // Horn glow pulse
+      (horn.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5 + Math.sin(t * 2.5) * 0.4;
+
+      // Newton's Cradle — realistic pendulum momentum
+      const cradleT = t * 2.8;
+      const swingAmp = 0.55;
+      // Ball 0 swings right when ball 4 is at rest, etc.
+      const phase0 = Math.max(0, -Math.sin(cradleT)) * swingAmp;
+      const phase4 = Math.max(0, Math.sin(cradleT)) * swingAmp;
+      cradleBalls[0].position.x = -0.72 + Math.sin(-phase0) * stringLen * 0.8;
+      cradleBalls[0].position.y = -stringLen + (1 - Math.cos(phase0)) * stringLen * 0.5;
+      cradleBalls[4].position.x = 0.72 + Math.sin(phase4) * stringLen * 0.8;
+      cradleBalls[4].position.y = -stringLen + (1 - Math.cos(phase4)) * stringLen * 0.5;
+      // Middle balls stay mostly stationary (realistic transfer)
+      for (let i = 1; i <= 3; i++) {
+        cradleBalls[i].position.y = -stringLen + Math.abs(Math.sin(cradleT * 8)) * 0.01;
+      }
+
+      // LED flicker on server racks
+      if (ledFlicker % 30 === 0) {
+        [leftRack, rightRack].forEach(rack => {
+          rack.children.forEach(child => {
+            if ((child as any)._isLed) {
+              const mat = (child as THREE.Mesh).material as THREE.MeshBasicMaterial;
+              mat.color.setHex(Math.random() > 0.15 ? (child as any)._ledBase : 0x000000);
+            }
+          });
+        });
+      }
+
+      // Dust bob
+      const dp = dustGeo.attributes.position.array as Float32Array;
+      for (let i = 0; i < dustCount; i++) {
+        dp[i * 3 + 1] = dPos[i * 3 + 1] + Math.sin(t + dustOffsets[i]) * 0.18;
+      }
+      dustGeo.attributes.position.needsUpdate = true;
 
       renderer.render(scene, camera);
     };
     animate();
 
     const handleResize = () => {
-      if (!container) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
       camera.aspect = w / h;
@@ -179,703 +523,18 @@ const Hero3DGeometricBackground = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", onMouseMove);
-      cancelAnimationFrame(animId);
-      if (container && renderer.domElement) container.removeChild(renderer.domElement);
-      icoGeo1.dispose();
-      icoMat1.dispose();
-      icoGeo2.dispose();
-      icoMat2.dispose();
-      torusGeo.dispose();
-      torusMat.dispose();
-      octGeo.dispose();
-      octMat.dispose();
-      dodecGeo.dispose();
-      dodecMat.dispose();
-      pGeo.dispose();
-      pMat.dispose();
-      renderer.dispose();
-    };
-  }, []);
-
-  return <div ref={mountRef} className="absolute inset-0 z-0 pointer-events-none opacity-80" />;
-};
-
-// ─── 2. Ultra-Smooth 60FPS 3D Retro Developer Workstation with Rubber Duck ───
-export type WorkstationScreenMode = "terminal" | "matrix" | "specs" | "visualizer";
-
-interface RetroWorkstation3DProps {
-  currentMode: WorkstationScreenMode;
-  onModeChange: (mode: WorkstationScreenMode) => void;
-  onDuckQuack?: (msg?: string) => void;
-}
-
-const HeroRetroWorkstation3D: React.FC<RetroWorkstation3DProps> = ({
-  currentMode,
-  onModeChange,
-  onDuckQuack,
-}) => {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const modeRef = useRef<WorkstationScreenMode>(currentMode);
-  modeRef.current = currentMode;
-
-  useEffect(() => {
-    const container = mountRef.current;
-    if (!container) return;
-
-    const width = container.clientWidth || 460;
-    const height = container.clientHeight || 345;
-
-    // 1. Scene & Camera
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(44, width / height, 0.1, 100);
-    camera.position.set(0, 1.35, 4.5);
-    camera.lookAt(0, 0.45, 0);
-
-    // High performance WebGL setup (pixelRatio fixed to 1 to guarantee 60fps on all devices)
-    const renderer = new THREE.WebGLRenderer({
-      antialias: false,
-      alpha: true,
-      powerPreference: "high-performance",
-      precision: "mediump",
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(1);
-    container.appendChild(renderer.domElement);
-
-    const deskGroup = new THREE.Group();
-    deskGroup.position.set(0, -0.42, 0);
-    scene.add(deskGroup);
-
-    // 2. High-Performance Screen Canvas
-    const screenCanvas = document.createElement("canvas");
-    screenCanvas.width = 384;
-    screenCanvas.height = 288;
-    const ctx = screenCanvas.getContext("2d");
-    const screenTexture = new THREE.CanvasTexture(screenCanvas);
-    screenTexture.minFilter = THREE.LinearFilter;
-    screenTexture.magFilter = THREE.LinearFilter;
-
-    // Performant Lambert Materials
-    const chassisMat = new THREE.MeshLambertMaterial({ color: 0x1f1f23 });
-    const bezelMat = new THREE.MeshLambertMaterial({ color: 0x2b2b30 });
-    const darkMat = new THREE.MeshLambertMaterial({ color: 0x121215 });
-
-    // Monitor Stand Base
-    const baseGeo = new THREE.CylinderGeometry(0.48, 0.58, 0.08, 20);
-    const baseMesh = new THREE.Mesh(baseGeo, chassisMat);
-    baseMesh.position.set(0, 0.04, 0);
-    deskGroup.add(baseMesh);
-
-    // Monitor Stand Stem
-    const stemGeo = new THREE.CylinderGeometry(0.11, 0.11, 0.48, 14);
-    const stemMesh = new THREE.Mesh(stemGeo, chassisMat);
-    stemMesh.position.set(0, 0.28, 0);
-    deskGroup.add(stemMesh);
-
-    // Monitor Chassis Body
-    const monitorBodyGeo = new THREE.BoxGeometry(2.16, 1.52, 0.48);
-    const monitorBody = new THREE.Mesh(monitorBodyGeo, bezelMat);
-    monitorBody.position.set(0, 1.25, 0);
-    deskGroup.add(monitorBody);
-
-    // CRT Screen Face
-    const screenGeo = new THREE.PlaneGeometry(1.88, 1.22);
-    const screenMat = new THREE.MeshBasicMaterial({ map: screenTexture });
-    const screenMesh = new THREE.Mesh(screenGeo, screenMat);
-    screenMesh.position.set(0, 1.25, 0.245);
-    screenMesh.name = "screen";
-    deskGroup.add(screenMesh);
-
-    // Power LED
-    const ledGeo = new THREE.SphereGeometry(0.024, 12, 12);
-    const ledMat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
-    const ledMesh = new THREE.Mesh(ledGeo, ledMat);
-    ledMesh.position.set(0.86, 0.58, 0.25);
-    deskGroup.add(ledMesh);
-
-    // Sticky Note on Monitor Corner
-    const noteGeo = new THREE.PlaneGeometry(0.28, 0.28);
-    const noteCanvas = document.createElement("canvas");
-    noteCanvas.width = 128;
-    noteCanvas.height = 128;
-    const nctx = noteCanvas.getContext("2d");
-    if (nctx) {
-      nctx.fillStyle = "#fef08a";
-      nctx.fillRect(0, 0, 128, 128);
-      nctx.fillStyle = "#713f12";
-      nctx.font = "bold 16px monospace";
-      nctx.textAlign = "center";
-      nctx.fillText("BUILD", 64, 45);
-      nctx.fillText("IMPACT", 64, 75);
-      nctx.fillText("// 2025", 64, 105);
-    }
-    const noteTexture = new THREE.CanvasTexture(noteCanvas);
-    const noteMat = new THREE.MeshBasicMaterial({ map: noteTexture });
-    const noteMesh = new THREE.Mesh(noteGeo, noteMat);
-    noteMesh.position.set(0.82, 1.82, 0.25);
-    noteMesh.rotation.z = -0.08;
-    deskGroup.add(noteMesh);
-
-    // Mechanical Keyboard Base
-    const kbBaseGeo = new THREE.BoxGeometry(1.72, 0.08, 0.65);
-    const kbBase = new THREE.Mesh(kbBaseGeo, chassisMat);
-    kbBase.position.set(0, 0.05, 1.15);
-    kbBase.rotation.x = 0.08;
-    deskGroup.add(kbBase);
-
-    // Keyboard Keycaps (Merged into clean row blocks for zero draw-call overhead!)
-    const keyMatDark = new THREE.MeshLambertMaterial({ color: 0x333338 });
-    const keyMatCyan = new THREE.MeshLambertMaterial({ color: 0x00e5ff });
-    const keyMatWhite = new THREE.MeshLambertMaterial({ color: 0xffffff });
-
-    for (let r = 0; r < 4; r++) {
-      const rowZ = 0.92 + r * 0.135;
-      const rowY = 0.08 + (3 - r) * 0.015;
-      for (let c = 0; c < 12; c++) {
-        const isEsc = r === 3 && c === 0;
-        const isEnter = r === 1 && c === 11;
-        const isSpace = r === 0 && c >= 4 && c <= 7;
-        if (isSpace && c !== 4) continue;
-        const m = isEsc ? keyMatCyan : isEnter ? keyMatWhite : keyMatDark;
-        const kw = isSpace ? 0.46 : 0.095;
-        const kGeo = new THREE.BoxGeometry(kw, 0.038, 0.082);
-        const kMesh = new THREE.Mesh(kGeo, m);
-        const xPos = isSpace ? 0 : (c - 5.5) * 0.125;
-        kMesh.position.set(xPos, rowY, rowZ);
-        kMesh.rotation.x = 0.08;
-        deskGroup.add(kMesh);
-      }
-    }
-
-    // Coiled Wire from keyboard to base
-    const cableCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, 0.06, 0.8),
-      new THREE.Vector3(0.08, 0.06, 0.55),
-      new THREE.Vector3(-0.06, 0.05, 0.35),
-      new THREE.Vector3(0, 0.04, 0.15),
-    ]);
-    const cableGeo = new THREE.TubeGeometry(cableCurve, 16, 0.012, 6, false);
-    const cableMesh = new THREE.Mesh(cableGeo, darkMat);
-    deskGroup.add(cableMesh);
-
-    // Mouse & Pad
-    const padGeo = new THREE.BoxGeometry(0.62, 0.01, 0.72);
-    const pad = new THREE.Mesh(padGeo, darkMat);
-    pad.position.set(1.28, 0.005, 1.15);
-    deskGroup.add(pad);
-
-    const mouseGeo = new THREE.BoxGeometry(0.18, 0.07, 0.3);
-    const mouse = new THREE.Mesh(mouseGeo, chassisMat);
-    mouse.position.set(1.28, 0.045, 1.15);
-    deskGroup.add(mouse);
-
-    // ── Yellow Rubber Duck Mascot (Clickable!) ──
-    const duckGroup = new THREE.Group();
-    duckGroup.name = "duck";
-    const duckMat = new THREE.MeshLambertMaterial({ color: 0xfacc15 });
-    const duckBody = new THREE.Mesh(new THREE.SphereGeometry(0.14, 14, 12), duckMat);
-    duckBody.scale.set(1, 0.8, 1.15);
-    duckGroup.add(duckBody);
-
-    const duckHead = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 12), duckMat);
-    duckHead.position.set(0, 0.13, 0.07);
-    duckGroup.add(duckHead);
-
-    const beak = new THREE.Mesh(
-      new THREE.ConeGeometry(0.04, 0.08, 12),
-      new THREE.MeshLambertMaterial({ color: 0xf97316 })
-    );
-    beak.rotation.x = Math.PI / 2;
-    beak.position.set(0, 0.12, 0.17);
-    duckGroup.add(beak);
-
-    // Duck Sunglasses
-    const glasses = new THREE.Mesh(
-      new THREE.BoxGeometry(0.13, 0.032, 0.04),
-      new THREE.MeshBasicMaterial({ color: 0x09090b })
-    );
-    glasses.position.set(0, 0.145, 0.15);
-    duckGroup.add(glasses);
-
-    duckGroup.position.set(-1.22, 0.13, 0.7);
-    duckGroup.rotation.y = 0.45;
-    deskGroup.add(duckGroup);
-
-    // Coffee Mug with Steam (Clickable!)
-    const mugGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.28, 16);
-    const mug = new THREE.Mesh(mugGeo, new THREE.MeshLambertMaterial({ color: 0xe4e4e7 }));
-    mug.name = "mug";
-    mug.position.set(-1.26, 0.14, 1.22);
-    deskGroup.add(mug);
-
-    const coffee = new THREE.Mesh(
-      new THREE.CircleGeometry(0.1, 14),
-      new THREE.MeshBasicMaterial({ color: 0x3f2212 })
-    );
-    coffee.rotation.x = -Math.PI / 2;
-    coffee.position.set(-1.26, 0.27, 1.22);
-    deskGroup.add(coffee);
-
-    // Steam particles
-    const steamCount = 10;
-    const steamGeo = new THREE.BufferGeometry();
-    const steamPos = new Float32Array(steamCount * 3);
-    for (let i = 0; i < steamCount; i++) {
-      steamPos[i * 3] = -1.26 + (Math.random() - 0.5) * 0.06;
-      steamPos[i * 3 + 1] = 0.3 + Math.random() * 0.35;
-      steamPos[i * 3 + 2] = 1.22 + (Math.random() - 0.5) * 0.06;
-    }
-    steamGeo.setAttribute("position", new THREE.BufferAttribute(steamPos, 3));
-    const steamMat = new THREE.PointsMaterial({
-      size: 0.03,
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.35,
-    });
-    const steam = new THREE.Points(steamGeo, steamMat);
-    deskGroup.add(steam);
-
-    // ── NEW: Retro 3.5" Floppy Disk (Clickable!) ──
-    const floppyGroup = new THREE.Group();
-    floppyGroup.name = "floppy";
-    const diskBase = new THREE.Mesh(
-      new THREE.BoxGeometry(0.36, 0.02, 0.36),
-      new THREE.MeshLambertMaterial({ color: 0x18181b })
-    );
-    floppyGroup.add(diskBase);
-
-    const shutter = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.025, 0.14),
-      new THREE.MeshLambertMaterial({ color: 0xa1a1aa })
-    );
-    shutter.position.set(0, 0.005, -0.11);
-    floppyGroup.add(shutter);
-
-    const floppyLabel = new THREE.Mesh(
-      new THREE.BoxGeometry(0.28, 0.022, 0.16),
-      new THREE.MeshLambertMaterial({ color: 0xf4f4f5 })
-    );
-    floppyLabel.position.set(0, 0.005, 0.07);
-    floppyGroup.add(floppyLabel);
-
-    floppyGroup.position.set(1.42, 0.015, 0.62);
-    floppyGroup.rotation.y = -0.32;
-    deskGroup.add(floppyGroup);
-
-    // ── NEW: Retro Gooseneck Architect Desk Lamp ──
-    const lampGroup = new THREE.Group();
-    const lampBase = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.13, 0.15, 0.04, 16),
-      darkMat
-    );
-    lampBase.position.set(-1.42, 0.02, 0.25);
-    lampGroup.add(lampBase);
-
-    const lampCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-1.42, 0.04, 0.25),
-      new THREE.Vector3(-1.38, 0.65, 0.3),
-      new THREE.Vector3(-1.08, 1.2, 0.4),
-      new THREE.Vector3(-0.68, 1.3, 0.5),
-    ]);
-    const lampArm = new THREE.Mesh(
-      new THREE.TubeGeometry(lampCurve, 16, 0.018, 6, false),
-      chassisMat
-    );
-    lampGroup.add(lampArm);
-
-    const lampHead = new THREE.Mesh(
-      new THREE.ConeGeometry(0.15, 0.22, 16, 1, true),
-      darkMat
-    );
-    lampHead.position.set(-0.68, 1.3, 0.5);
-    lampHead.rotation.z = Math.PI / 4;
-    lampHead.rotation.x = -Math.PI / 6;
-    lampGroup.add(lampHead);
-
-    const bulb = new THREE.Mesh(
-      new THREE.SphereGeometry(0.055, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xfef08a })
-    );
-    bulb.position.set(-0.66, 1.28, 0.5);
-    lampGroup.add(bulb);
-    deskGroup.add(lampGroup);
-
-    // ── NEW: Sticky Note on Monitor Bezel (Clickable!) ──
-    const stickyGeo = new THREE.BoxGeometry(0.18, 0.18, 0.01);
-    const stickyMat = new THREE.MeshBasicMaterial({ color: 0xfde047 });
-    const sticky = new THREE.Mesh(stickyGeo, stickyMat);
-    sticky.name = "sticky";
-    sticky.position.set(-0.84, 0.84, 0.12);
-    sticky.rotation.z = 0.12;
-    sticky.rotation.y = 0.06;
-    deskGroup.add(sticky);
-
-    // Lighting (Simple & Fast)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight.position.set(3, 4, 3);
-    scene.add(dirLight);
-
-    const pointLight = new THREE.PointLight(0x00e5ff, 1.6, 4.0);
-    pointLight.position.set(0, 1.2, 0.8);
-    deskGroup.add(pointLight);
-
-    // Data for Screen Modes
-    const termLines = [
-      "> DHRUV_BAJAJ.sh --mode=production",
-      "> LeetCode Knight · Rating 1933 [TOP 3%]",
-      "> Full-Stack: Next.js & MERN [ONLINE]",
-      "> Agentic RAG & LangChain AI [READY]",
-      "> SIH Winner · CleanCity IoT [DEPLOYED]",
-      "> Systems Operational. Ready to build_",
-    ];
-
-    const matrixCols = 22;
-    const matrixDrops = Array.from({ length: matrixCols }, () => Math.floor(Math.random() * -25));
-    const matrixChars = "0101XYZΩλπΔ<>{}[]=/*#ABCDEF";
-
-    // Mouse Tracking / Tilt
-    let targetRotY = 0;
-    let targetRotX = 0;
-
-    const onPointerMove = (e: MouseEvent | TouchEvent) => {
-      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-      const rect = container.getBoundingClientRect();
-      const normX = ((clientX - rect.left) / rect.width) * 2 - 1;
-      const normY = -(((clientY - rect.top) / rect.height) * 2 - 1);
-      targetRotY = Math.max(-0.25, Math.min(0.25, normX * 0.22));
-      targetRotX = Math.max(-0.16, Math.min(0.16, -normY * 0.14));
-    };
-
-    window.addEventListener("mousemove", onPointerMove, { passive: true });
-    container.addEventListener("touchmove", onPointerMove, { passive: true });
-
-    // Click Detection (Raycaster)
-    let duckHop = 0;
-    let duckHopSpeed = 0;
-    const raycaster = new THREE.Raycaster();
-    const mouseCoord = new THREE.Vector2();
-
-    const onPointerDown = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      mouseCoord.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouseCoord.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-      raycaster.setFromCamera(mouseCoord, camera);
-
-      const intersects = raycaster.intersectObjects(deskGroup.children, true);
-      if (intersects.length > 0) {
-        let hit: THREE.Object3D | null = intersects[0].object;
-        while (hit && hit !== deskGroup) {
-          if (hit.name === "duck") {
-            duckHopSpeed = 0.08;
-            if (onDuckQuack) onDuckQuack();
-            return;
-          }
-          if (hit.name === "floppy") {
-            if (onDuckQuack) onDuckQuack("Floppy Loaded: SDE_2026.bin 💾");
-            return;
-          }
-          if (hit.name === "sticky") {
-            if (onDuckQuack) onDuckQuack("Sticky: 1,100+ LeetCode solved! ⚔️");
-            return;
-          }
-          if (hit.name === "mug") {
-            if (onDuckQuack) onDuckQuack("Caffeine Refill: 100% ☕");
-            return;
-          }
-          if (hit.name === "screen") {
-            const modes: WorkstationScreenMode[] = ["terminal", "matrix", "specs", "visualizer"];
-            const nextIdx = (modes.indexOf(modeRef.current) + 1) % modes.length;
-            onModeChange(modes[nextIdx]);
-            return;
-          }
-          hit = hit.parent;
-        }
-      }
-    };
-    container.addEventListener("pointerdown", onPointerDown);
-
-    // Animation Loop with Throttled Canvas Updates (Zero Lag Guarantee)
-    let frame = 0;
-    let lastCanvasUpdate = 0;
-    let animId: number;
-
-    const animate = (time: number) => {
-      animId = requestAnimationFrame(animate);
-      frame++;
-
-      // Smooth Lerp Tilt (with subtle auto-sway on mobile)
-      const autoSway = Math.sin(frame * 0.02) * 0.04;
-      deskGroup.rotation.y += (targetRotY + autoSway - deskGroup.rotation.y) * 0.06;
-      deskGroup.rotation.x += (targetRotX - deskGroup.rotation.x) * 0.06;
-
-      // Duck bounce physics
-      if (duckHopSpeed !== 0 || duckHop > 0) {
-        duckHop += duckHopSpeed;
-        duckHopSpeed -= 0.007;
-        if (duckHop <= 0) {
-          duckHop = 0;
-          duckHopSpeed = 0;
-        }
-        duckGroup.position.y = 0.13 + duckHop;
-        duckGroup.rotation.y = 0.45 + duckHop * 4.0;
-      }
-
-      // Steam float
-      const sp = steamGeo.attributes.position.array as Float32Array;
-      for (let i = 1; i < steamCount * 3; i += 3) {
-        sp[i] += 0.0025;
-        if (sp[i] > 0.65) sp[i] = 0.3;
-      }
-      steamGeo.attributes.position.needsUpdate = true;
-
-      // Throttle 2D Canvas redraw to 15-20 FPS for maximum performance
-      if (time - lastCanvasUpdate > 60 && ctx) {
-        lastCanvasUpdate = time;
-        const mode = modeRef.current;
-        const W = 384;
-        const H = 288;
-
-        if (mode === "matrix") {
-          ctx.fillStyle = "rgba(4, 9, 14, 0.25)";
-          ctx.fillRect(0, 0, W, H);
-          ctx.font = "bold 13px monospace";
-
-          for (let i = 0; i < matrixCols; i++) {
-            const ch = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-            const x = 14 + i * 16.5;
-            const y = matrixDrops[i] * 16;
-            ctx.fillStyle = "#ffffff";
-            ctx.fillText(ch, x, y);
-            ctx.fillStyle = "#22c55e";
-            ctx.fillText(matrixChars[Math.floor(Math.random() * matrixChars.length)], x, y - 16);
-
-            if (y > H && Math.random() > 0.95) matrixDrops[i] = 0;
-            else matrixDrops[i]++;
-          }
-
-          ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-          ctx.fillRect(8, 8, W - 16, 22);
-          ctx.fillStyle = "#4ade80";
-          ctx.font = "bold 10px monospace";
-          ctx.fillText("● MATRIX STREAM // DHRUV.SYS ACTIVE", 14, 23);
-
-        } else if (mode === "specs") {
-          ctx.fillStyle = "#0a0e17";
-          ctx.fillRect(0, 0, W, H);
-
-          // Top line
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 12px monospace";
-          ctx.fillText("● ● ●  neofetch — dhruv@nsut", 16, 24);
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-          ctx.beginPath(); ctx.moveTo(12, 32); ctx.lineTo(W - 12, 32); ctx.stroke();
-
-          // ASCII Cat
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "11px monospace";
-          const cat = [" /\_/\ ", "( o.o )", " > ^ < ", " |   | "];
-          for (let a = 0; a < cat.length; a++) {
-            ctx.fillText(cat[a], 16, 68 + a * 20);
-          }
-
-          // Specs list
-          const specs = [
-            { k: "OS", v: "DhruvOS v2.5 (x86_64)", c: "#e2e8f0" },
-            { k: "ROLE", v: "Full Stack & AI Engineer", c: "#ffffff" },
-            { k: "LEETCODE", v: "Knight 1951 · Top 3%", c: "#facc15" },
-            { k: "DSA", v: "1,100+ Problems Solved", c: "#22c55e" },
-            { k: "STACK", v: "Next.js / MERN / AI RAG", c: "#38bdf8" },
-            { k: "STATUS", v: "Open to SDE Roles / FTE", c: "#4ade80" },
-          ];
-          ctx.font = "10.5px monospace";
-          for (let s = 0; s < specs.length; s++) {
-            ctx.fillStyle = "#94a3b8";
-            ctx.fillText(`${specs[s].k}:`, 110, 60 + s * 22);
-            ctx.fillStyle = specs[s].c;
-            ctx.fillText(specs[s].v, 180, 60 + s * 22);
-          }
-
-          // Palette
-          const colors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#a855f7"];
-          for (let p = 0; p < colors.length; p++) {
-            ctx.fillStyle = colors[p];
-            ctx.fillRect(110 + p * 24, 215, 18, 10);
-          }
-
-        } else if (mode === "visualizer") {
-          ctx.fillStyle = "#080c14";
-          ctx.fillRect(0, 0, W, H);
-
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 11px monospace";
-          ctx.fillText("● SPECTRUM AUDIO & CORE TELEMETRY", 16, 24);
-
-          const bars = 20;
-          const bw = 12;
-          const gap = 5;
-          const startX = 18;
-
-          for (let b = 0; b < bars; b++) {
-            const freq = Math.sin(frame * 0.1 + b * 0.5) * 0.5 + 0.5;
-            const bh = 25 + freq * 130 + Math.sin(frame * 0.05 * b) * 20;
-            const y = 220 - bh;
-
-            const grad = ctx.createLinearGradient(0, y, 0, 220);
-            grad.addColorStop(0, "#ffffff");
-            grad.addColorStop(0.5, "#38bdf8");
-            grad.addColorStop(1, "#22c55e");
-            ctx.fillStyle = grad;
-            ctx.fillRect(startX + b * (bw + gap), y, bw, bh);
-          }
-
-          ctx.fillStyle = "#94a3b8";
-          ctx.font = "10px monospace";
-          ctx.fillText(`CPU: ${(24 + Math.sin(frame * 0.08) * 8).toFixed(1)}%   RAM: 4.8 GB   LATENCY: 12ms`, 16, 255);
-
-        } else {
-          // ── Authentic macOS Desktop & Terminal Screen ──
-          // 1. macOS Wallpaper Gradient (Dark Sequoia / Cosmic Nebula)
-          const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-          bgGrad.addColorStop(0, "#0c0d16");
-          bgGrad.addColorStop(0.4, "#141528");
-          bgGrad.addColorStop(0.8, "#0a0a10");
-          bgGrad.addColorStop(1, "#050508");
-          ctx.fillStyle = bgGrad;
-          ctx.fillRect(0, 0, W, H);
-
-          // Subtle wallpaper ambient curve glow
-          ctx.fillStyle = "rgba(56, 189, 248, 0.08)";
-          ctx.beginPath();
-          ctx.arc(W * 0.7, H * 0.35, 120, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = "rgba(168, 85, 247, 0.06)";
-          ctx.beginPath();
-          ctx.arc(W * 0.3, H * 0.7, 100, 0, Math.PI * 2);
-          ctx.fill();
-
-          // 2. macOS Top Menu Bar
-          ctx.fillStyle = "rgba(20, 20, 28, 0.85)";
-          ctx.fillRect(0, 0, W, 18);
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
-          ctx.beginPath(); ctx.moveTo(0, 18); ctx.lineTo(W, 18); ctx.stroke();
-
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 9px -apple-system, BlinkMacSystemFont, sans-serif";
-          ctx.fillText("", 8, 12);
-
-          ctx.fillStyle = "#cbd5e1";
-          ctx.font = "8px -apple-system, BlinkMacSystemFont, sans-serif";
-          ctx.fillText("Finder   File   Edit   View   Terminal   Window   Help", 24, 12);
-
-          // Right menu items
-          ctx.fillStyle = "#94a3b8";
-          ctx.fillText("94% [⚡]   Wed 11:42 PM", W - 94, 12);
-
-          // 3. Floating macOS Terminal Window
-          const twX = 14;
-          const twY = 26;
-          const twW = W - 28;
-          const twH = H - 56;
-
-          // Terminal window shadow & backdrop
-          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-          ctx.fillRect(twX + 3, twY + 4, twW, twH);
-
-          ctx.fillStyle = "rgba(12, 13, 18, 0.95)";
-          ctx.fillRect(twX, twY, twW, twH);
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
-          ctx.lineWidth = 1;
-          ctx.strokeRect(twX, twY, twW, twH);
-
-          // Window Title Bar
-          ctx.fillStyle = "rgba(28, 29, 38, 0.98)";
-          ctx.fillRect(twX, twY, twW, 18);
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
-          ctx.beginPath(); ctx.moveTo(twX, twY + 18); ctx.lineTo(twX + twW, twY + 18); ctx.stroke();
-
-          // Traffic light dots
-          ctx.fillStyle = "#ff5f57";
-          ctx.beginPath(); ctx.arc(twX + 10, twY + 9, 3.5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#febc2e";
-          ctx.beginPath(); ctx.arc(twX + 20, twY + 9, 3.5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#28c840";
-          ctx.beginPath(); ctx.arc(twX + 30, twY + 9, 3.5, 0, Math.PI * 2); ctx.fill();
-
-          // Window Title text
-          ctx.fillStyle = "#94a3b8";
-          ctx.font = "bold 8.5px -apple-system, BlinkMacSystemFont, monospace";
-          ctx.fillText("dhruv@macbook-pro: ~ (zsh)", twX + twW / 2 - 58, twY + 12);
-
-          // Terminal content lines
-          ctx.font = "9.5px monospace";
-          const visible = Math.min(Math.floor(frame / 26) + 1, termLines.length);
-          for (let l = 0; l < visible; l++) {
-            const isPrompt = l === 0;
-            const isHigh = l === 1 || l === 4;
-            ctx.fillStyle = isPrompt ? "#4ade80" : isHigh ? "#ffffff" : "#94a3b8";
-            const line = termLines[l];
-            if (l === visible - 1 && visible < termLines.length) {
-              const chars = Math.floor(((frame % 26) / 26) * line.length);
-              ctx.fillText(line.slice(0, chars) + "█", twX + 10, twY + 34 + l * 20);
-            } else {
-              ctx.fillText(line, twX + 10, twY + 34 + l * 20);
-            }
-          }
-
-          // 4. macOS Bottom Floating Dock
-          const dockW = 140;
-          const dockH = 18;
-          const dockX = (W - dockW) / 2;
-          const dockY = H - 22;
-
-          ctx.fillStyle = "rgba(28, 30, 42, 0.75)";
-          ctx.fillRect(dockX, dockY, dockW, dockH);
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-          ctx.strokeRect(dockX, dockY, dockW, dockH);
-
-          // Mini Dock App Icons
-          const dockIcons = ["📁", "🧭", "⚡", "💻", "📝", "⚙️"];
-          ctx.font = "10px sans-serif";
-          dockIcons.forEach((icon, i) => {
-            ctx.fillText(icon, dockX + 10 + i * 21, dockY + 13);
-          });
-        }
-
-        screenTexture.needsUpdate = true;
-      }
-
-      renderer.render(scene, camera);
-    };
-
-    animId = requestAnimationFrame(animate);
-
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", onPointerMove);
-      container.removeEventListener("touchmove", onPointerMove);
+      window.removeEventListener("mouseup", onMouseUp);
+      container.removeEventListener("mousedown", onMouseDown);
       container.removeEventListener("pointerdown", onPointerDown);
       cancelAnimationFrame(animId);
-      if (container && renderer.domElement) container.removeChild(renderer.domElement);
+      if (container && renderer.domElement.parentNode === container) {
+        container.removeChild(renderer.domElement);
+      }
       renderer.dispose();
     };
-  }, [onDuckQuack, onModeChange]);
+  }, [onInteract]);
 
-  return <div ref={mountRef} className="w-full h-full cursor-pointer touch-none" />;
+  return <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-none select-none" />;
 };
 
 // Roles for Typewriter Text Loop
@@ -895,19 +554,16 @@ export function ActHero({
 }) {
   const RESUME_URL = "https://drive.google.com/file/d/1muHU96RCNS1iCxL6H6SonHjeL6nJlkrA/view";
 
-  const [screenMode, setScreenMode] = useState<WorkstationScreenMode>("terminal");
-  const [duckNotification, setDuckNotification] = useState<string | null>(null);
+  const [autoSpin, setAutoSpin] = useState(true);
+  const [interactMsg, setInteractMsg] = useState<string | null>(null);
+  const interactTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleDuckQuack = (customMsg?: string) => {
-    const quips = [
-      "Quack! 0 bugs in production! 🦆",
-      "Rubber Duck Debugging: Approved! 💻",
-      "LeetCode Knight vibes only! ⚔️",
-      "Quack! Clean code detected! ✨",
-    ];
-    const picked = customMsg || quips[Math.floor(Math.random() * quips.length)];
-    setDuckNotification(picked);
-    setTimeout(() => setDuckNotification(null), 2600);
+  const handleInteract = (msg: string | null) => {
+    setInteractMsg(msg);
+    if (interactTimerRef.current) clearTimeout(interactTimerRef.current);
+    if (msg) {
+      interactTimerRef.current = setTimeout(() => setInteractMsg(null), 2800);
+    }
   };
 
   // Typewriter Loop Logic
@@ -918,221 +574,157 @@ export function ActHero({
   useEffect(() => {
     const targetRole = ROLES[roleIndex];
     const typingSpeed = isDeleting ? 40 : 80;
+    const pauseAtEnd = 1400;
+    const pauseAtStart = 300;
 
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        setCurrentText(targetRole.substring(0, currentText.length + 1));
-        if (currentText === targetRole) {
-          setTimeout(() => setIsDeleting(true), 1600);
-        }
-      } else {
-        setCurrentText(targetRole.substring(0, currentText.length - 1));
-        if (currentText === "") {
-          setIsDeleting(false);
-          setRoleIndex((prev) => (prev + 1) % ROLES.length);
-        }
-      }
+    if (!isDeleting && currentText === targetRole) {
+      const t = setTimeout(() => setIsDeleting(true), pauseAtEnd);
+      return () => clearTimeout(t);
+    }
+    if (isDeleting && currentText === "") {
+      const t = setTimeout(() => {
+        setIsDeleting(false);
+        setRoleIndex(prev => (prev + 1) % ROLES.length);
+      }, pauseAtStart);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => {
+      setCurrentText(isDeleting
+        ? targetRole.slice(0, currentText.length - 1)
+        : targetRole.slice(0, currentText.length + 1)
+      );
     }, typingSpeed);
-
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(t);
   }, [currentText, isDeleting, roleIndex]);
 
   const scrollToNext = () => {
-    const nextEl = document.getElementById("about");
-    if (nextEl) {
-      nextEl.scrollIntoView({ behavior: "smooth" });
-    }
+    const next = document.querySelector("[data-section='about']") as HTMLElement;
+    if (next) next.scrollIntoView({ behavior: "smooth" });
   };
+
+  const socialLinks = [
+    { href: "https://github.com/Dhruv-Bajaj-code", icon: Github, label: "GitHub" },
+    { href: "https://linkedin.com/in/dhruv-bajaj-8ba898257", icon: Linkedin, label: "LinkedIn" },
+    { href: "mailto:d4bajaj@gmail.com", icon: Mail, label: "Email" },
+  ];
 
   return (
     <section
-      id="hero"
-      className="relative w-full min-h-screen flex flex-col justify-between px-4 sm:px-8 md:px-12 lg:px-16 pt-20 sm:pt-28 pb-8 sm:pb-10 overflow-hidden z-10 bg-[#050505]"
+      data-section="hero"
+      className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#080808] px-4 sm:px-6 pt-20 pb-8"
     >
-      {/* 3D Wireframe & Particle Background */}
+      {/* 3D Geometric Background */}
       <Hero3DGeometricBackground />
 
-      {/* Subtle Volumetric Ambient Glow */}
-      <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04)_0%,transparent_70%)] blur-[140px] pointer-events-none z-0" />
+      {/* Subtle radial vignette */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(8,8,8,0.85)_100%)]" />
 
-      {/* Main Hero Layout: 2 Columns (Responsive Stack on Mobile, Side-by-Side on Desktop) */}
-      <div className="max-w-7xl mx-auto w-full my-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-14 relative z-10">
-        
-        {/* Left Column: Text & Actions */}
-        <div className="w-full lg:w-[52%] flex flex-col items-center lg:items-start text-center lg:text-left space-y-5 sm:space-y-6">
-          
-          {/* Header Title Lockup: Badge & Typewriter Centered relative to Name */}
-          <div className="flex flex-col items-center lg:items-center max-w-fit w-full lg:w-auto">
-            {/* Status Pill Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#0C0C0E] border border-white/10 text-xs font-semibold text-slate-300 shadow-md backdrop-blur-md mb-2.5"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Open to SDE Opportunities / Internship</span>
-            </motion.div>
+      {/* Main two-column layout */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-8">
 
-            {/* Hero Name Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-tight text-center"
-            >
-              Dhruv <span className="text-[#FFFFFF]">Bajaj</span>
-            </motion.h1>
-
-            {/* Typewriter Dynamic Role Subtitle */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="h-9 sm:h-10 flex items-center justify-center mt-1"
-            >
-              <span className="font-display text-base sm:text-xl md:text-2xl font-semibold text-white tracking-wide text-center">
-                {currentText}
-                <span className="text-white animate-pulse ml-0.5">|</span>
-              </span>
-            </motion.div>
+        {/* Left: Text Content */}
+        <motion.div
+          initial={{ opacity: 0, x: -28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.65, ease: "easeOut" }}
+          className="flex flex-col items-center lg:items-start text-center lg:text-left max-w-xl"
+        >
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] sm:text-[11px] font-mono text-white/60 mb-5 backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Available for SDE Roles & Internships
           </div>
 
-          {/* Description Paragraph */}
-          <motion.p
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.6 }}
-            className="font-sans text-sm sm:text-base md:text-lg text-[#A8A8A8] max-w-xl leading-relaxed font-light"
-          >
-            Software engineer building production-grade full-stack web platforms and autonomous AI systems. Dedicated to algorithms, scalable architecture, and clean code.
-          </motion.p>
+          {/* Name */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none text-white mb-2">
+            DHRUV
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#00e5ff] via-[#7c3aed] to-[#10b981]">
+              BAJAJ
+            </span>
+          </h1>
 
-          {/* Hero Action CTA Buttons (Fully Mobile Responsive) */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.7 }}
-            className="pt-1 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 w-full sm:w-auto"
-          >
-            {/* Primary CTA: View My Work ↗ */}
-            <a
-              href="#projects"
-              className="w-full sm:w-auto px-7 py-3 rounded-2xl bg-[#FFFFFF] font-sans text-sm font-bold text-black shadow-[0_0_25px_rgba(255,255,255,0.4)] hover:shadow-[0_0_40px_rgba(255,255,255,0.7)] hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <span>View My Work</span>
-              <ExternalLink className="w-4 h-4" />
-            </a>
+          {/* Typewriter Role */}
+          <div className="h-7 sm:h-8 flex items-center gap-1.5 mb-5">
+            <span className="text-base sm:text-lg font-mono font-medium text-white/75">{currentText}</span>
+            <span className="w-0.5 h-5 bg-[#00e5ff] animate-pulse" />
+          </div>
 
-            {/* Secondary CTA: Download Résumé */}
-            <a
+          {/* Bio */}
+          <p className="text-sm sm:text-[15px] text-white/55 leading-relaxed mb-7 max-w-[420px]">
+            B.Tech CSE · NSUT Delhi — Building full-stack apps, AI agents & competitive programming with{" "}
+            <span className="text-[#facc15] font-semibold">LeetCode Knight</span> rated at 1951.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            <motion.a
               href={RESUME_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-7 py-3 rounded-2xl border border-white/15 text-white font-sans text-sm font-bold hover:border-white/60 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg bg-[#0C0C0E]"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black font-semibold text-sm hover:bg-white/90 transition-colors shadow-lg"
             >
-              <Download className="w-4 h-4 text-white" />
-              <span>Download Résumé</span>
-            </a>
-
-            {/* Tertiary CTA: Contact */}
-            <a
-              href="#contact"
-              className="w-full sm:w-auto px-6 py-3 rounded-2xl border border-white/10 text-white/70 hover:text-white font-sans text-sm font-medium hover:border-white/30 hover:bg-white/5 transition-all duration-300 flex items-center justify-center gap-2"
+              <Download className="w-4 h-4" />
+              Resume
+            </motion.a>
+            <motion.a
+              href="#projects"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/15 text-white/80 font-medium text-sm hover:border-white/40 hover:text-white transition-colors backdrop-blur-sm"
             >
-              <span>Let&apos;s Talk</span>
-            </a>
-          </motion.div>
+              <ExternalLink className="w-4 h-4" />
+              View Projects
+            </motion.a>
+          </div>
 
-          {/* Social Icons Row (Centered) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className="pt-1 flex items-center justify-center gap-3 w-full max-w-lg"
-          >
-            <a
-              href="https://github.com/dhruvbajaj13"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-white hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
-              aria-label="GitHub"
-            >
-              <Github className="w-4 h-4" />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/dhruvbajaj13"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-white hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
-              aria-label="LinkedIn"
-            >
-              <Linkedin className="w-4 h-4" />
-            </a>
-            <a
-              href="mailto:d4bajaj@gmail.com"
-              className="p-3 rounded-xl text-[#A8A8A8] hover:text-white border border-white/10 hover:border-white hover:scale-110 transition-all duration-300 shadow-md bg-[#0C0C0E]"
-              aria-label="Email"
-            >
-              <Mail className="w-4 h-4" />
-            </a>
-          </motion.div>
-
-          {/* Stat Cards Container */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.9 }}
-            className="pt-2 w-full max-w-lg"
-          >
-            <div className="flex flex-row items-center justify-between px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl border border-white/10 bg-[#0C0C0E]/90 shadow-xl backdrop-blur-xl">
-              <div className="text-center">
-                <div className="font-display text-lg sm:text-2xl font-extrabold text-[#FFFFFF]">1,100+</div>
-                <div className="font-mono text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Solved</div>
-              </div>
-
-              <div className="w-px h-6 sm:h-7 bg-white/10" />
-
-              <div className="text-center">
-                <div className="font-display text-lg sm:text-2xl font-extrabold text-white">6+</div>
-                <div className="font-mono text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">Featured Apps</div>
-              </div>
-
-              <div className="w-px h-6 sm:h-7 bg-white/10" />
-
-              <div className="text-center">
-                <div className="font-display text-lg sm:text-2xl font-extrabold text-[#FFFFFF]">Top 3%</div>
-                <div className="font-mono text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Knight</div>
-              </div>
-            </div>
-          </motion.div>
-
-        </div>
-
-        {/* Right Column: 3D Retro Developer Workstation Card (Zero Overlap & 60FPS) */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="w-full lg:w-[48%] flex flex-col items-center justify-center relative"
-        >
-          {/* Duck Quack Notification Toast */}
-          <AnimatePresence>
-            {duckNotification && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="absolute -top-11 z-30 px-3.5 py-1.5 rounded-full bg-amber-400 text-black font-mono text-xs font-bold shadow-[0_0_20px_rgba(251,191,36,0.6)] flex items-center gap-1.5"
+          {/* Social Links */}
+          <div className="flex items-center gap-3">
+            {socialLinks.map(({ href, icon: Icon, label }) => (
+              <motion.a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                whileHover={{ scale: 1.12, y: -2 }}
+                whileTap={{ scale: 0.92 }}
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/12 hover:border-white/30 transition-all flex items-center justify-center text-white/70 hover:text-white backdrop-blur-sm"
               >
-                <span>{duckNotification}</span>
+                <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+              </motion.a>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Right: 3D Knight Tech Scene */}
+        <motion.div
+          initial={{ opacity: 0, x: 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+          className="relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[480px] flex flex-col items-center gap-2"
+        >
+          {/* Interaction Toast */}
+          <AnimatePresence>
+            {interactMsg && (
+              <motion.div
+                key={interactMsg}
+                initial={{ opacity: 0, y: -8, scale: 0.92 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.94 }}
+                transition={{ duration: 0.28 }}
+                className="absolute -top-10 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap bg-[#0a0a0e]/95 border border-white/15 text-white/90 text-[11px] sm:text-xs font-mono px-4 py-1.5 rounded-full shadow-xl backdrop-blur-md"
+              >
+                {interactMsg}
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[480px] aspect-[4/3] rounded-3xl border border-white/15 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden backdrop-blur-2xl flex flex-col group/terminal">
-            
-            {/* Window Header Chrome with Interactive Mode Switcher */}
+          {/* 3D Viewport */}
+          <div className="relative w-full aspect-[4/3] rounded-3xl border border-white/15 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden backdrop-blur-2xl flex flex-col group/terminal">
+
+            {/* Window Chrome */}
             <div className="flex items-center justify-between px-3 sm:px-3.5 py-2 bg-[#141418] border-b border-white/10 shrink-0 select-none">
               {/* Mac Traffic Lights */}
               <div className="flex items-center gap-1.5">
@@ -1141,79 +733,42 @@ export function ActHero({
                 <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_5px_rgba(40,200,64,0.4)]" />
               </div>
 
-              {/* Mode Switcher Tabs */}
-              <div className="flex items-center gap-0.5 sm:gap-1 bg-black/50 p-0.5 rounded-lg border border-white/10">
-                <button
-                  onClick={() => setScreenMode("terminal")}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "terminal"
-                      ? "bg-white text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Terminal className="w-2.5 h-2.5" />
-                  <span>TERM</span>
-                </button>
+              {/* Auto-Spin Toggle */}
+              <button
+                onClick={() => setAutoSpin(v => !v)}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-mono font-medium border transition-all ${
+                  autoSpin
+                    ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300"
+                    : "bg-white/5 border-white/10 text-white/40 hover:text-white/70"
+                }`}
+              >
+                <RotateCcw className="w-2.5 h-2.5" />
+                {autoSpin ? "AUTO-SPIN ON" : "AUTO-SPIN OFF"}
+              </button>
 
-                <button
-                  onClick={() => setScreenMode("matrix")}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "matrix"
-                      ? "bg-emerald-500 text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Code2 className="w-2.5 h-2.5" />
-                  <span>MATRIX</span>
-                </button>
-
-                <button
-                  onClick={() => setScreenMode("specs")}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "specs"
-                      ? "bg-white text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Cpu className="w-2.5 h-2.5" />
-                  <span>SPECS</span>
-                </button>
-
-                <button
-                  onClick={() => setScreenMode("visualizer")}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "visualizer"
-                      ? "bg-purple-500 text-white font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Activity className="w-2.5 h-2.5" />
-                  <span>EQ</span>
-                </button>
-              </div>
-
-              {/* Live Status Indicator */}
+              {/* Live status */}
               <span className="flex items-center gap-1 text-[8.5px] sm:text-[9px] font-mono text-emerald-400">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                60FPS
+                360°
               </span>
             </div>
 
-            {/* 3D Canvas Viewport */}
+            {/* 3D Canvas */}
             <div className="relative flex-1 w-full h-full overflow-hidden">
-              <HeroRetroWorkstation3D
-                currentMode={screenMode}
-                onModeChange={setScreenMode}
-                onDuckQuack={handleDuckQuack}
+              <HeroKnightTechScene3D
+                autoSpin={autoSpin}
+                onAutoSpinToggle={() => setAutoSpin(v => !v)}
+                onInteract={handleInteract}
               />
-              
-              {/* Interaction Hints Pill */}
+
+              {/* Interaction Hints */}
               <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between font-mono text-[8px] sm:text-[8.5px] text-white/50 pointer-events-none select-none">
                 <span className="bg-black/75 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm">
-                  Click Screen or Duck · Move to Tilt
+                  Drag to rotate · Click to explore
                 </span>
-                <span className="bg-black/75 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm text-white">
-                  {screenMode.toUpperCase()}
+                <span className="bg-black/75 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm flex items-center gap-1 text-cyan-300">
+                  <Sparkles className="w-2 h-2" />
+                  KNIGHT
                 </span>
               </div>
             </div>
