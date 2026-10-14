@@ -26,7 +26,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     const width = container.clientWidth || 460;
     const height = container.clientHeight || 345;
 
-    // ── 1. Scene, Camera & High-Performance Renderer ──
+    // ── 1. Scene, Camera & Ultra-Smooth 60FPS Renderer ──
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
     camera.position.set(0, 2.5, 6.2);
@@ -39,44 +39,43 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       precision: "mediump",
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // 1.25 pixel ratio ensures crisp retina detail while maintaining locked 60-120fps with zero drag lag
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
 
-    // ── 2. Studio Lighting (Key, Fill, Rim & Ground Bounce) ──
-    // Ambient light
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+    // ── 2. Studio Lighting (Key, Fill, Rim & Ground Accent) ──
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
-    // Warm key light (creates golden specular gleam)
+    // Warm golden key light
     const keyLight = new THREE.DirectionalLight(0xfff3e0, 2.4);
     keyLight.position.set(4.5, 6.5, 5.0);
     scene.add(keyLight);
 
-    // Cool blue cyber fill light
-    const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.1);
+    // Cool cyber blue fill light
+    const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.0);
     fillLight.position.set(-5.0, 3.5, 3.0);
     scene.add(fillLight);
 
-    // Luminous rim / backlight (highlights contours & horse crest)
+    // Luminous rim light from behind (sculpts edges & horse mane)
     const rimLight = new THREE.DirectionalLight(0xa855f7, 2.0);
     rimLight.position.set(0, 5.0, -4.5);
     scene.add(rimLight);
 
-    // Cyan accent light from beneath/front
-    const bottomAccent = new THREE.PointLight(0x00f0ff, 1.6, 8.0);
+    // Bottom soft cyan bounce light
+    const bottomAccent = new THREE.PointLight(0x00f0ff, 1.4, 7.0);
     bottomAccent.position.set(0, -0.2, 2.0);
     scene.add(bottomAccent);
 
-    // ── 3. Turntable Group (Allows 360° rotation) ──
+    // ── 3. Turntable Group (360° Rotatable Scene) ──
     const turntable = new THREE.Group();
     turntable.position.set(0, -0.65, 0);
     scene.add(turntable);
 
     // ── 4. Ground Platform & Circuit Board Base ──
-    // Circular cyber pedestal
-    const groundGeo = new THREE.CylinderGeometry(3.3, 3.4, 0.14, 64);
+    const groundGeo = new THREE.CylinderGeometry(3.3, 3.4, 0.14, 48);
     const groundMat = new THREE.MeshStandardMaterial({
       color: 0x0b0e14,
       metalness: 0.8,
@@ -86,8 +85,8 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     groundMesh.position.y = -0.07;
     turntable.add(groundMesh);
 
-    // Metallic rim around the pedestal
-    const rimRingGeo = new THREE.TorusGeometry(3.35, 0.04, 16, 64);
+    // Glowing cyan perimeter ring
+    const rimRingGeo = new THREE.TorusGeometry(3.35, 0.035, 12, 48);
     const rimRingMat = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
       metalness: 0.9,
@@ -109,8 +108,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       cctx.fillStyle = "#070a10";
       cctx.fillRect(0, 0, 512, 512);
 
-      // Radial rings
-      cctx.strokeStyle = "rgba(0, 240, 255, 0.4)";
+      cctx.strokeStyle = "rgba(0, 240, 255, 0.45)";
       cctx.lineWidth = 2;
       [70, 140, 210].forEach((r) => {
         cctx.beginPath();
@@ -118,8 +116,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
         cctx.stroke();
       });
 
-      // Circuit lines
-      cctx.strokeStyle = "rgba(16, 185, 129, 0.35)";
+      cctx.strokeStyle = "rgba(16, 185, 129, 0.4)";
       cctx.lineWidth = 1.5;
       for (let a = 0; a < 16; a++) {
         const rad = (a / 16) * Math.PI * 2;
@@ -132,7 +129,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
         cctx.lineTo(x2, y2);
         cctx.stroke();
 
-        // Contact pads
         cctx.fillStyle = "#f59e0b";
         cctx.beginPath();
         cctx.arc(x2, y2, 3, 0, Math.PI * 2);
@@ -140,7 +136,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       }
     }
     const circuitTexture = new THREE.CanvasTexture(circuitCanvas);
-    const topPlateGeo = new THREE.CircleGeometry(3.3, 64);
+    const topPlateGeo = new THREE.CircleGeometry(3.3, 48);
     const topPlateMat = new THREE.MeshStandardMaterial({
       map: circuitTexture,
       roughness: 0.4,
@@ -153,7 +149,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     topPlate.position.y = 0.005;
     turntable.add(topPlate);
 
-    // Soft Contact Shadows for realism
+    // Soft Contact Shadows
     const shadowCanvas = document.createElement("canvas");
     shadowCanvas.width = 128;
     shadowCanvas.height = 128;
@@ -181,143 +177,140 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       sMesh.scale.set(scaleX, scaleZ, 1);
       turntable.add(sMesh);
     };
-    createContactShadow(0, 0, 1.8, 1.8);       // Under Knight
-    createContactShadow(-2.1, 0.1, 1.6, 1.6);  // Under Left Server
-    createContactShadow(2.1, 0.1, 1.6, 1.6);   // Under Right Server
+    createContactShadow(0, 0, 1.8, 1.8);
+    createContactShadow(-2.1, 0.1, 1.6, 1.6);
+    createContactShadow(2.1, 0.1, 1.6, 1.6);
 
-    // ── 5. Golden Unicorn Chess Knight (Main Centerpiece) ──
+    // ── 5. Realistic Sculpted Golden Unicorn Chess Knight (Centerpiece) ──
     const knightGroup = new THREE.Group();
     knightGroup.name = "knight";
     knightGroup.position.set(0, 0, 0);
     turntable.add(knightGroup);
 
-    // Premium Rich Gold Material
+    // Premium Lustrous Royal Gold Materials
     const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xdfa535,
+      color: 0xe0a536,
       metalness: 0.88,
       roughness: 0.22,
-      emissive: 0x422a06,
-      emissiveIntensity: 0.2,
+      emissive: 0x3d2704,
+      emissiveIntensity: 0.22,
     });
 
-    // Darker Antique Gold for Accents
     const darkGoldMat = new THREE.MeshStandardMaterial({
       color: 0xa87418,
       metalness: 0.85,
       roughness: 0.35,
     });
 
-    // Lathed Chess Pedestal (Authentic Staunton profile)
+    // Lathed Staunton Chess Pedestal Base
     const lathePoints = [
       new THREE.Vector2(0, 0),
-      new THREE.Vector2(0.68, 0),
-      new THREE.Vector2(0.68, 0.07),
-      new THREE.Vector2(0.61, 0.12),
-      new THREE.Vector2(0.53, 0.18),
-      new THREE.Vector2(0.56, 0.24),
-      new THREE.Vector2(0.46, 0.34),
-      new THREE.Vector2(0.40, 0.44),
-      new THREE.Vector2(0.45, 0.50),
-      new THREE.Vector2(0.36, 0.56),
-      new THREE.Vector2(0, 0.56),
+      new THREE.Vector2(0.70, 0),
+      new THREE.Vector2(0.70, 0.07),
+      new THREE.Vector2(0.63, 0.13),
+      new THREE.Vector2(0.54, 0.19),
+      new THREE.Vector2(0.58, 0.25),
+      new THREE.Vector2(0.48, 0.35),
+      new THREE.Vector2(0.41, 0.45),
+      new THREE.Vector2(0.46, 0.51),
+      new THREE.Vector2(0.38, 0.57),
+      new THREE.Vector2(0, 0.57),
     ];
-    const pedestalGeo = new THREE.LatheGeometry(lathePoints, 48);
+    const pedestalGeo = new THREE.LatheGeometry(lathePoints, 36);
     const pedestal = new THREE.Mesh(pedestalGeo, goldMat);
     knightGroup.add(pedestal);
 
-    // Sculpted Horse Head (Extruded Profile with Chamfered Bevels)
+    // Sculpted Staunton Horse Head Geometry
     const knightShape = new THREE.Shape();
     knightShape.moveTo(-0.35, 0);
-    // Arched crest going backward and up
-    knightShape.quadraticCurveTo(-0.52, 0.45, -0.46, 0.95);
-    knightShape.quadraticCurveTo(-0.42, 1.35, -0.25, 1.68);
-    // Back of alert horse ear
-    knightShape.lineTo(-0.22, 1.72);
-    knightShape.lineTo(-0.16, 2.05); // Ear tip
-    // Front of ear
-    knightShape.lineTo(-0.06, 1.76);
-    // Forehead slope down to snout
-    knightShape.quadraticCurveTo(0.12, 1.62, 0.32, 1.48);
-    // Muzzle / Snout curve
-    knightShape.quadraticCurveTo(0.52, 1.35, 0.50, 1.18);
-    knightShape.quadraticCurveTo(0.42, 1.05, 0.28, 1.10); // Mouth & lower jaw
-    // Throat curve coming back in
-    knightShape.quadraticCurveTo(0.12, 1.05, 0.08, 0.85);
-    // Proud chest curve descending to base
-    knightShape.quadraticCurveTo(0.04, 0.55, 0.25, 0);
+    // Back crest arching up
+    knightShape.quadraticCurveTo(-0.50, 0.45, -0.44, 0.95);
+    knightShape.quadraticCurveTo(-0.40, 1.35, -0.25, 1.70);
+    // Horse ear
+    knightShape.lineTo(-0.21, 1.74);
+    knightShape.lineTo(-0.15, 2.10);
+    knightShape.lineTo(-0.05, 1.80);
+    // Forehead slope down to muzzle
+    knightShape.quadraticCurveTo(0.12, 1.66, 0.34, 1.50);
+    // Snout / muzzle
+    knightShape.quadraticCurveTo(0.54, 1.36, 0.52, 1.18);
+    knightShape.quadraticCurveTo(0.44, 1.05, 0.30, 1.10);
+    // Throat curve
+    knightShape.quadraticCurveTo(0.14, 1.05, 0.10, 0.85);
+    // Proud chest curve down to base
+    knightShape.quadraticCurveTo(0.06, 0.52, 0.28, 0);
     knightShape.closePath();
 
     const headGeo = new THREE.ExtrudeGeometry(knightShape, {
-      depth: 0.36,
+      depth: 0.38,
       bevelEnabled: true,
-      bevelSegments: 5,
-      bevelSize: 0.05,
-      bevelThickness: 0.05,
-      curveSegments: 28,
+      bevelSegments: 4,
+      bevelSize: 0.045,
+      bevelThickness: 0.045,
+      curveSegments: 20,
     });
     headGeo.center();
     const headMesh = new THREE.Mesh(headGeo, goldMat);
-    headMesh.position.set(0.02, 1.42, 0);
+    headMesh.position.set(0.02, 1.45, 0);
     knightGroup.add(headMesh);
 
-    // Mane Carved Waves
+    // Flowing Mane Curls along Crest
     for (let i = 0; i < 4; i++) {
-      const maneGeo = new THREE.CylinderGeometry(0.06 - i * 0.008, 0.12, 0.28, 16);
+      const maneGeo = new THREE.CylinderGeometry(0.055 - i * 0.007, 0.11, 0.26, 14);
       const mane = new THREE.Mesh(maneGeo, darkGoldMat);
       mane.position.set(-0.38 - i * 0.04, 1.95 - i * 0.28, 0);
       mane.rotation.z = -0.6 - i * 0.15;
       knightGroup.add(mane);
     }
 
-    // Inset Obsidian Gem Eyes
+    // Inset Polished Onyx Gem Eyes with Specular Sparkle
     const eyeMat = new THREE.MeshStandardMaterial({
       color: 0x050508,
-      roughness: 0.05,
+      roughness: 0.04,
       metalness: 0.95,
     });
-    [-0.20, 0.20].forEach((zPos) => {
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.038, 16, 16), eyeMat);
-      eye.position.set(0.24, 1.76, zPos);
+    [-0.21, 0.21].forEach((zPos) => {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.04, 14, 14), eyeMat);
+      eye.position.set(0.24, 1.78, zPos);
       knightGroup.add(eye);
     });
 
     // Spiraled Golden Unicorn Horn with Glowing Cyan Tip
     const hornGroup = new THREE.Group();
-    hornGroup.position.set(0.22, 1.96, 0);
-    hornGroup.rotation.z = -Math.PI / 5;
+    hornGroup.position.set(0.24, 1.98, 0);
+    hornGroup.rotation.z = -Math.PI / 5.2;
 
-    const hornConeGeo = new THREE.ConeGeometry(0.075, 0.65, 24);
+    const hornConeGeo = new THREE.ConeGeometry(0.075, 0.68, 20);
     const hornCone = new THREE.Mesh(hornConeGeo, goldMat);
-    hornCone.position.y = 0.32;
+    hornCone.position.y = 0.34;
     hornGroup.add(hornCone);
 
-    // Spiral coils around the horn
+    // Spiral Coils Wrapping the Horn
     for (let i = 0; i < 5; i++) {
-      const coilR = 0.07 - i * 0.01;
+      const coilR = 0.072 - i * 0.01;
       const coil = new THREE.Mesh(
-        new THREE.TorusGeometry(coilR, 0.018, 8, 20),
+        new THREE.TorusGeometry(coilR, 0.016, 8, 16),
         darkGoldMat
       );
-      coil.position.y = 0.1 + i * 0.1;
+      coil.position.y = 0.1 + i * 0.11;
       coil.rotation.x = Math.PI / 2 + 0.2;
       hornGroup.add(coil);
     }
 
-    // Glowing cyan tip crystal
+    // Glowing Cyan Crystal Horn Tip
     const hornTipMat = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
       emissive: 0x00f0ff,
-      emissiveIntensity: 1.2,
+      emissiveIntensity: 1.3,
       metalness: 0.3,
       roughness: 0.1,
     });
-    const hornTip = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.2, 16), hornTipMat);
-    hornTip.position.y = 0.68;
+    const hornTip = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.22, 14), hornTipMat);
+    hornTip.position.y = 0.72;
     hornGroup.add(hornTip);
 
-    // Light emission from the horn tip
-    const hornGlowLight = new THREE.PointLight(0x00f0ff, 1.4, 2.5);
-    hornGlowLight.position.set(0, 0.72, 0);
+    const hornGlowLight = new THREE.PointLight(0x00f0ff, 1.5, 2.5);
+    hornGlowLight.position.set(0, 0.76, 0);
     hornGroup.add(hornGlowLight);
 
     knightGroup.add(hornGroup);
@@ -328,17 +321,15 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     cradleGroup.position.set(0, 3.1, 0);
     turntable.add(cradleGroup);
 
-    // Polished Chrome Frame
     const chromeMat = new THREE.MeshStandardMaterial({
       color: 0xf5f5fa,
       metalness: 0.98,
       roughness: 0.04,
     });
 
-    // Top horizontal crossbars (front and back rails)
     [-0.14, 0.14].forEach((zRail) => {
       const topRail = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.03, 0.03, 2.1, 16),
+        new THREE.CylinderGeometry(0.03, 0.03, 2.1, 14),
         chromeMat
       );
       topRail.rotation.z = Math.PI / 2;
@@ -346,22 +337,19 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       cradleGroup.add(topRail);
     });
 
-    // Vertical Frame Uprights with Chamfered Joints
     [-0.95, 0.95].forEach((xEnd) => {
       const arch = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.035, 0.035, 1.3, 16),
+        new THREE.CylinderGeometry(0.035, 0.035, 1.3, 14),
         chromeMat
       );
       arch.position.set(xEnd, -0.65, 0);
       cradleGroup.add(arch);
 
-      // Horizontal connector cap
       const cap = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.34), chromeMat);
       cap.position.set(xEnd, 0, 0);
       cradleGroup.add(cap);
     });
 
-    // 5 Suspended Chrome Spheres & Dual V-Wires
     const cradleBalls: THREE.Mesh[] = [];
     const wireLines: THREE.Line[] = [];
     const numBalls = 5;
@@ -372,14 +360,12 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     for (let i = 0; i < numBalls; i++) {
       const xRest = (i - 2) * ballSpacing;
 
-      // Chrome Sphere with high specular precision
-      const ballGeo = new THREE.SphereGeometry(ballR, 48, 48);
+      const ballGeo = new THREE.SphereGeometry(ballR, 32, 32);
       const ball = new THREE.Mesh(ballGeo, chromeMat);
       ball.position.set(xRest, -stringLen, 0);
       cradleGroup.add(ball);
       cradleBalls.push(ball);
 
-      // Suspension V-Wires (Front wire & Back wire to respective rails)
       [-0.14, 0.14].forEach((zRail) => {
         const wireGeo = new THREE.BufferGeometry().setFromPoints([
           new THREE.Vector3(xRest, 0, zRail),
@@ -396,12 +382,11 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       });
     }
 
-    // ── 7. Left Server Rack on IC Chip Pedestal ──
-    const makeICChipPedestal = (x: number, label: string) => {
+    // ── 7. Dual Server Racks on IC Chip Pedestals ──
+    const makeICChipPedestal = (x: number) => {
       const chipGroup = new THREE.Group();
       chipGroup.position.set(x, 0, 0);
 
-      // Dark Ceramic Chip Body
       const chipMat = new THREE.MeshStandardMaterial({
         color: 0x16161b,
         metalness: 0.35,
@@ -411,7 +396,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       chipBody.position.y = 0.05;
       chipGroup.add(chipBody);
 
-      // Metallic Heat Spreader / Die in center
       const dieMat = new THREE.MeshStandardMaterial({
         color: 0x222228,
         metalness: 0.85,
@@ -421,7 +405,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       die.position.y = 0.11;
       chipGroup.add(die);
 
-      // Metallic IC Pins (32 total, 8 per side)
       const pinMat = new THREE.MeshStandardMaterial({
         color: 0xd8d8e2,
         metalness: 0.95,
@@ -431,15 +414,11 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       const step = 0.11;
       for (let p = 0; p < pinCountPerSide; p++) {
         const offset = (p - (pinCountPerSide - 1) / 2) * step;
-
-        // Front & Back pins
         [-0.56, 0.56].forEach((zPos) => {
           const pin = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.05, 0.09), pinMat);
           pin.position.set(offset, 0.04, zPos);
           chipGroup.add(pin);
         });
-
-        // Left & Right pins
         [-0.56, 0.56].forEach((xPos) => {
           const pin = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.05, 0.045), pinMat);
           pin.position.set(xPos, 0.04, offset);
@@ -451,14 +430,13 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       return chipGroup;
     };
 
-    // Left Server Rack: Enterprise Telecom / Compute Unit
-    makeICChipPedestal(-2.1, "DHRUV-AI");
+    // Left Server Rack
+    makeICChipPedestal(-2.1);
     const leftRackGroup = new THREE.Group();
     leftRackGroup.name = "server";
     leftRackGroup.position.set(-2.1, 0.1, 0);
     turntable.add(leftRackGroup);
 
-    // Chassis in brushed dark metal
     const chassisMat = new THREE.MeshStandardMaterial({
       color: 0x111317,
       metalness: 0.7,
@@ -468,7 +446,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     leftChassis.position.y = 0.925;
     leftRackGroup.add(leftChassis);
 
-    // Front Panel with Vertical Air Intake Louvers & Blue LED arrays
     const frontPanelMat = new THREE.MeshStandardMaterial({
       color: 0x1a1c22,
       metalness: 0.6,
@@ -478,10 +455,8 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     frontPanel.position.set(0, 0.925, 0.35);
     leftRackGroup.add(frontPanel);
 
-    // Dynamic Blinking Blue & Cyan LEDs (Enterprise Activity)
     const leftLeds: THREE.Mesh[] = [];
     const ledBlueMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
-    const ledDimMat = new THREE.MeshBasicMaterial({ color: 0x002244 });
     const numRows = 14;
     for (let r = 0; r < numRows; r++) {
       [-0.26, 0.26].forEach((xCol) => {
@@ -492,19 +467,17 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       });
     }
 
-    // ── 8. Right Server Rack on IC Chip Pedestal (Glass Cabinet with Colorful Blades) ──
-    makeICChipPedestal(2.1, "OCTA-CORE");
+    // Right Server Rack (Glass Cabinet with Colorful Blades)
+    makeICChipPedestal(2.1);
     const rightRackGroup = new THREE.Group();
     rightRackGroup.name = "server";
     rightRackGroup.position.set(2.1, 0.1, 0);
     turntable.add(rightRackGroup);
 
-    // Main cabinet body
     const rightChassis = new THREE.Mesh(new THREE.BoxGeometry(0.88, 1.85, 0.68), chassisMat);
     rightChassis.position.y = 0.925;
     rightRackGroup.add(rightChassis);
 
-    // Stacked Server Blades (6 units) with multicolored status LEDs
     const rightLeds: { mesh: THREE.Mesh; baseColor: number }[] = [];
     const bladeMat = new THREE.MeshStandardMaterial({
       color: 0x1c1e26,
@@ -519,7 +492,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       blade.position.set(0, bladeY, 0.02);
       rightRackGroup.add(blade);
 
-      // Handle on blade
       const handleMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 });
       [-0.32, 0.32].forEach((hx) => {
         const handle = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.12, 0.04), handleMat);
@@ -527,11 +499,10 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
         rightRackGroup.add(handle);
       });
 
-      // Cluster of 4 LEDs per blade
       for (let l = 0; l < 4; l++) {
         const col = ledColors[(b + l) % ledColors.length];
         const ledMesh = new THREE.Mesh(
-          new THREE.SphereGeometry(0.022, 12, 12),
+          new THREE.SphereGeometry(0.022, 10, 10),
           new THREE.MeshBasicMaterial({ color: col })
         );
         ledMesh.position.set(-0.16 + l * 0.1, bladeY, 0.34);
@@ -540,11 +511,10 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       }
     }
 
-    // Sleek Tempered Glass Door with Cyan Tint
     const glassMat = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
       transparent: true,
-      opacity: 0.28,
+      opacity: 0.26,
       metalness: 0.3,
       roughness: 0.08,
     });
@@ -552,7 +522,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     glassDoor.position.set(0, 0.925, 0.36);
     rightRackGroup.add(glassDoor);
 
-    // ── 9. Stylized Background Clouds & Cyber Dust Particles ──
+    // ── 8. Stylized Cloud Puffs & Cyber Dust Particles ──
     const cloudMat = new THREE.MeshStandardMaterial({
       color: 0x1e293b,
       roughness: 0.9,
@@ -560,7 +530,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       transparent: true,
       opacity: 0.35,
     });
-    // Cloud puffs in distance
     const cloudPuffs = [
       { x: -2.8, y: 3.2, z: -2.2, r: 0.7 },
       { x: -2.1, y: 3.5, z: -2.0, r: 0.9 },
@@ -568,13 +537,12 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       { x: 2.9, y: 3.1, z: -2.3, r: 0.65 },
     ];
     cloudPuffs.forEach((cp) => {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(cp.r, 20, 20), cloudMat);
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(cp.r, 16, 16), cloudMat);
       puff.position.set(cp.x, cp.y, cp.z);
       turntable.add(puff);
     });
 
-    // Ambient floating Cyber Dust Motes
-    const dustCount = 80;
+    const dustCount = 60;
     const dustGeo = new THREE.BufferGeometry();
     const dustPos = new Float32Array(dustCount * 3);
     const dustOffsets = new Float32Array(dustCount);
@@ -596,13 +564,15 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     );
     turntable.add(dustParticles);
 
-    // ── 10. Interactive 360° Drag & Inertia ──
+    // ── 9. BUTTER-SMOOTH 60-120FPS Decoupled Drag & Momentum Physics ──
     let isDragging = false;
     let prevMouseX = 0;
     let prevMouseY = 0;
-    let angularVelocityY = 0;
-    let tiltVelocityX = 0;
-    let currentTiltX = 0;
+    let dragDeltaX = 0;
+    let dragDeltaY = 0;
+    let dragVelocityY = 0;
+    let targetRotY = 0;
+    let targetRotX = 0;
     let autoSpin = true;
     let idleTimer: NodeJS.Timeout | null = null;
 
@@ -620,16 +590,11 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       if (!isDragging) return;
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
       const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-      const dx = clientX - prevMouseX;
-      const dy = clientY - prevMouseY;
+      // Accumulate deltas without DOM layout recalculation
+      dragDeltaX += clientX - prevMouseX;
+      dragDeltaY += clientY - prevMouseY;
       prevMouseX = clientX;
       prevMouseY = clientY;
-
-      angularVelocityY = dx * 0.008;
-      tiltVelocityX = dy * 0.003;
-      turntable.rotation.y += angularVelocityY;
-      currentTiltX = Math.max(-0.2, Math.min(0.25, currentTiltX + tiltVelocityX));
-      turntable.rotation.x = currentTiltX;
     };
 
     const onPointerUp = () => {
@@ -642,7 +607,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
 
     container.addEventListener("mousedown", onPointerDown);
     container.addEventListener("touchstart", onPointerDown, { passive: true });
-    window.addEventListener("mousemove", onPointerMove);
+    window.addEventListener("mousemove", onPointerMove, { passive: true });
     window.addEventListener("touchmove", onPointerMove, { passive: true });
     window.addEventListener("mouseup", onPointerUp);
     window.addEventListener("touchend", onPointerUp);
@@ -698,7 +663,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     };
     container.addEventListener("click", onClick);
 
-    // ── 11. 60FPS Physics & Rendering Loop ──
+    // ── 10. Locked 60FPS Physics, Animation & Damped Orbit Loop ──
     let animId: number;
     let time = 0;
     let knightHop = 0;
@@ -711,17 +676,27 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       time += 0.016;
       ledTick++;
 
-      // 1. Turntable rotation physics (Auto-spin & Drag damping)
-      if (autoSpin && !isDragging) {
-        turntable.rotation.y += 0.0055;
-        turntable.rotation.x += (0 - turntable.rotation.x) * 0.05;
-      } else if (!isDragging) {
-        turntable.rotation.y += angularVelocityY;
-        angularVelocityY *= 0.94;
-        turntable.rotation.x += (currentTiltX - turntable.rotation.x) * 0.08;
+      // 1. Fluid, Zero-Lag Turntable Orbit (Spring-damped interpolation)
+      if (isDragging) {
+        targetRotY += dragDeltaX * 0.007;
+        targetRotX = Math.max(-0.25, Math.min(0.32, targetRotX + dragDeltaY * 0.004));
+        dragVelocityY = dragDeltaX * 0.007;
+        dragDeltaX = 0;
+        dragDeltaY = 0;
+      } else {
+        if (autoSpin) {
+          targetRotY += 0.0045;
+          targetRotX += (0 - targetRotX) * 0.05;
+        } else {
+          targetRotY += dragVelocityY;
+          dragVelocityY *= 0.94; // Smooth momentum decay
+        }
       }
 
-      // 2. Knight hop animation
+      turntable.rotation.y += (targetRotY - turntable.rotation.y) * 0.14;
+      turntable.rotation.x += (targetRotX - turntable.rotation.x) * 0.14;
+
+      // 2. Knight Hop Animation
       if (knightHopSpeed !== 0 || knightHop > 0) {
         knightHop += knightHopSpeed;
         knightHopSpeed -= 0.005;
@@ -736,33 +711,29 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       hornTipMat.emissiveIntensity = 0.9 + Math.sin(time * 3.5) * 0.6;
       hornGlowLight.intensity = 1.2 + Math.sin(time * 3.5) * 0.6;
 
-      // 4. Newton's Cradle Realistic Momentum Transfer Physics
+      // 4. Newton's Cradle Realistic Momentum Transfer
       const cradlePeriod = 2.2;
-      const tNorm = (time % cradlePeriod) / cradlePeriod; // 0 to 1
+      const tNorm = (time % cradlePeriod) / cradlePeriod;
       const maxTheta = 0.62 + cradleBoost;
-      cradleBoost *= 0.96; // Smooth decay of click boost
+      cradleBoost *= 0.96;
 
       let theta0 = 0;
       let theta4 = 0;
 
       if (tNorm < 0.5) {
-        // Half 1: Left sphere (Ball 0) swings out and returns
         const subPhase = (tNorm / 0.5) * Math.PI;
         theta0 = -Math.sin(subPhase) * maxTheta;
         theta4 = 0;
       } else {
-        // Half 2: Right sphere (Ball 4) swings out and returns
         const subPhase = ((tNorm - 0.5) / 0.5) * Math.PI;
         theta0 = 0;
         theta4 = Math.sin(subPhase) * maxTheta;
       }
 
-      // Update Ball 0 (Leftmost)
       const x0Rest = (0 - 2) * ballSpacing;
       cradleBalls[0].position.x = x0Rest + Math.sin(theta0) * stringLen;
       cradleBalls[0].position.y = -Math.cos(theta0) * stringLen;
 
-      // Middle Balls (1, 2, 3) stay stationary with subtle impact shudder
       const isImpact = Math.abs(tNorm - 0.5) < 0.04 || tNorm < 0.04 || tNorm > 0.96;
       for (let i = 1; i <= 3; i++) {
         const xRest = (i - 2) * ballSpacing;
@@ -770,24 +741,20 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
         cradleBalls[i].position.y = -stringLen + (isImpact ? Math.sin(time * 50) * 0.008 : 0);
       }
 
-      // Update Ball 4 (Rightmost)
       const x4Rest = (4 - 2) * ballSpacing;
       cradleBalls[4].position.x = x4Rest + Math.sin(theta4) * stringLen;
       cradleBalls[4].position.y = -Math.cos(theta4) * stringLen;
 
-      // Update wire suspension lines dynamically
       for (let i = 0; i < numBalls; i++) {
         const ballPos = cradleBalls[i].position;
         const xRest = (i - 2) * ballSpacing;
 
-        // Front wire (rail at z = -0.14)
         const frontWire = wireLines[i * 2];
         const fPos = frontWire.geometry.attributes.position.array as Float32Array;
         fPos[0] = xRest; fPos[1] = 0; fPos[2] = -0.14;
         fPos[3] = ballPos.x; fPos[4] = ballPos.y + ballR * 0.8; fPos[5] = 0;
         frontWire.geometry.attributes.position.needsUpdate = true;
 
-        // Back wire (rail at z = +0.14)
         const backWire = wireLines[i * 2 + 1];
         const bPos = backWire.geometry.attributes.position.array as Float32Array;
         bPos[0] = xRest; bPos[1] = 0; bPos[2] = 0.14;
@@ -799,7 +766,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
       if (ledTick % 4 === 0) {
         const mode = modeRef.current;
         if (mode === "matrix") {
-          // Matrix cascade: digital green streaming down the rack
           leftLeds.forEach((led, idx) => {
             const row = Math.floor(idx / 2);
             const isHead = ((Math.floor(time * 14) + row) % numRows) === 0;
@@ -815,7 +781,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
             );
           });
         } else if (mode === "visualizer") {
-          // Equalizer audio spectrum bouncing
           leftLeds.forEach((led, idx) => {
             const row = Math.floor(idx / 2);
             const freq = Math.sin(time * 9 + (idx % 2) * 2.5) * 0.5 + 0.5;
@@ -833,7 +798,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
             );
           });
         } else if (mode === "specs") {
-          // Golden Neofetch scan line
           leftLeds.forEach((led, idx) => {
             const row = Math.floor(idx / 2);
             const scan = Math.sin(time * 6 - row * 0.4) > 0.3;
@@ -845,7 +809,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
             (item.mesh.material as THREE.MeshBasicMaterial).color.setHex(item.baseColor);
           });
         } else {
-          // Terminal mode: High-traffic enterprise network activity
           leftLeds.forEach((led) => {
             const on = Math.random() > 0.35;
             (led.material as THREE.MeshBasicMaterial).color.setHex(
@@ -874,7 +837,6 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
 
     animId = requestAnimationFrame(animate);
 
-    // Responsive Resize Handler
     const handleResize = () => {
       if (!container) return;
       const w = container.clientWidth;

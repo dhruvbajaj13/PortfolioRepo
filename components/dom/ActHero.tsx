@@ -54,17 +54,6 @@ const Hero3DGeometricBackground = () => {
     icoMesh2.position.set(3.8, -0.2, -3);
     scene.add(icoMesh2);
 
-    // 3. Top-Right floating wireframe Torus — Neon Emerald (0x10b981)
-    const torusGeo = new THREE.TorusGeometry(1.1, 0.22, 8, 20);
-    const torusMat = new THREE.MeshBasicMaterial({
-      color: 0x10b981,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.16,
-    });
-    const torusMesh = new THREE.Mesh(torusGeo, torusMat);
-    torusMesh.position.set(2.4, 2.2, -2.5);
-    scene.add(torusMesh);
 
     // 4. Bottom-Left floating wireframe Octahedron — Warm Amber (0xf59e0b)
     const octGeo = new THREE.OctahedronGeometry(1.1, 0);
@@ -147,9 +136,6 @@ const Hero3DGeometricBackground = () => {
       icoMesh2.rotation.x -= 0.001;
       icoMesh2.position.y = -0.2 + Math.cos(clock * 0.7) * 0.08;
 
-      torusMesh.rotation.x += 0.003;
-      torusMesh.rotation.y += 0.004;
-
       octMesh.rotation.x -= 0.004;
       octMesh.rotation.y += 0.003;
 
@@ -185,8 +171,6 @@ const Hero3DGeometricBackground = () => {
       icoMat1.dispose();
       icoGeo2.dispose();
       icoMat2.dispose();
-      torusGeo.dispose();
-      torusMat.dispose();
       octGeo.dispose();
       octMat.dispose();
       dodecGeo.dispose();

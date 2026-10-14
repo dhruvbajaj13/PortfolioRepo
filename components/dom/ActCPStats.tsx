@@ -165,9 +165,6 @@ export function ActCPStats() {
             >
               Coding Stats
             </motion.h2>
-            <span className="font-mono text-xs text-white/40 tracking-wider">
-              [ 1100+ Solved · Knight 1951 · 3★ 1605 ]
-            </span>
           </div>
         </div>
 
@@ -195,7 +192,7 @@ export function ActCPStats() {
           })}
         </div>
 
-        {/* Full-Width Platform Details Container */}
+        {/* Full-Width Platform Details Container as macOS Window */}
         <AnimatePresence mode="wait">
           <motion.div
             key={active.id}
@@ -203,8 +200,32 @@ export function ActCPStats() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.35 }}
-            className="rounded-2xl border border-white/10 bg-[#0C0C0E]/95 p-4 sm:p-6 shadow-2xl flex flex-col gap-4"
+            className="rounded-2xl border border-white/12 bg-[#0C0C0E]/95 shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden backdrop-blur-2xl flex flex-col"
           >
+            {/* macOS Window Header Chrome */}
+            <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 bg-[#141418] border-b border-white/10 select-none shrink-0">
+              {/* Traffic Light Dots */}
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#FF5F57] shadow-[0_0_6px_rgba(255,95,87,0.6)]" />
+                <div className="w-3 h-3 rounded-full bg-[#FEBC2E] shadow-[0_0_6px_rgba(254,188,46,0.5)]" />
+                <div className="w-3 h-3 rounded-full bg-[#28C840] shadow-[0_0_6px_rgba(40,200,64,0.5)]" />
+              </div>
+
+              {/* Window Title */}
+              <div className="flex items-center gap-1.5 font-mono text-[11px] sm:text-xs text-white/60">
+                <span className="text-white/30">stats/</span>
+                <span className="text-white/90 font-medium">{active.id}.zsh</span>
+              </div>
+
+              {/* Window Status Badge */}
+              <div className="flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>ONLINE</span>
+              </div>
+            </div>
+
+            {/* Window Content Body */}
+            <div className="p-4 sm:p-6 flex flex-col gap-4">
             {/* Header: Platform Branding & Direct Profile Link Button */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-white/10">
               <div className="flex items-center gap-3">
@@ -287,6 +308,7 @@ export function ActCPStats() {
               </div>
             )}
 
+            </div>
           </motion.div>
         </AnimatePresence>
 
