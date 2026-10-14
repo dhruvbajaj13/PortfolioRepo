@@ -516,16 +516,6 @@ export function ActHero({
                 onModeChange={setScreenMode}
                 onDuckQuack={handleDuckQuack}
               />
-              
-              {/* Interaction Hints Pill */}
-              <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between font-mono text-[8px] sm:text-[8.5px] text-white/50 pointer-events-none select-none">
-                <span className="bg-black/75 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm">
-                  Drag 360° to Rotate · Click to Explore
-                </span>
-                <span className="bg-black/75 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm text-white">
-                  {screenMode.toUpperCase()}
-                </span>
-              </div>
             </div>
           </div>
         </motion.div>
