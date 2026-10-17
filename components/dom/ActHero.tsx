@@ -121,10 +121,17 @@ const Hero3DGeometricBackground = () => {
     };
     window.addEventListener("mousemove", onMouseMove, { passive: true });
 
+    let isVisible = true;
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { threshold: 0.05 });
+    observer.observe(container);
+
     let animId: number;
     let clock = 0;
     const animate = () => {
       animId = requestAnimationFrame(animate);
+      if (!isVisible) return;
       clock += 0.015;
 
       // Subtle rotation and gentle bobbing
@@ -163,6 +170,7 @@ const Hero3DGeometricBackground = () => {
     window.addEventListener("resize", handleResize);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", onMouseMove);
       cancelAnimationFrame(animId);

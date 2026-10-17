@@ -783,6 +783,12 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     };
 
     // ── 10. Locked 60-120FPS Animation Loop (Zero-GC, Zero Buffer uploads) ──
+    let isVisible = true;
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { threshold: 0.05 });
+    observer.observe(container);
+
     let animId: number;
     let time = 0;
     let knightHop = 0;
@@ -793,6 +799,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
+      if (!isVisible) return;
       time += 0.016;
       ledTick++;
 
@@ -967,6 +974,7 @@ export const HeroKnightTechScene3D: React.FC<HeroKnightTechScene3DProps> = ({
     window.addEventListener("resize", handleResize);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", handleResize);
       container.removeEventListener("pointerdown", onPointerDown);
       container.removeEventListener("pointermove", onPointerMove);
