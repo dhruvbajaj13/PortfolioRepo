@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Github, Linkedin, Mail, ArrowDown, ExternalLink, Download, Terminal, Code2, Cpu, Activity } from "lucide-react";
+import { motion } from "framer-motion";
+import { Github, Linkedin, Mail, ArrowDown, ExternalLink, Download } from "lucide-react";
 import * as THREE from "three";
 
 // ─── 1. Ultra-Lightweight 3D Geometric Spinning Wireframe & Particle Background ───
@@ -192,9 +192,8 @@ const Hero3DGeometricBackground = () => {
   return <div ref={mountRef} className="absolute inset-0 z-0 pointer-events-none opacity-80" />;
 };
 
-// ─── 2. Golden Knight & Tech Scene 3D (360° Turntable, Newton's Cradle, Dual Server Racks) ───
-import { HeroKnightTechScene3D, WorkstationScreenMode } from "./HeroKnightTechScene3D";
-export type { WorkstationScreenMode };
+// ─── 2. Cyberpunk Night Drive 3D Supercar Scene (Locked 60-120FPS) ───
+import { HeroCyberpunkCar3D } from "./HeroCyberpunkCar3D";
 
 // Roles for Typewriter Text Loop
 const ROLES = [
@@ -212,21 +211,6 @@ export function ActHero({
   setSelectedProject?: (proj: any) => void;
 }) {
   const RESUME_URL = "https://drive.google.com/file/d/1muHU96RCNS1iCxL6H6SonHjeL6nJlkrA/view";
-
-  const [screenMode, setScreenMode] = useState<WorkstationScreenMode>("terminal");
-  const [duckNotification, setDuckNotification] = useState<string | null>(null);
-
-  const handleDuckQuack = (customMsg?: string) => {
-    const quips = [
-      "Quack! 0 bugs in production! 🦆",
-      "Rubber Duck Debugging: Approved! 💻",
-      "LeetCode Knight vibes only! ⚔️",
-      "Quack! Clean code detected! ✨",
-    ];
-    const picked = customMsg || quips[Math.floor(Math.random() * quips.length)];
-    setDuckNotification(picked);
-    setTimeout(() => setDuckNotification(null), 2600);
-  };
 
   // Typewriter Loop Logic
   const [roleIndex, setRoleIndex] = useState(0);
@@ -427,103 +411,17 @@ export function ActHero({
 
         </div>
 
-        {/* Right Column: 3D Retro Developer Workstation Card (Zero Overlap & 60FPS) */}
+        {/* Right Column: 3D Cyberpunk Night Drive Supercar (Interactive & Locked 60FPS) */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4 }}
           className="w-full lg:w-[48%] flex flex-col items-center justify-center relative"
         >
-          {/* Duck Quack Notification Toast */}
-          <AnimatePresence>
-            {duckNotification && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="absolute -top-11 z-30 px-3.5 py-1.5 rounded-full bg-amber-400 text-black font-mono text-xs font-bold shadow-[0_0_20px_rgba(251,191,36,0.6)] flex items-center gap-1.5"
-              >
-                <span>{duckNotification}</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[480px] aspect-[4/3] rounded-3xl border border-white/15 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden backdrop-blur-2xl flex flex-col group/terminal">
-            
-            {/* Window Header Chrome with Interactive Mode Switcher */}
-            <div className="flex items-center justify-between px-3 sm:px-3.5 py-2 bg-[#141418] border-b border-white/10 shrink-0 select-none">
-              {/* Mac Traffic Lights */}
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_5px_rgba(255,95,87,0.5)]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_5px_rgba(254,188,46,0.4)]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_5px_rgba(40,200,64,0.4)]" />
-              </div>
-
-              {/* Mode Switcher Tabs */}
-              <div className="flex items-center gap-0.5 sm:gap-1 bg-black/50 p-0.5 rounded-lg border border-white/10">
-                <button
-                  onClick={() => setScreenMode("terminal")}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "terminal"
-                      ? "bg-white text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Terminal className="w-2.5 h-2.5" />
-                  <span>TERM</span>
-                </button>
-
-                <button
-                  onClick={() => setScreenMode("matrix")}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "matrix"
-                      ? "bg-emerald-500 text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Code2 className="w-2.5 h-2.5" />
-                  <span>MATRIX</span>
-                </button>
-
-                <button
-                  onClick={() => setScreenMode("specs")}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "specs"
-                      ? "bg-white text-black font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Cpu className="w-2.5 h-2.5" />
-                  <span>SPECS</span>
-                </button>
-
-                <button
-                  onClick={() => setScreenMode("visualizer")}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-medium transition-all flex items-center gap-1 ${
-                    screenMode === "visualizer"
-                      ? "bg-purple-500 text-white font-bold shadow-sm"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  <Activity className="w-2.5 h-2.5" />
-                  <span>EQ</span>
-                </button>
-              </div>
-
-              {/* Live Status Indicator */}
-              <span className="flex items-center gap-1 text-[8.5px] sm:text-[9px] font-mono text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                60FPS
-              </span>
-            </div>
-
+          <div className="relative w-full max-w-[360px] sm:max-w-[460px] lg:max-w-[530px] aspect-[16/11] sm:aspect-[4/3] rounded-3xl border border-white/15 hover:border-cyan-500/40 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.95)] hover:shadow-[0_25px_70px_rgba(255,0,128,0.22)] overflow-hidden backdrop-blur-2xl flex flex-col group/carcard transition-all duration-300">
             {/* 3D Canvas Viewport */}
             <div className="relative flex-1 w-full h-full overflow-hidden">
-              <HeroKnightTechScene3D
-                currentMode={screenMode}
-                onModeChange={setScreenMode}
-                onDuckQuack={handleDuckQuack}
-              />
+              <HeroCyberpunkCar3D />
             </div>
           </div>
         </motion.div>
