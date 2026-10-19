@@ -70,7 +70,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     setIsHovered(true);
     if (soundEnabled && audioContextRef.current && engineGainRef.current && engineOscRef.current) {
       const now = audioContextRef.current.currentTime;
-      const freq = boostStateRef.current ? 155 : 65;
+      const freq = boostStateRef.current ? 160 : 70;
       const vol = boostStateRef.current ? 0.08 : 0.04;
       engineOscRef.current.frequency.setTargetAtTime(freq, now, 0.25);
       engineGainRef.current.gain.setTargetAtTime(vol, now, 0.2);
@@ -96,10 +96,10 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     if (soundEnabled && audioContextRef.current && engineOscRef.current && engineGainRef.current) {
       const now = audioContextRef.current.currentTime;
       if (next) {
-        engineOscRef.current.frequency.setTargetAtTime(155, now, 0.2);
+        engineOscRef.current.frequency.setTargetAtTime(160, now, 0.2);
         engineGainRef.current.gain.setTargetAtTime(0.08, now, 0.15);
       } else {
-        engineOscRef.current.frequency.setTargetAtTime(65, now, 0.3);
+        engineOscRef.current.frequency.setTargetAtTime(70, now, 0.3);
         engineGainRef.current.gain.setTargetAtTime(0.04, now, 0.2);
       }
     }
@@ -114,11 +114,12 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
 
     // ── 1. WebGL Scene, Camera & Renderer ──
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x1a0628, 0.009);
+    // Soft atmospheric mist that doesn't black-out the city
+    scene.fog = new THREE.FogExp2(0x240b38, 0.007);
 
-    const camera = new THREE.PerspectiveCamera(54, width / height, 0.1, 300);
-    camera.position.set(0, 1.45, 3.85);
-    camera.lookAt(0, 0.72, -18);
+    const camera = new THREE.PerspectiveCamera(54, width / height, 0.1, 350);
+    camera.position.set(0, 1.48, 3.8);
+    camera.lookAt(0, 0.75, -16);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -129,53 +130,53 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.45;
-    renderer.setClearColor(0x180528, 1);
+    renderer.toneMappingExposure = 1.5;
+    renderer.setClearColor(0x220836, 1);
     container.appendChild(renderer.domElement);
 
-    // ── 2. Vivid Cyberpunk Lighting ──
-    scene.add(new THREE.AmbientLight(0x5a267a, 1.8));
+    // ── 2. Vivid Cyberpunk Lighting Setup ──
+    scene.add(new THREE.AmbientLight(0x7c3aed, 2.2)); // Rich purple ambient light
 
-    // Car Key Spotlight: Shines directly on the silver metallic body
-    const carKeyLight = new THREE.DirectionalLight(0xfff0ff, 2.8);
-    carKeyLight.position.set(0, 4.5, 4.0);
-    scene.add(carKeyLight);
+    // Key Spotlight directly illuminating the silver car chassis
+    const carSpotlight = new THREE.DirectionalLight(0xffffff, 3.2);
+    carSpotlight.position.set(0, 5.0, 3.5);
+    scene.add(carSpotlight);
 
-    const cityGlowLight = new THREE.DirectionalLight(0xff0088, 2.2);
-    cityGlowLight.position.set(0, 7.0, -25);
-    scene.add(cityGlowLight);
-
-    const leftStreetLight = new THREE.DirectionalLight(0x00f0ff, 2.0);
-    leftStreetLight.position.set(-8, 5, -5);
+    // Cyan Street Lighting from left
+    const leftStreetLight = new THREE.DirectionalLight(0x00f0ff, 2.5);
+    leftStreetLight.position.set(-10, 6, -5);
     scene.add(leftStreetLight);
 
-    const rightStreetLight = new THREE.DirectionalLight(0xff0066, 2.2);
-    rightStreetLight.position.set(8, 5, -5);
+    // Neon Magenta Street Lighting from right
+    const rightStreetLight = new THREE.DirectionalLight(0xff007f, 2.8);
+    rightStreetLight.position.set(10, 6, -5);
     scene.add(rightStreetLight);
 
-    const groundReflection = new THREE.PointLight(0xff0088, 3.5, 12);
-    groundReflection.position.set(0, 0.25, 2.2);
-    scene.add(groundReflection);
+    // Wet Asphalt Reflective Glow
+    const wetRoadGlow = new THREE.PointLight(0xff00aa, 3.5, 14);
+    wetRoadGlow.position.set(0, 0.2, 1.5);
+    scene.add(wetRoadGlow);
 
-    // ── 3. Cyberpunk Sky Dome / Horizon Backdrop ──
-    const skyGeo = new THREE.SphereGeometry(180, 24, 16);
+    // ── 3. High-Res Cyberpunk Sky Backdrop ──
+    const skyGeo = new THREE.SphereGeometry(220, 24, 16);
     const skyCanvas = document.createElement("canvas");
     skyCanvas.width = 512;
     skyCanvas.height = 512;
     const sCtx = skyCanvas.getContext("2d")!;
     const skyGrad = sCtx.createLinearGradient(0, 0, 0, 512);
-    skyGrad.addColorStop(0, "#080210");
-    skyGrad.addColorStop(0.35, "#180628");
-    skyGrad.addColorStop(0.65, "#3b0a48");
-    skyGrad.addColorStop(0.85, "#6a105c");
-    skyGrad.addColorStop(1.0, "#280738");
+    skyGrad.addColorStop(0, "#0b0314");
+    skyGrad.addColorStop(0.3, "#210738");
+    skyGrad.addColorStop(0.6, "#4a0e5c");
+    skyGrad.addColorStop(0.82, "#831872");
+    skyGrad.addColorStop(1.0, "#3c0b48");
     sCtx.fillStyle = skyGrad;
     sCtx.fillRect(0, 0, 512, 512);
 
-    for (let c = 0; c < 30; c++) {
-      sCtx.fillStyle = c % 2 === 0 ? "rgba(0, 240, 255, 0.12)" : "rgba(255, 0, 128, 0.15)";
+    // Neon haze clouds & city glow
+    for (let c = 0; c < 45; c++) {
+      sCtx.fillStyle = c % 2 === 0 ? "rgba(0, 240, 255, 0.16)" : "rgba(255, 0, 128, 0.18)";
       sCtx.beginPath();
-      sCtx.arc(Math.random() * 512, 280 + Math.random() * 120, 20 + Math.random() * 45, 0, Math.PI * 2);
+      sCtx.arc(Math.random() * 512, 260 + Math.random() * 140, 25 + Math.random() * 55, 0, Math.PI * 2);
       sCtx.fill();
     }
     const skyTex = new THREE.CanvasTexture(skyCanvas);
@@ -187,59 +188,125 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     const skyMesh = new THREE.Mesh(skyGeo, skyMat);
     scene.add(skyMesh);
 
-    // ── 4. Procedural Canvas Textures ──
+    // ── 4. Procedural Textures (Asphalt, Windows, Neon Signs, Bloom) ──
+
+    // A. Procedural Wet Asphalt Road Texture with Painted Lines
+    const createRoadTexture = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 512;
+      canvas.height = 1024;
+      const ctx = canvas.getContext("2d")!;
+
+      // Dark asphalt base
+      ctx.fillStyle = "#110e1a";
+      ctx.fillRect(0, 0, 512, 1024);
+
+      // Fine asphalt gravel noise
+      for (let i = 0; i < 4000; i++) {
+        const x = Math.random() * 512;
+        const y = Math.random() * 1024;
+        ctx.fillStyle = Math.random() > 0.5 ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.15)";
+        ctx.fillRect(x, y, 2, 2);
+      }
+
+      // Wet reflective puddles
+      for (let p = 0; p < 12; p++) {
+        const px = Math.random() * 400 + 50;
+        const py = Math.random() * 900 + 50;
+        const pGrad = ctx.createRadialGradient(px, py, 5, px, py, 60);
+        pGrad.addColorStop(0, "rgba(217, 70, 239, 0.2)");
+        pGrad.addColorStop(0.5, "rgba(0, 240, 255, 0.12)");
+        pGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = pGrad;
+        ctx.fillRect(px - 60, py - 60, 120, 120);
+      }
+
+      // Outer Road Boundary Stripes (Cyan on left, Pink on right)
+      ctx.fillStyle = "#00f0ff";
+      ctx.fillRect(36, 0, 10, 1024);
+      ctx.fillStyle = "#ff0077";
+      ctx.fillRect(466, 0, 10, 1024);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(1, 16);
+      return tex;
+    };
+
+    // B. Self-Illuminating Skyscraper Windows Texture
     const createBuildingTexture = (primaryColor: string, secondaryColor: string) => {
       const canvas = document.createElement("canvas");
       canvas.width = 256;
       canvas.height = 512;
       const ctx = canvas.getContext("2d")!;
-      ctx.fillStyle = "#0c0816";
+
+      // Deep cyber wall
+      ctx.fillStyle = "#1e1330";
       ctx.fillRect(0, 0, 256, 512);
 
+      // Vertical architectural structural lines
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+      ctx.lineWidth = 2;
+      for (let x = 0; x <= 256; x += 28) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 512);
+        ctx.stroke();
+      }
+
+      // Brightly lit windows
       const rows = 36;
-      const cols = 9;
-      const winW = 18;
-      const winH = 8;
+      const cols = 8;
+      const winW = 20;
+      const winH = 9;
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const rand = Math.random();
-          if (rand > 0.3) {
-            ctx.fillStyle = rand > 0.85 ? primaryColor : rand > 0.65 ? secondaryColor : rand > 0.45 ? "#fffae0" : "#00f0ff";
-            ctx.fillRect(14 + c * 26, 10 + r * 14, winW, winH);
+          if (rand > 0.22) {
+            ctx.fillStyle = rand > 0.8 ? primaryColor : rand > 0.55 ? secondaryColor : rand > 0.38 ? "#ffea00" : "#ffffff";
+            ctx.shadowColor = ctx.fillStyle;
+            ctx.shadowBlur = rand > 0.7 ? 8 : 0;
+            ctx.fillRect(16 + c * 28, 12 + r * 14, winW, winH);
           }
         }
       }
+
       const tex = new THREE.CanvasTexture(canvas);
       tex.wrapS = THREE.RepeatWrapping;
       tex.wrapT = THREE.RepeatWrapping;
       return tex;
     };
 
+    // C. Glowing Neon Billboard Textures (Anderson Mancini style)
     const createNeonSignTexture = (text: string, neonColor: string, borderCol: string, bgCol: string) => {
       const canvas = document.createElement("canvas");
-      canvas.width = 320;
-      canvas.height = 120;
+      canvas.width = 340;
+      canvas.height = 140;
       const ctx = canvas.getContext("2d")!;
       ctx.fillStyle = bgCol;
-      ctx.fillRect(0, 0, 320, 120);
+      ctx.fillRect(0, 0, 340, 140);
 
+      // Glowing border
       ctx.lineWidth = 6;
       ctx.strokeStyle = borderCol;
       ctx.shadowColor = borderCol;
-      ctx.shadowBlur = 16;
-      ctx.strokeRect(8, 8, 304, 104);
+      ctx.shadowBlur = 18;
+      ctx.strokeRect(10, 10, 320, 120);
 
+      // Glowing neon text
       ctx.fillStyle = neonColor;
-      ctx.font = "bold 56px 'Hiragino Sans', 'Noto Sans JP', 'Impact', sans-serif";
+      ctx.font = "bold 60px 'Hiragino Sans', 'Noto Sans JP', 'Impact', sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.shadowColor = neonColor;
-      ctx.shadowBlur = 24;
-      ctx.fillText(text, 160, 60);
+      ctx.shadowBlur = 28;
+      ctx.fillText(text, 170, 70);
 
       return new THREE.CanvasTexture(canvas);
     };
 
+    // D. Radial Bloom Flare Texture
     const createGlowTexture = (colorStop: string) => {
       const canvas = document.createElement("canvas");
       canvas.width = 128;
@@ -248,7 +315,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
       grad.addColorStop(0, "#ffffff");
       grad.addColorStop(0.25, colorStop);
-      grad.addColorStop(0.65, "rgba(255, 0, 128, 0.4)");
+      grad.addColorStop(0.65, "rgba(255, 0, 128, 0.45)");
       grad.addColorStop(1, "rgba(0, 0, 0, 0)");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 128, 128);
@@ -258,69 +325,186 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     const redBloomTex = createGlowTexture("#ff0044");
     const purpleBloomTex = createGlowTexture("#d946ef");
 
-    // ── 5. The Wet Multi-Lane Highway ──
+    // ── 5. The Racing Game Highway (Wet Asphalt + 3D Curbs + Gantries) ──
     const highwayGroup = new THREE.Group();
     scene.add(highwayGroup);
 
-    const groundGeo = new THREE.PlaneGeometry(60, 220, 1, 32);
-    const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x090712,
-      roughness: 0.16,
-      metalness: 0.88,
+    // Multi-Lane Road
+    const roadTex = createRoadTexture();
+    const roadGeo = new THREE.PlaneGeometry(16, 260, 1, 32);
+    const roadMat = new THREE.MeshStandardMaterial({
+      map: roadTex,
+      roughness: 0.15,
+      metalness: 0.85,
     });
-    const highway = new THREE.Mesh(groundGeo, groundMat);
+    const highway = new THREE.Mesh(roadGeo, roadMat);
     highway.rotation.x = -Math.PI / 2;
-    highway.position.set(0, 0, -60);
+    highway.position.set(0, 0, -80);
     highwayGroup.add(highway);
 
-    // Glowing Lane Markings
-    const laneDashCount = 32;
+    // Moving Dashed Center Line Markings
+    const laneDashCount = 36;
     const laneDashMeshes: THREE.Mesh[] = [];
-    const laneDashGeo = new THREE.PlaneGeometry(0.22, 3.2);
+    const laneDashGeo = new THREE.PlaneGeometry(0.25, 3.4);
     const laneDashMat = new THREE.MeshBasicMaterial({
       color: 0xff0066,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.95,
     });
 
     for (let i = 0; i < laneDashCount; i++) {
       const dash = new THREE.Mesh(laneDashGeo, laneDashMat);
       dash.rotation.x = -Math.PI / 2;
-      dash.position.set(0, 0.02, -i * 6.5);
+      dash.position.set(0, 0.025, -i * 6.5);
       highwayGroup.add(dash);
       laneDashMeshes.push(dash);
     }
 
+    // Secondary White/Cyan Lane Separators
     const sideDashMeshes: THREE.Mesh[] = [];
-    const sideDashMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.65 });
+    const sideDashMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.75 });
     for (let i = 0; i < laneDashCount; i++) {
       const leftDash = new THREE.Mesh(laneDashGeo, sideDashMat);
       leftDash.rotation.x = -Math.PI / 2;
-      leftDash.position.set(-3.2, 0.02, -i * 6.5);
+      leftDash.position.set(-3.5, 0.025, -i * 6.5);
       highwayGroup.add(leftDash);
       sideDashMeshes.push(leftDash);
 
       const rightDash = new THREE.Mesh(laneDashGeo, sideDashMat);
       rightDash.rotation.x = -Math.PI / 2;
-      rightDash.position.set(3.2, 0.02, -i * 6.5);
+      rightDash.position.set(3.5, 0.025, -i * 6.5);
       highwayGroup.add(rightDash);
       sideDashMeshes.push(rightDash);
     }
 
-    // Glowing Barrier Guardrails
-    const barrierGeo = new THREE.BoxGeometry(0.25, 0.45, 220);
-    const leftBarrierMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
-    const rightBarrierMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
+    // 3D Sidewalk Curbs with Racing Checkered Stripes (Red & White / Yellow & Black)
+    const curbGeo = new THREE.BoxGeometry(0.55, 0.22, 260);
+    const curbCanvas = document.createElement("canvas");
+    curbCanvas.width = 64;
+    curbCanvas.height = 128;
+    const cCtx = curbCanvas.getContext("2d")!;
+    cCtx.fillStyle = "#ff0055";
+    cCtx.fillRect(0, 0, 64, 64);
+    cCtx.fillStyle = "#ffffff";
+    cCtx.fillRect(0, 64, 64, 64);
+    const curbTex = new THREE.CanvasTexture(curbCanvas);
+    curbTex.wrapS = THREE.RepeatWrapping;
+    curbTex.wrapT = THREE.RepeatWrapping;
+    curbTex.repeat.set(1, 40);
 
-    const leftBarrier = new THREE.Mesh(barrierGeo, leftBarrierMat);
-    leftBarrier.position.set(-6.8, 0.22, -60);
-    highwayGroup.add(leftBarrier);
+    const curbMat = new THREE.MeshBasicMaterial({ map: curbTex });
+    const leftCurb = new THREE.Mesh(curbGeo, curbMat);
+    leftCurb.position.set(-8.2, 0.11, -80);
+    highwayGroup.add(leftCurb);
 
-    const rightBarrier = new THREE.Mesh(barrierGeo, rightBarrierMat);
-    rightBarrier.position.set(6.8, 0.22, -60);
-    highwayGroup.add(rightBarrier);
+    const rightCurb = new THREE.Mesh(curbGeo, curbMat);
+    rightCurb.position.set(8.2, 0.11, -80);
+    highwayGroup.add(rightCurb);
 
-    // ── 6. DENSE Cyberpunk City Skyline Flanking Highway ──
+    // Glowing Guardrail Barriers
+    const guardrailGeo = new THREE.BoxGeometry(0.18, 0.45, 260);
+    const leftGuardrail = new THREE.Mesh(guardrailGeo, new THREE.MeshBasicMaterial({ color: 0x00f0ff }));
+    leftGuardrail.position.set(-8.5, 0.35, -80);
+    highwayGroup.add(leftGuardrail);
+
+    const rightGuardrail = new THREE.Mesh(guardrailGeo, new THREE.MeshBasicMaterial({ color: 0xff0077 }));
+    rightGuardrail.position.set(8.5, 0.35, -80);
+    highwayGroup.add(rightGuardrail);
+
+    // ── 6. Overhead Highway Sign Gantries (Spanning Across Road Every 55 Units) ──
+    const gantryGroup = new THREE.Group();
+    scene.add(gantryGroup);
+
+    interface GantryItem {
+      group: THREE.Group;
+      baseZ: number;
+    }
+    const gantries: GantryItem[] = [];
+
+    const createGantry = (z: number, signText: string, signCol: string) => {
+      const g = new THREE.Group();
+
+      // Steel truss arch
+      const postGeo = new THREE.BoxGeometry(0.35, 6.5, 0.35);
+      const postMat = new THREE.MeshStandardMaterial({ color: 0x242432, metalness: 0.9, roughness: 0.2 });
+
+      const leftPost = new THREE.Mesh(postGeo, postMat);
+      leftPost.position.set(-8.4, 3.25, 0);
+      g.add(leftPost);
+
+      const rightPost = new THREE.Mesh(postGeo, postMat);
+      rightPost.position.set(8.4, 3.25, 0);
+      g.add(rightPost);
+
+      // Top cross beam
+      const beamGeo = new THREE.BoxGeometry(17.2, 0.4, 0.4);
+      const beam = new THREE.Mesh(beamGeo, postMat);
+      beam.position.set(0, 6.2, 0);
+      g.add(beam);
+
+      // Electronic Green/Cyan Overhead Highway Sign
+      const signTex = createNeonSignTexture(signText, signCol, "#ffffff", "#040d14");
+      const signGeo = new THREE.PlaneGeometry(6.5, 1.8);
+      const signMat = new THREE.MeshBasicMaterial({ map: signTex, side: THREE.DoubleSide });
+      const signMesh = new THREE.Mesh(signGeo, signMat);
+      signMesh.position.set(0, 5.0, 0.1);
+      g.add(signMesh);
+
+      // Bottom glowing cyan tube on gantry
+      const tubeGeo = new THREE.BoxGeometry(16.8, 0.08, 0.08);
+      const tube = new THREE.Mesh(tubeGeo, new THREE.MeshBasicMaterial({ color: 0x00f0ff }));
+      tube.position.set(0, 4.0, 0);
+      g.add(tube);
+
+      g.position.set(0, 0, z);
+      gantryGroup.add(g);
+      return { group: g, baseZ: z };
+    };
+
+    gantries.push(createGantry(-45, "TOKYO EXPY · 渋谷", "#00f0ff"));
+    gantries.push(createGantry(-110, "SPEED LIMIT 280 · 速度", "#ffea00"));
+    gantries.push(createGantry(-175, "NEO CITY · 次の出口", "#ff0077"));
+
+    // ── 7. Street Light Poles with Glowing Lamps Lining Highway ──
+    const streetLightGroup = new THREE.Group();
+    scene.add(streetLightGroup);
+
+    interface LampItem {
+      group: THREE.Group;
+      baseZ: number;
+    }
+    const lamps: LampItem[] = [];
+
+    for (let l = 0; l < 18; l++) {
+      const isLeft = l % 2 === 0;
+      const z = -l * 14;
+      const lg = new THREE.Group();
+
+      const poleGeo = new THREE.CylinderGeometry(0.08, 0.1, 5.5, 8);
+      const poleMat = new THREE.MeshStandardMaterial({ color: 0x282c38, metalness: 0.8, roughness: 0.3 });
+      const pole = new THREE.Mesh(poleGeo, poleMat);
+      pole.position.set(isLeft ? -8.6 : 8.6, 2.75, 0);
+      lg.add(pole);
+
+      // Curved Lamp Arm extending over road
+      const armGeo = new THREE.BoxGeometry(1.6, 0.08, 0.08);
+      const arm = new THREE.Mesh(armGeo, poleMat);
+      arm.position.set(isLeft ? -7.8 : 7.8, 5.4, 0);
+      lg.add(arm);
+
+      // Glowing Lamp Bulb
+      const bulbGeo = new THREE.SphereGeometry(0.22, 12, 12);
+      const bulbMat = new THREE.MeshBasicMaterial({ color: isLeft ? 0x00f0ff : 0xffaa00 });
+      const bulb = new THREE.Mesh(bulbGeo, bulbMat);
+      bulb.position.set(isLeft ? -7.1 : 7.1, 5.3, 0);
+      lg.add(bulb);
+
+      lg.position.set(0, 0, z);
+      streetLightGroup.add(lg);
+      lamps.push({ group: lg, baseZ: z });
+    }
+
+    // ── 8. DENSE Cyberpunk City Skyscrapers Flanking Highway (No Darkness!) ──
     const cityGroup = new THREE.Group();
     scene.add(cityGroup);
 
@@ -332,29 +516,33 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
 
     const bldgPalette = [
       { p: "#ff0088", s: "#ffea00" },
-      { p: "#00f0ff", s: "#a855f7" },
+      { p: "#00f0ff", s: "#d946ef" },
       { p: "#f43f5e", s: "#38bdf8" },
-      { p: "#eab308", s: "#ec4899" },
+      { p: "#eab308", s: "#a855f7" },
     ];
 
-    const totalBuildings = 48;
+    const totalBuildings = 54;
     for (let i = 0; i < totalBuildings; i++) {
       const isLeft = i % 2 === 0;
       const side = isLeft ? -1 : 1;
-      const x = side * (7.6 + Math.random() * 7.5);
-      const z = -((i * 4.2) % 190);
-      const bldgW = 4.2 + Math.random() * 3.8;
-      const bldgH = 16 + Math.random() * 32;
-      const bldgD = 4.5 + Math.random() * 4.0;
+      const x = side * (8.8 + Math.random() * 7.5);
+      const z = -((i * 4.6) % 240);
+      const bldgW = 4.8 + Math.random() * 3.8;
+      const bldgH = 20 + Math.random() * 38;
+      const bldgD = 5.0 + Math.random() * 4.2;
 
       const pal = bldgPalette[i % bldgPalette.length];
       const tex = createBuildingTexture(pal.p, pal.s);
 
+      // Self-illuminated emissive material so buildings are NEVER dark or black!
       const mat = new THREE.MeshStandardMaterial({
-        color: 0x140e22,
+        color: 0xffffff,
         map: tex,
-        metalness: 0.7,
-        roughness: 0.35,
+        emissive: 0xffffff,
+        emissiveMap: tex,
+        emissiveIntensity: 0.65,
+        metalness: 0.6,
+        roughness: 0.3,
       });
 
       const geo = new THREE.BoxGeometry(bldgW, bldgH, bldgD);
@@ -363,7 +551,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       cityGroup.add(mesh);
       buildings.push({ mesh, baseZ: z });
 
-      // Add Giant Glowing Neon Billboards
+      // Add Giant Glowing Neon Billboards directly facing the street
       if (i % 2 === 0) {
         let signText = "BAR";
         let signBorder = "#00f0ff";
@@ -371,7 +559,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         let signBg = "#00121a";
 
         if (i % 6 === 0) {
-          signText = "どこかに";
+          signText = "どこかに"; // Exact Japanese sign from user photo!
           signBorder = "#ff0044";
           signNeon = "#ffe600";
           signBg = "#1a0008";
@@ -381,14 +569,14 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
           signNeon = "#ff00aa";
           signBg = "#14000b";
         } else if (i % 3 === 0) {
-          signText = "HOTEL";
-          signBorder = "#a855f7";
-          signNeon = "#e879f9";
-          signBg = "#0e0216";
+          signText = "RAMEN";
+          signBorder = "#ffaa00";
+          signNeon = "#fff066";
+          signBg = "#160b00";
         }
 
         const signTex = createNeonSignTexture(signText, signNeon, signBorder, signBg);
-        const signGeo = new THREE.PlaneGeometry(4.2, 1.6);
+        const signGeo = new THREE.PlaneGeometry(4.8, 1.8);
         const signMat = new THREE.MeshBasicMaterial({
           map: signTex,
           transparent: true,
@@ -397,240 +585,239 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         const signMesh = new THREE.Mesh(signGeo, signMat);
 
         signMesh.position.set(
-          x + (isLeft ? bldgW / 2 + 0.08 : -bldgW / 2 - 0.08),
-          4.5 + (i % 5) * 2.5,
-          z + 1.0
+          x + (isLeft ? bldgW / 2 + 0.12 : -bldgW / 2 - 0.12),
+          5.0 + (i % 5) * 3.0,
+          z + 1.2
         );
         signMesh.rotation.y = isLeft ? Math.PI / 2 : -Math.PI / 2;
         cityGroup.add(signMesh);
 
-        // Horizontal Neon Tubes
-        const tubeGeo = new THREE.BoxGeometry(0.12, 0.12, bldgD + 2);
-        const tubeMat = new THREE.MeshBasicMaterial({
-          color: isLeft ? 0x00f0ff : 0xff0066,
-        });
-        const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
-        tubeMesh.position.set(
-          x + (isLeft ? bldgW / 2 + 0.15 : -bldgW / 2 - 0.15),
-          3.0 + (i % 4) * 3,
-          z
+        // Vertical Neon Light Column running up the whole height of the skyscraper!
+        const colGeo = new THREE.BoxGeometry(0.18, bldgH, 0.18);
+        const colMat = new THREE.MeshBasicMaterial({ color: isLeft ? 0x00f0ff : 0xff0066 });
+        const colMesh = new THREE.Mesh(colGeo, colMat);
+        colMesh.position.set(
+          x + (isLeft ? bldgW / 2 + 0.08 : -bldgW / 2 - 0.08),
+          bldgH / 2,
+          z + bldgD / 2
         );
-        cityGroup.add(tubeMesh);
+        cityGroup.add(colMesh);
       }
     }
 
-    // ── 7. High-Speed Motion Blur Light Streaks ──
-    const streakCount = 65;
+    // ── 9. High-Speed Motion Blur Neon Streaks ──
+    const streakCount = 75;
     const streakMeshes: { mesh: THREE.Mesh; speedMult: number; baseLen: number }[] = [];
     const streakColors = [0xff0066, 0x00f0ff, 0xffea00, 0xa855f7, 0xff3366, 0xffffff];
 
     for (let i = 0; i < streakCount; i++) {
-      const streakLen = 4.0 + Math.random() * 8.0;
-      const streakGeo = new THREE.BoxGeometry(0.06, 0.06, streakLen);
+      const streakLen = 4.5 + Math.random() * 8.5;
+      const streakGeo = new THREE.BoxGeometry(0.07, 0.07, streakLen);
       const col = streakColors[i % streakColors.length];
       const streakMat = new THREE.MeshBasicMaterial({
         color: col,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.9,
       });
       const streak = new THREE.Mesh(streakGeo, streakMat);
 
       const side = Math.random() > 0.5 ? 1 : -1;
-      const x = side * (4.2 + Math.random() * 6.5);
-      const y = 0.35 + Math.random() * 3.8;
-      const z = -Math.random() * 140;
+      const x = side * (3.8 + Math.random() * 6.8);
+      const y = 0.35 + Math.random() * 4.2;
+      const z = -Math.random() * 160;
       streak.position.set(x, y, z);
 
       scene.add(streak);
       streakMeshes.push({ mesh: streak, speedMult: 0.85 + Math.random() * 0.45, baseLen: streakLen });
     }
 
-    // ── 8. Detailed Cyberpunk Supercar ──
+    // ── 10. Crystal-Clear Silver Cyberpunk Supercar ──
     const carRoot = new THREE.Group();
-    carRoot.position.set(0, 0.46, 0);
+    carRoot.position.set(0, 0.48, 0);
     scene.add(carRoot);
 
+    // Brilliant Gleaming Metallic Silver Chassis
     const bodySilverMat = new THREE.MeshStandardMaterial({
-      color: 0xced4de,
-      metalness: 0.92,
-      roughness: 0.18,
+      color: 0xf0f4f8, // Gleaming platinum silver
+      metalness: 0.95,
+      roughness: 0.12,
     });
 
     const bodyDarkCarbonMat = new THREE.MeshStandardMaterial({
-      color: 0x181a20,
+      color: 0x14161c,
       metalness: 0.95,
-      roughness: 0.3,
+      roughness: 0.25,
     });
 
     const cockpitGlassMat = new THREE.MeshStandardMaterial({
-      color: 0x08101a,
+      color: 0x060e18,
       metalness: 0.98,
-      roughness: 0.05,
+      roughness: 0.04,
     });
 
-    // A. Main Lower Wide Body Wedge
-    const mainBodyGeo = new THREE.BoxGeometry(2.05, 0.36, 3.9);
+    // Lower Wide Body Wedge
+    const mainBodyGeo = new THREE.BoxGeometry(2.1, 0.38, 3.95);
     const mainBody = new THREE.Mesh(mainBodyGeo, bodySilverMat);
     mainBody.position.set(0, 0, 0);
     carRoot.add(mainBody);
 
-    // B. Slanted Hood Front Wedge
-    const frontHoodGeo = new THREE.BoxGeometry(1.85, 0.22, 1.3);
+    // Front Hood Wedge
+    const frontHoodGeo = new THREE.BoxGeometry(1.9, 0.22, 1.35);
     const frontHood = new THREE.Mesh(frontHoodGeo, bodySilverMat);
-    frontHood.position.set(0, -0.05, -1.65);
-    frontHood.rotation.x = 0.13;
+    frontHood.position.set(0, -0.05, -1.68);
+    frontHood.rotation.x = 0.14;
     carRoot.add(frontHood);
 
-    // C. Wide Flared Rear Fenders
-    const flareGeo = new THREE.BoxGeometry(0.28, 0.42, 1.85);
+    // Wide Flared Rear Hips
+    const flareGeo = new THREE.BoxGeometry(0.3, 0.44, 1.9);
     const leftFlare = new THREE.Mesh(flareGeo, bodySilverMat);
-    leftFlare.position.set(-1.06, 0.03, 0.72);
+    leftFlare.position.set(-1.08, 0.03, 0.74);
     carRoot.add(leftFlare);
 
     const rightFlare = new THREE.Mesh(flareGeo, bodySilverMat);
-    rightFlare.position.set(1.06, 0.03, 0.72);
+    rightFlare.position.set(1.08, 0.03, 0.74);
     carRoot.add(rightFlare);
 
-    // D. Cockpit Canopy & Rear Glass
-    const cockpitGeo = new THREE.BoxGeometry(1.36, 0.42, 1.8);
+    // Cockpit Canopy
+    const cockpitGeo = new THREE.BoxGeometry(1.38, 0.44, 1.85);
     const cockpit = new THREE.Mesh(cockpitGeo, cockpitGlassMat);
-    cockpit.position.set(0, 0.34, -0.15);
+    cockpit.position.set(0, 0.35, -0.15);
     carRoot.add(cockpit);
 
-    // E. Amber/Yellow Dual Engine Vents
+    // Yellow Heat Vents on Rear Deck Lid (Exact from reference image!)
     const ventMat = new THREE.MeshStandardMaterial({
-      color: 0xffb700,
+      color: 0xffbb00,
       metalness: 0.5,
-      roughness: 0.2,
-      emissive: 0xffa200,
-      emissiveIntensity: 0.5,
+      roughness: 0.15,
+      emissive: 0xff9900,
+      emissiveIntensity: 0.65,
     });
-    const ventGeo = new THREE.BoxGeometry(0.32, 0.06, 0.55);
+    const ventGeo = new THREE.BoxGeometry(0.34, 0.07, 0.58);
 
     const leftVent = new THREE.Mesh(ventGeo, ventMat);
-    leftVent.position.set(-0.42, 0.23, 0.95);
+    leftVent.position.set(-0.44, 0.24, 0.98);
     leftVent.rotation.x = -0.14;
     carRoot.add(leftVent);
 
     const rightVent = new THREE.Mesh(ventGeo, ventMat);
-    rightVent.position.set(0.42, 0.23, 0.95);
+    rightVent.position.set(0.44, 0.24, 0.98);
     rightVent.rotation.x = -0.14;
     carRoot.add(rightVent);
 
-    // F. Twin Roof Antenna Rods
-    const antennaMat = new THREE.MeshBasicMaterial({ color: 0xe2e8f0 });
-    const antennaGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.75, 8);
+    // Twin Roof Antenna Needles
+    const antennaMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const antennaGeo = new THREE.CylinderGeometry(0.016, 0.016, 0.8, 8);
     antennaGeo.rotateX(0.35);
 
     const leftAntenna = new THREE.Mesh(antennaGeo, antennaMat);
-    leftAntenna.position.set(-0.25, 0.65, 0.5);
+    leftAntenna.position.set(-0.26, 0.68, 0.52);
     carRoot.add(leftAntenna);
 
     const rightAntenna = new THREE.Mesh(antennaGeo, antennaMat);
-    rightAntenna.position.set(0.25, 0.65, 0.5);
+    rightAntenna.position.set(0.26, 0.68, 0.52);
     carRoot.add(rightAntenna);
 
-    // G. Rear Deck Louvers
+    // Rear Deck Louvers
     for (let l = 0; l < 4; l++) {
-      const louverGeo = new THREE.BoxGeometry(1.22, 0.035, 0.16);
+      const louverGeo = new THREE.BoxGeometry(1.24, 0.038, 0.16);
       const louver = new THREE.Mesh(louverGeo, bodyDarkCarbonMat);
-      louver.position.set(0, 0.29 - l * 0.05, 0.8 + l * 0.24);
+      louver.position.set(0, 0.3 - l * 0.05, 0.82 + l * 0.24);
       louver.rotation.x = -0.16;
       carRoot.add(louver);
     }
 
-    // H. Aerodynamic Rear Wing / Spoiler
-    const spoilerBladeGeo = new THREE.BoxGeometry(2.1, 0.05, 0.42);
+    // Rear Spoiler Wing
+    const spoilerBladeGeo = new THREE.BoxGeometry(2.15, 0.05, 0.44);
     const spoilerBlade = new THREE.Mesh(spoilerBladeGeo, bodyDarkCarbonMat);
-    spoilerBlade.position.set(0, 0.48, 1.88);
+    spoilerBlade.position.set(0, 0.5, 1.9);
     carRoot.add(spoilerBlade);
 
-    const strutGeo = new THREE.BoxGeometry(0.04, 0.26, 0.24);
+    const strutGeo = new THREE.BoxGeometry(0.045, 0.28, 0.26);
     const leftStrut = new THREE.Mesh(strutGeo, bodyDarkCarbonMat);
-    leftStrut.position.set(-0.68, 0.34, 1.86);
+    leftStrut.position.set(-0.7, 0.35, 1.88);
     carRoot.add(leftStrut);
 
     const rightStrut = new THREE.Mesh(strutGeo, bodyDarkCarbonMat);
-    rightStrut.position.set(0.68, 0.34, 1.86);
+    rightStrut.position.set(0.7, 0.35, 1.88);
     carRoot.add(rightStrut);
 
-    // I. Luminous Rear Tech Badge
+    // "AURORA / TURBO R" Badge
     const badgeMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
-    const badgeGeo = new THREE.PlaneGeometry(0.75, 0.1);
+    const badgeGeo = new THREE.PlaneGeometry(0.8, 0.12);
     const badgeMesh = new THREE.Mesh(badgeGeo, badgeMat);
-    badgeMesh.position.set(0, 0.23, 1.96);
+    badgeMesh.position.set(0, 0.24, 1.98);
     carRoot.add(badgeMesh);
 
-    // J. Glowing Red/Magenta LED Light Bar
-    const tailBarGeo = new THREE.BoxGeometry(1.92, 0.085, 0.08);
+    // LED Taillight Bar (Vibrant Neon Red/Magenta with Wrap-Around)
+    const tailBarGeo = new THREE.BoxGeometry(1.96, 0.09, 0.09);
     const tailBarMat = new THREE.MeshBasicMaterial({ color: 0xff0044 });
     const tailBar = new THREE.Mesh(tailBarGeo, tailBarMat);
-    tailBar.position.set(0, 0.14, 1.96);
+    tailBar.position.set(0, 0.14, 1.98);
     carRoot.add(tailBar);
 
-    const lowerBarGeo = new THREE.BoxGeometry(1.78, 0.03, 0.06);
+    const lowerBarGeo = new THREE.BoxGeometry(1.82, 0.035, 0.07);
     const lowerBarMat = new THREE.MeshBasicMaterial({ color: 0xff0077 });
     const lowerBar = new THREE.Mesh(lowerBarGeo, lowerBarMat);
-    lowerBar.position.set(0, 0.04, 1.96);
+    lowerBar.position.set(0, 0.04, 1.98);
     carRoot.add(lowerBar);
 
-    // Taillight Bloom Flare
-    const tailBloomGeo = new THREE.PlaneGeometry(3.2, 1.1);
+    // Taillight Halo Bloom Flare
+    const tailBloomGeo = new THREE.PlaneGeometry(3.4, 1.2);
     const tailBloomMat = new THREE.MeshBasicMaterial({
       map: redBloomTex,
       transparent: true,
       blending: THREE.AdditiveBlending,
-      opacity: 0.95,
+      opacity: 0.98,
       depthWrite: false,
     });
     const tailBloom = new THREE.Mesh(tailBloomGeo, tailBloomMat);
-    tailBloom.position.set(0, 0.14, 2.0);
+    tailBloom.position.set(0, 0.14, 2.02);
     carRoot.add(tailBloom);
 
-    // K. Dual Exhaust Thrusters & Plasma Flames
+    // Dual Rocket Exhaust Nozzles & Plasma Flames
     const exhaustGroup = new THREE.Group();
     carRoot.add(exhaustGroup);
 
-    const exhaustNozzleGeo = new THREE.CylinderGeometry(0.14, 0.16, 0.24, 16);
+    const exhaustNozzleGeo = new THREE.CylinderGeometry(0.15, 0.17, 0.25, 16);
     exhaustNozzleGeo.rotateX(Math.PI / 2);
     const exhaustNozzleMat = new THREE.MeshStandardMaterial({
-      color: 0x111114,
+      color: 0x111116,
       metalness: 0.95,
       roughness: 0.1,
     });
 
     const leftNozzle = new THREE.Mesh(exhaustNozzleGeo, exhaustNozzleMat);
-    leftNozzle.position.set(-0.52, -0.06, 1.94);
+    leftNozzle.position.set(-0.54, -0.06, 1.96);
     exhaustGroup.add(leftNozzle);
 
     const rightNozzle = new THREE.Mesh(exhaustNozzleGeo, exhaustNozzleMat);
-    rightNozzle.position.set(0.52, -0.06, 1.94);
+    rightNozzle.position.set(0.54, -0.06, 1.96);
     exhaustGroup.add(rightNozzle);
 
-    // Roaring Plasma Flame Cones
-    const flameGeo = new THREE.ConeGeometry(0.22, 2.8, 16);
+    // Plasma Flame Cones
+    const flameGeo = new THREE.ConeGeometry(0.24, 2.9, 16);
     flameGeo.rotateX(-Math.PI / 2);
-    flameGeo.translate(0, 0, 1.4);
+    flameGeo.translate(0, 0, 1.45);
 
     const flameMat = new THREE.MeshBasicMaterial({
       color: 0xd946ef,
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.94,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
 
     const leftFlame = new THREE.Mesh(flameGeo, flameMat);
-    leftFlame.position.set(-0.52, -0.06, 2.02);
+    leftFlame.position.set(-0.54, -0.06, 2.05);
     exhaustGroup.add(leftFlame);
 
     const rightFlame = new THREE.Mesh(flameGeo, flameMat);
-    rightFlame.position.set(0.52, -0.06, 2.02);
+    rightFlame.position.set(0.54, -0.06, 2.05);
     exhaustGroup.add(rightFlame);
 
-    const innerFlameGeo = new THREE.ConeGeometry(0.1, 2.2, 16);
+    const innerFlameGeo = new THREE.ConeGeometry(0.11, 2.3, 16);
     innerFlameGeo.rotateX(-Math.PI / 2);
-    innerFlameGeo.translate(0, 0, 1.1);
+    innerFlameGeo.translate(0, 0, 1.15);
     const innerFlameMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
@@ -640,15 +827,15 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     });
 
     const leftInnerFlame = new THREE.Mesh(innerFlameGeo, innerFlameMat);
-    leftInnerFlame.position.set(-0.52, -0.06, 2.02);
+    leftInnerFlame.position.set(-0.54, -0.06, 2.05);
     exhaustGroup.add(leftInnerFlame);
 
     const rightInnerFlame = new THREE.Mesh(innerFlameGeo, innerFlameMat);
-    rightInnerFlame.position.set(0.52, -0.06, 2.02);
+    rightInnerFlame.position.set(0.54, -0.06, 2.05);
     exhaustGroup.add(rightInnerFlame);
 
-    // Road Ground Plasma Glow Flares
-    const groundFlameGeo = new THREE.PlaneGeometry(1.8, 4.2);
+    // Ground Road Plasma Glow Flares
+    const groundFlameGeo = new THREE.PlaneGeometry(1.9, 4.4);
     groundFlameGeo.rotateX(-Math.PI / 2);
     const groundFlameMat = new THREE.MeshBasicMaterial({
       map: purpleBloomTex,
@@ -659,33 +846,29 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     });
 
     const leftGroundGlow = new THREE.Mesh(groundFlameGeo, groundFlameMat);
-    leftGroundGlow.position.set(-0.52, 0.03, 3.4);
+    leftGroundGlow.position.set(-0.54, 0.035, 3.5);
     scene.add(leftGroundGlow);
 
     const rightGroundGlow = new THREE.Mesh(groundFlameGeo, groundFlameMat);
-    rightGroundGlow.position.set(0.52, 0.03, 3.4);
+    rightGroundGlow.position.set(0.54, 0.035, 3.5);
     scene.add(rightGroundGlow);
 
-    // L. Wheels
+    // Wheels
     const wheelGroup = new THREE.Group();
     carRoot.add(wheelGroup);
 
-    const tireGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.34, 20);
+    const tireGeo = new THREE.CylinderGeometry(0.36, 0.36, 0.35, 20);
     tireGeo.rotateZ(Math.PI / 2);
-    const tireMat = new THREE.MeshStandardMaterial({
-      color: 0x09090b,
-      roughness: 0.8,
-      metalness: 0.2,
-    });
+    const tireMat = new THREE.MeshStandardMaterial({ color: 0x09090c, roughness: 0.8, metalness: 0.2 });
 
-    const rimGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.35, 16);
+    const rimGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.36, 16);
     rimGeo.rotateZ(Math.PI / 2);
     const rimMat = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
       metalness: 0.9,
       roughness: 0.15,
       emissive: 0x00f0ff,
-      emissiveIntensity: 0.45,
+      emissiveIntensity: 0.5,
     });
 
     const createWheel = (x: number, y: number, z: number) => {
@@ -699,35 +882,34 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       return g;
     };
 
-    const wheelFL = createWheel(-1.05, -0.12, -1.35);
-    const wheelFR = createWheel(1.05, -0.12, -1.35);
-    const wheelRL = createWheel(-1.08, -0.12, 1.35);
-    const wheelRR = createWheel(1.08, -0.12, 1.35);
+    const wheelFL = createWheel(-1.08, -0.12, -1.38);
+    const wheelFR = createWheel(1.08, -0.12, -1.38);
+    const wheelRL = createWheel(-1.1, -0.12, 1.38);
+    const wheelRR = createWheel(1.1, -0.12, 1.38);
     const wheels = [wheelFL, wheelFR, wheelRL, wheelRR];
 
-    // ── 9. Interactive Mouse Steering (Active ONLY When Hovered Inside Car Section) ──
+    // ── 11. Mouse Steering (Active ONLY When Hovered) ──
     let targetCarX = 0;
     let targetCarRotY = 0;
     let targetCarRoll = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!isHoveredRef.current) {
-        // Re-center if not hovered
         targetCarX = 0;
         targetCarRotY = 0;
         targetCarRoll = 0;
         return;
       }
       const rect = container.getBoundingClientRect();
-      const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1; // -1 to 1
-      targetCarX = normX * 2.4;
-      targetCarRotY = -normX * 0.14;
+      const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      targetCarX = normX * 2.5;
+      targetCarRotY = -normX * 0.15;
       targetCarRoll = normX * 0.09;
     };
 
     container.addEventListener("mousemove", handleMouseMove, { passive: true });
 
-    // ── 10. Locked 60-120FPS Animation Loop (Runs ONLY when hovered, stops when cursor leaves) ──
+    // ── 12. Locked 60-120FPS Animation Loop (Runs on Hover, Stops on Leave) ──
     let animId: number;
     let isVisible = true;
     let clock = 0;
@@ -744,23 +926,21 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
 
       clock += 0.016;
 
-      // Target Speed is 0 when cursor is outside the car card!
-      // When inside, cruises at 115 KM/H or boosts at 295 KM/H!
+      // Speed Target (0 when mouse is outside window, 120 or 295 when hovered inside)
       const targetSpeed = isHoveredRef.current
-        ? (boostStateRef.current ? 295 : 115)
+        ? (boostStateRef.current ? 295 : 120)
         : 0;
 
       speed += (targetSpeed - speed) * 0.085;
 
-      // Update React UI Speedometer state
       if (Math.round(clock * 60) % 4 === 0) {
         setCurrentSpeed(Math.round(speed));
       }
 
-      const speedFactor = speed / 115;
+      const speedFactor = speed / 120;
 
-      // Move Lane Markings (Stops when speed = 0)
-      const dashMove = 0.44 * speedFactor;
+      // Move Lane Markings
+      const dashMove = 0.46 * speedFactor;
       laneDashMeshes.forEach((dash) => {
         dash.position.z += dashMove;
         if (dash.position.z > 8) {
@@ -774,74 +954,90 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         }
       });
 
-      // Move Buildings (Stops when speed = 0)
-      const bldgMove = 0.54 * speedFactor;
+      // Move Road Surface Texture repeat offset for realistic wet highway motion
+      roadTex.offset.y -= 0.045 * speedFactor;
+
+      // Move Buildings
+      const bldgMove = 0.55 * speedFactor;
       buildings.forEach((item) => {
         item.mesh.position.z += bldgMove;
         if (item.mesh.position.z > 24) {
-          item.mesh.position.z -= 190;
+          item.mesh.position.z -= 240;
         }
       });
 
-      // Move Speed Light Streaks (Stops when speed = 0)
+      // Move Overhead Gantries
+      gantries.forEach((item) => {
+        item.group.position.z += bldgMove;
+        if (item.group.position.z > 20) {
+          item.group.position.z -= 195;
+        }
+      });
+
+      // Move Streetlight Lamps
+      lamps.forEach((item) => {
+        item.group.position.z += bldgMove;
+        if (item.group.position.z > 18) {
+          item.group.position.z -= 252;
+        }
+      });
+
+      // Move Speed Light Streaks
       streakMeshes.forEach((item) => {
-        item.mesh.position.z += 0.88 * speedFactor * item.speedMult;
+        item.mesh.position.z += 0.9 * speedFactor * item.speedMult;
         if (item.mesh.position.z > 14) {
-          item.mesh.position.z = -140 - Math.random() * 25;
+          item.mesh.position.z = -160 - Math.random() * 25;
         }
         const boostStretch = boostStateRef.current && isHoveredRef.current ? 2.8 : 1.0;
         item.mesh.scale.z = boostStretch;
-        (item.mesh.material as THREE.MeshBasicMaterial).opacity = isHoveredRef.current ? 0.85 : 0.25;
+        (item.mesh.material as THREE.MeshBasicMaterial).opacity = isHoveredRef.current ? 0.9 : 0.25;
       });
 
-      // Rotate Wheels (Stops when speed = 0)
-      const wheelRotSpeed = 0.52 * speedFactor;
+      // Rotate Wheels
+      const wheelRotSpeed = 0.55 * speedFactor;
       wheels.forEach((w) => {
         w.rotation.x += wheelRotSpeed;
       });
 
-      // Steer Front Wheels
       wheelFL.rotation.y = targetCarRotY * 1.6;
       wheelFR.rotation.y = targetCarRotY * 1.6;
 
-      // Smooth Car Physics & Re-centering
+      // Smooth Car Physics
       carRoot.position.x += (targetCarX - carRoot.position.x) * 0.09;
       carRoot.rotation.y += (targetCarRotY - carRoot.rotation.y) * 0.09;
       carRoot.rotation.z += (targetCarRoll - carRoot.rotation.z) * 0.09;
 
-      // Engine Rumble Vibration (Active only while running)
+      // Engine Rumble Vibration
       const rumble = speed > 5 ? Math.sin(clock * 48) * (boostStateRef.current ? 0.024 : 0.009) : 0;
-      carRoot.position.y = 0.46 + rumble;
+      carRoot.position.y = 0.48 + rumble;
 
       // Acceleration Squat
-      const targetSquat = speed > 5 ? (boostStateRef.current ? -0.05 : -0.018) : 0;
+      const targetSquat = speed > 5 ? (boostStateRef.current ? -0.052 : -0.02) : 0;
       carRoot.rotation.x += (targetSquat - carRoot.rotation.x) * 0.1;
 
-      // Dual Exhaust Plasma Flames (Extinguishes/shrinks when stopped, roars when running!)
+      // Dual Exhaust Plasma Flames
       const flamePulse = Math.sin(clock * 65) * 0.18;
       const boostFlameLen = isHoveredRef.current
-        ? (boostStateRef.current ? 2.9 + flamePulse : 1.1 + flamePulse * 0.5)
-        : (speed > 5 ? (speed / 115) * 0.5 : 0.001);
+        ? (boostStateRef.current ? 3.0 + flamePulse : 1.2 + flamePulse * 0.5)
+        : (speed > 5 ? (speed / 120) * 0.5 : 0.001);
 
       leftFlame.scale.set(1.0, 1.0, boostFlameLen);
       rightFlame.scale.set(1.0, 1.0, boostFlameLen);
       leftInnerFlame.scale.set(1.0, 1.0, boostFlameLen * 0.88);
       rightInnerFlame.scale.set(1.0, 1.0, boostFlameLen * 0.88);
 
-      // Follow car ground flame reflections
-      leftGroundGlow.position.x = carRoot.position.x - 0.52;
-      rightGroundGlow.position.x = carRoot.position.x + 0.52;
+      leftGroundGlow.position.x = carRoot.position.x - 0.54;
+      rightGroundGlow.position.x = carRoot.position.x + 0.54;
       const groundGlowOpacity = isHoveredRef.current
-        ? (boostStateRef.current ? 0.98 : 0.6)
-        : (speed > 5 ? (speed / 115) * 0.3 : 0);
+        ? (boostStateRef.current ? 0.98 : 0.65)
+        : (speed > 5 ? (speed / 120) * 0.35 : 0);
       groundFlameMat.opacity = groundGlowOpacity;
 
-      // Dynamic Camera Reaction to Acceleration & Braking
-      const targetCamZ = isHoveredRef.current && boostStateRef.current ? 4.5 : 3.85;
+      // Camera Dynamics
+      const targetCamZ = isHoveredRef.current && boostStateRef.current ? 4.5 : 3.8;
       camera.position.z += (targetCamZ - camera.position.z) * 0.07;
       camera.position.x += (carRoot.position.x * 0.32 - camera.position.x) * 0.09;
 
-      // Render Scene
       renderer.render(scene, camera);
     };
 
