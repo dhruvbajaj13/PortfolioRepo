@@ -418,7 +418,7 @@ export function ActHero({
           transition={{ duration: 1, delay: 0.4 }}
           className="w-full lg:w-[48%] flex flex-col items-center justify-center relative"
         >
-          <div className="relative w-full max-w-[360px] sm:max-w-[460px] lg:max-w-[530px] aspect-[16/11] sm:aspect-[4/3] rounded-3xl border border-white/15 hover:border-cyan-500/40 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.95)] hover:shadow-[0_25px_70px_rgba(255,0,128,0.22)] overflow-hidden backdrop-blur-2xl flex flex-col group/carcard transition-all duration-300">
+          <div className="relative w-full max-w-[380px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/10] rounded-3xl border border-white/15 hover:border-cyan-500/40 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.95)] hover:shadow-[0_25px_70px_rgba(255,0,128,0.22)] overflow-hidden backdrop-blur-2xl flex flex-col group/carcard transition-all duration-300">
             {/* 3D Canvas Viewport */}
             <div className="relative flex-1 w-full h-full overflow-hidden">
               <HeroCyberpunkCar3D />
