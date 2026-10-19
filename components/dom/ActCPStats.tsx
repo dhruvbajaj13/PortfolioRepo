@@ -179,10 +179,10 @@ export function ActCPStats() {
                 key={plat.id}
                 type="button"
                 onClick={() => setActiveIdx(i)}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-sans transition-all duration-300 shrink-0 border ${
+                className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-sans transition-all duration-300 shrink-0 border hover:-translate-y-0.5 active:scale-95 ${
                   isSelected
-                    ? 'bg-white text-black font-bold border-white shadow-[0_0_16px_rgba(255,255,255,0.35)] scale-105'
-                    : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/[0.06]'
+                    ? 'bg-white text-black font-bold border-white shadow-[0_0_18px_rgba(255,255,255,0.35)] scale-105'
+                    : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-cyan-500/30 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
                 <Logo color={isSelected ? '#000' : iconColor} />
@@ -192,61 +192,43 @@ export function ActCPStats() {
           })}
         </div>
 
-        {/* Full-Width Platform Details Container as macOS Window */}
+        {/* Full-Width Platform Details Container with Hover Translate */}
         <AnimatePresence mode="wait">
           <motion.div
             key={active.id}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.35 }}
-            className="rounded-2xl border border-white/12 bg-[#0C0C0E]/95 shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden backdrop-blur-2xl flex flex-col"
+            transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+            className="group relative rounded-3xl border border-white/10 bg-[#0A0A0E]/95 p-5 sm:p-7 md:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col gap-5 hover:-translate-y-1.5 hover:border-cyan-500/35 hover:shadow-[0_25px_65px_rgba(0,240,255,0.08)] transition-all duration-300 overflow-hidden"
           >
-            {/* macOS Window Header Chrome */}
-            <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 bg-[#141418] border-b border-white/10 select-none shrink-0">
-              {/* Traffic Light Dots */}
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#FF5F57] shadow-[0_0_6px_rgba(255,95,87,0.6)]" />
-                <div className="w-3 h-3 rounded-full bg-[#FEBC2E] shadow-[0_0_6px_rgba(254,188,46,0.5)]" />
-                <div className="w-3 h-3 rounded-full bg-[#28C840] shadow-[0_0_6px_rgba(40,200,64,0.5)]" />
-              </div>
+            {/* Subtle Ambient Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/10 transition-colors duration-500" />
 
-              {/* Window Title */}
-              <div className="flex items-center gap-1.5 font-mono text-[11px] sm:text-xs text-white/60">
-                <span className="text-white/30">stats/</span>
-                <span className="text-white/90 font-medium">{active.id}.zsh</span>
-              </div>
-
-              {/* Window Status Badge */}
-              <div className="flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>ONLINE</span>
-              </div>
-            </div>
-
-            {/* Window Content Body */}
-            <div className="p-4 sm:p-6 flex flex-col gap-4">
             {/* Header: Platform Branding & Direct Profile Link Button */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-white/10">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10 relative z-10">
+              <div className="flex items-center gap-3.5">
                 <div
-                  className="w-10 h-10 rounded-xl border border-white/15 bg-white/5 flex items-center justify-center"
+                  className="w-11 h-11 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform"
                   style={{ color: PLATFORM_ICON_COLORS[active.id] }}
                 >
                   <active.Logo color={PLATFORM_ICON_COLORS[active.id]} />
                 </div>
                 <div>
-                  <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight">
-                    {active.name}
-                  </h3>
-                  <p className="text-white/50 text-[10px] font-mono tracking-wider uppercase mt-0.5">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight group-hover:text-cyan-50 transition-colors">
+                      {active.name}
+                    </h3>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981] animate-pulse" />
+                  </div>
+                  <p className="text-white/50 text-[10.5px] font-mono tracking-wider uppercase mt-0.5">
                     {active.tagline}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2.5">
-                <span className="text-[10px] font-bold font-mono px-3 py-1 rounded-full border border-white/20 bg-white/10 text-white shadow-sm">
+                <span className="text-[10px] font-bold font-mono px-3 py-1 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-cyan-300 shadow-sm">
                   {active.badge}
                 </span>
 
@@ -254,61 +236,60 @@ export function ActCPStats() {
                   href={active.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg border border-white/15 bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:scale-105 transition-all shadow-md"
+                  className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl border border-white/15 bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:bg-cyan-400 hover:scale-105 hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] transition-all shadow-md group/btn"
                 >
                   <span>Profile</span>
-                  <ArrowUpRight className="w-3 h-3" />
+                  <ArrowUpRight className="w-3 h-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                 </a>
               </div>
             </div>
 
-            {/* Stats Row — compact */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            {/* Stats Row — interactive cards */}
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 relative z-10">
               {active.stats.map((s) => (
                 <div
                   key={s.label}
-                  className="flex flex-col gap-0.5 p-2.5 rounded-xl border border-white/8 bg-white/[0.02] text-center hover:border-white/25 transition-colors"
+                  className="flex flex-col gap-1 p-3 sm:p-3.5 rounded-2xl border border-white/8 bg-white/[0.02] text-center hover:border-cyan-400/30 hover:bg-white/[0.05] hover:-translate-y-1 transition-all duration-200 cursor-default group/stat shadow-sm"
                 >
-                  <span className="font-display font-black text-xl sm:text-2xl text-white tracking-tight">
+                  <span className="font-display font-black text-xl sm:text-3xl text-white tracking-tight group-hover/stat:text-cyan-300 transition-colors">
                     <AnimatedCounter target={s.value} />
                   </span>
-                  <span className="font-mono text-[9px] tracking-widest text-white/50 uppercase">
+                  <span className="font-mono text-[9px] sm:text-[10px] tracking-widest text-white/50 uppercase group-hover/stat:text-white/80 transition-colors">
                     {s.label}
                   </span>
                 </div>
               ))}
             </div>
 
-            {/* Platform Graph Images - Compact & Balanced */}
+            {/* Platform Graph Images - Compact & Balanced with Hover Translate */}
             {active.graphs.length > 0 && (
               <div
                 className={`grid grid-cols-1 ${
                   active.graphs.length > 1
-                    ? 'sm:grid-cols-2 gap-3'
+                    ? 'sm:grid-cols-2 gap-3.5'
                     : 'max-w-2xl mx-auto w-full'
-                } pt-1`}
+                } pt-1 relative z-10`}
               >
                 {active.graphs.map((g) => (
                   <div
                     key={g.src}
-                    className="rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0c] p-2 sm:p-2.5 flex items-center justify-center hover:border-white/25 transition-all group"
+                    className="rounded-2xl overflow-hidden border border-white/10 bg-[#08080a] p-2.5 sm:p-3 flex items-center justify-center hover:border-cyan-500/30 hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(0,240,255,0.08)] transition-all duration-300 group/graph"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={g.src}
                       alt={g.alt}
-                      className={`w-auto max-w-full rounded-lg object-contain ${
+                      className={`w-auto max-w-full rounded-xl object-contain ${
                         active.graphs.length > 1
                           ? 'max-h-[175px] sm:max-h-[200px]'
                           : 'max-h-[230px] sm:max-h-[270px]'
-                      } group-hover:scale-[1.01] transition-transform duration-300`}
+                      } group-hover/graph:scale-[1.015] transition-transform duration-300`}
                     />
                   </div>
                 ))}
               </div>
             )}
 
-            </div>
           </motion.div>
         </AnimatePresence>
 
