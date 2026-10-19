@@ -10,17 +10,18 @@ export interface HeroCyberpunkCar3DProps {
 
 export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ className = "" }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
   const [isBoosting, setIsBoosting] = useState(false);
-  const [currentSpeed, setCurrentSpeed] = useState(90);
+  const [currentSpeed, setCurrentSpeed] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(false);
 
+  const isHoveredRef = useRef(false);
   const boostStateRef = useRef(false);
-  const targetSpeedRef = useRef(90);
   const audioContextRef = useRef<AudioContext | null>(null);
   const engineGainRef = useRef<GainNode | null>(null);
   const engineOscRef = useRef<OscillatorNode | null>(null);
 
-  // Synthesize futuristic cyberpunk turbo engine audio via Web Audio API (Zero external assets)
+  // Synthesize futuristic cyberpunk turbo engine audio via Web Audio API
   const initAudio = useCallback(() => {
     if (audioContextRef.current) return;
     try {
@@ -33,12 +34,12 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       const filter = ctx.createBiquadFilter();
 
       osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(60, ctx.currentTime);
+      osc.frequency.setValueAtTime(55, ctx.currentTime);
 
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(380, ctx.currentTime);
+      filter.frequency.setValueAtTime(360, ctx.currentTime);
 
-      gain.gain.setValueAtTime(soundEnabled ? 0.04 : 0, ctx.currentTime);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
 
       osc.connect(filter);
       filter.connect(gain);
@@ -50,7 +51,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     } catch {
       // Audio autoplay blocked or not supported
     }
-  }, [soundEnabled]);
+  }, []);
 
   const toggleSound = () => {
     const next = !soundEnabled;
@@ -59,24 +60,47 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       initAudio();
     }
     if (engineGainRef.current && audioContextRef.current) {
-      engineGainRef.current.gain.setTargetAtTime(next ? 0.04 : 0, audioContextRef.current.currentTime, 0.1);
+      const targetVol = next && isHoveredRef.current ? (boostStateRef.current ? 0.08 : 0.04) : 0;
+      engineGainRef.current.gain.setTargetAtTime(targetVol, audioContextRef.current.currentTime, 0.1);
+    }
+  };
+
+  const handlePointerEnter = () => {
+    isHoveredRef.current = true;
+    setIsHovered(true);
+    if (soundEnabled && audioContextRef.current && engineGainRef.current && engineOscRef.current) {
+      const now = audioContextRef.current.currentTime;
+      const freq = boostStateRef.current ? 155 : 65;
+      const vol = boostStateRef.current ? 0.08 : 0.04;
+      engineOscRef.current.frequency.setTargetAtTime(freq, now, 0.25);
+      engineGainRef.current.gain.setTargetAtTime(vol, now, 0.2);
+    }
+  };
+
+  const handlePointerLeave = () => {
+    isHoveredRef.current = false;
+    setIsHovered(false);
+    if (soundEnabled && audioContextRef.current && engineGainRef.current && engineOscRef.current) {
+      const now = audioContextRef.current.currentTime;
+      engineGainRef.current.gain.setTargetAtTime(0, now, 0.4);
+      engineOscRef.current.frequency.setTargetAtTime(45, now, 0.4);
     }
   };
 
   const handleBoostToggle = () => {
+    if (!isHoveredRef.current) return;
     const next = !boostStateRef.current;
     boostStateRef.current = next;
     setIsBoosting(next);
-    targetSpeedRef.current = next ? 295 : 90;
 
     if (soundEnabled && audioContextRef.current && engineOscRef.current && engineGainRef.current) {
       const now = audioContextRef.current.currentTime;
       if (next) {
-        engineOscRef.current.frequency.setTargetAtTime(155, now, 0.25);
+        engineOscRef.current.frequency.setTargetAtTime(155, now, 0.2);
         engineGainRef.current.gain.setTargetAtTime(0.08, now, 0.15);
       } else {
-        engineOscRef.current.frequency.setTargetAtTime(60, now, 0.35);
-        engineGainRef.current.gain.setTargetAtTime(0.04, now, 0.25);
+        engineOscRef.current.frequency.setTargetAtTime(65, now, 0.3);
+        engineGainRef.current.gain.setTargetAtTime(0.04, now, 0.2);
       }
     }
   };
@@ -90,11 +114,9 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
 
     // ── 1. WebGL Scene, Camera & Renderer ──
     const scene = new THREE.Scene();
-    // Atmospheric Cyberpunk Violet Mist (Soft density so buildings & lights remain sharp and vivid)
     scene.fog = new THREE.FogExp2(0x1a0628, 0.009);
 
     const camera = new THREE.PerspectiveCamera(54, width / height, 0.1, 300);
-    // Positioned closer and slightly higher for prominent view of the car body and highway
     camera.position.set(0, 1.45, 3.85);
     camera.lookAt(0, 0.72, -18);
 
@@ -111,31 +133,26 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     renderer.setClearColor(0x180528, 1);
     container.appendChild(renderer.domElement);
 
-    // ── 2. Vivid Cyberpunk Lighting (Ensures Car is Clearly Visible!) ──
-    // Ambient light - warm violet/magenta
+    // ── 2. Vivid Cyberpunk Lighting ──
     scene.add(new THREE.AmbientLight(0x5a267a, 1.8));
 
-    // Car Key Spotlight: Shines directly on the car from above/behind to illuminate the silver metallic body!
+    // Car Key Spotlight: Shines directly on the silver metallic body
     const carKeyLight = new THREE.DirectionalLight(0xfff0ff, 2.8);
     carKeyLight.position.set(0, 4.5, 4.0);
     scene.add(carKeyLight);
 
-    // Front/Horizon City Glow Light
     const cityGlowLight = new THREE.DirectionalLight(0xff0088, 2.2);
     cityGlowLight.position.set(0, 7.0, -25);
     scene.add(cityGlowLight);
 
-    // Left Streetlight (Cyan)
     const leftStreetLight = new THREE.DirectionalLight(0x00f0ff, 2.0);
     leftStreetLight.position.set(-8, 5, -5);
     scene.add(leftStreetLight);
 
-    // Right Streetlight (Neon Magenta & Amber)
     const rightStreetLight = new THREE.DirectionalLight(0xff0066, 2.2);
     rightStreetLight.position.set(8, 5, -5);
     scene.add(rightStreetLight);
 
-    // Ground Wet Reflection Point Light
     const groundReflection = new THREE.PointLight(0xff0088, 3.5, 12);
     groundReflection.position.set(0, 0.25, 2.2);
     scene.add(groundReflection);
@@ -155,7 +172,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     sCtx.fillStyle = skyGrad;
     sCtx.fillRect(0, 0, 512, 512);
 
-    // Add faint distant city lights & neon clouds
     for (let c = 0; c < 30; c++) {
       sCtx.fillStyle = c % 2 === 0 ? "rgba(0, 240, 255, 0.12)" : "rgba(255, 0, 128, 0.15)";
       sCtx.beginPath();
@@ -172,7 +188,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     scene.add(skyMesh);
 
     // ── 4. Procedural Canvas Textures ──
-    // Building Window Grid Texture (High density of glowing neon windows)
     const createBuildingTexture = (primaryColor: string, secondaryColor: string) => {
       const canvas = document.createElement("canvas");
       canvas.width = 256;
@@ -200,7 +215,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       return tex;
     };
 
-    // Neon Signs: Japanese "どこかに", "BAR", "XXX", "CYBER" (Exact match to reference photo!)
     const createNeonSignTexture = (text: string, neonColor: string, borderCol: string, bgCol: string) => {
       const canvas = document.createElement("canvas");
       canvas.width = 320;
@@ -209,14 +223,12 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       ctx.fillStyle = bgCol;
       ctx.fillRect(0, 0, 320, 120);
 
-      // Neon glowing border
       ctx.lineWidth = 6;
       ctx.strokeStyle = borderCol;
       ctx.shadowColor = borderCol;
       ctx.shadowBlur = 16;
       ctx.strokeRect(8, 8, 304, 104);
 
-      // Neon glowing text
       ctx.fillStyle = neonColor;
       ctx.font = "bold 56px 'Hiragino Sans', 'Noto Sans JP', 'Impact', sans-serif";
       ctx.textAlign = "center";
@@ -228,7 +240,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       return new THREE.CanvasTexture(canvas);
     };
 
-    // Radial Bloom Flare Texture for Taillights & Exhaust
     const createGlowTexture = (colorStop: string) => {
       const canvas = document.createElement("canvas");
       canvas.width = 128;
@@ -247,15 +258,14 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     const redBloomTex = createGlowTexture("#ff0044");
     const purpleBloomTex = createGlowTexture("#d946ef");
 
-    // ── 5. The Wet Multi-Lane Highway (Spans edge-to-edge, zero black voids) ──
+    // ── 5. The Wet Multi-Lane Highway ──
     const highwayGroup = new THREE.Group();
     scene.add(highwayGroup);
 
-    // Wide ground plane covering all visible space
     const groundGeo = new THREE.PlaneGeometry(60, 220, 1, 32);
     const groundMat = new THREE.MeshStandardMaterial({
       color: 0x090712,
-      roughness: 0.16, // Highly reflective wet road
+      roughness: 0.16,
       metalness: 0.88,
     });
     const highway = new THREE.Mesh(groundGeo, groundMat);
@@ -281,7 +291,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       laneDashMeshes.push(dash);
     }
 
-    // Side Lane White/Cyan Glowing Dash Lines
     const sideDashMeshes: THREE.Mesh[] = [];
     const sideDashMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.65 });
     for (let i = 0; i < laneDashCount; i++) {
@@ -298,7 +307,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       sideDashMeshes.push(rightDash);
     }
 
-    // Glowing Highway Barrier Guardrails
+    // Glowing Barrier Guardrails
     const barrierGeo = new THREE.BoxGeometry(0.25, 0.45, 220);
     const leftBarrierMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
     const rightBarrierMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
@@ -311,7 +320,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     rightBarrier.position.set(6.8, 0.22, -60);
     highwayGroup.add(rightBarrier);
 
-    // ── 6. DENSE Cyberpunk City Skyline Directly Flanking Highway (No Empty Black Voids!) ──
+    // ── 6. DENSE Cyberpunk City Skyline Flanking Highway ──
     const cityGroup = new THREE.Group();
     scene.add(cityGroup);
 
@@ -321,7 +330,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     }
     const buildings: CityBuilding[] = [];
 
-    // Left and Right Building Rows situated close to the highway (`x = ±7.5 to ±16`)
     const bldgPalette = [
       { p: "#ff0088", s: "#ffea00" },
       { p: "#00f0ff", s: "#a855f7" },
@@ -355,7 +363,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       cityGroup.add(mesh);
       buildings.push({ mesh, baseZ: z });
 
-      // Add Giant Glowing Neon Billboards & Signs (BAR, どこかに, XXX, CYBER)
+      // Add Giant Glowing Neon Billboards
       if (i % 2 === 0) {
         let signText = "BAR";
         let signBorder = "#00f0ff";
@@ -363,7 +371,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         let signBg = "#00121a";
 
         if (i % 6 === 0) {
-          signText = "どこかに"; // Exact Japanese sign from reference image!
+          signText = "どこかに";
           signBorder = "#ff0044";
           signNeon = "#ffe600";
           signBg = "#1a0008";
@@ -388,7 +396,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         });
         const signMesh = new THREE.Mesh(signGeo, signMat);
 
-        // Mount billboard on the facade facing the street
         signMesh.position.set(
           x + (isLeft ? bldgW / 2 + 0.08 : -bldgW / 2 - 0.08),
           4.5 + (i % 5) * 2.5,
@@ -397,7 +404,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         signMesh.rotation.y = isLeft ? Math.PI / 2 : -Math.PI / 2;
         cityGroup.add(signMesh);
 
-        // Horizontal Glowing Neon Tubes running along the buildings (Just like the cyan/pink bars in image!)
+        // Horizontal Neon Tubes
         const tubeGeo = new THREE.BoxGeometry(0.12, 0.12, bldgD + 2);
         const tubeMat = new THREE.MeshBasicMaterial({
           color: isLeft ? 0x00f0ff : 0xff0066,
@@ -412,7 +419,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       }
     }
 
-    // ── 7. High-Speed Motion Blur Light Streaks on Left & Right ──
+    // ── 7. High-Speed Motion Blur Light Streaks ──
     const streakCount = 65;
     const streakMeshes: { mesh: THREE.Mesh; speedMult: number; baseLen: number }[] = [];
     const streakColors = [0xff0066, 0x00f0ff, 0xffea00, 0xa855f7, 0xff3366, 0xffffff];
@@ -438,20 +445,19 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       streakMeshes.push({ mesh: streak, speedMult: 0.85 + Math.random() * 0.45, baseLen: streakLen });
     }
 
-    // ── 8. Detailed, Highly Visible Cyberpunk Supercar (Exact Image Match!) ──
+    // ── 8. Detailed Cyberpunk Supercar ──
     const carRoot = new THREE.Group();
     carRoot.position.set(0, 0.46, 0);
     scene.add(carRoot);
 
-    // Highly reflective Metallic Silver/Platinum Body (Matches image, clearly visible against dark road!)
     const bodySilverMat = new THREE.MeshStandardMaterial({
-      color: 0xced4de, // Crisp metallic silver/platinum
+      color: 0xced4de,
       metalness: 0.92,
       roughness: 0.18,
     });
 
     const bodyDarkCarbonMat = new THREE.MeshStandardMaterial({
-      color: 0x181a20, // Contrast dark carbon accents
+      color: 0x181a20,
       metalness: 0.95,
       roughness: 0.3,
     });
@@ -475,7 +481,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     frontHood.rotation.x = 0.13;
     carRoot.add(frontHood);
 
-    // C. Wide Flared Rear Fenders / Hips (Aggressive supercar shoulders)
+    // C. Wide Flared Rear Fenders
     const flareGeo = new THREE.BoxGeometry(0.28, 0.42, 1.85);
     const leftFlare = new THREE.Mesh(flareGeo, bodySilverMat);
     leftFlare.position.set(-1.06, 0.03, 0.72);
@@ -491,9 +497,9 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     cockpit.position.set(0, 0.34, -0.15);
     carRoot.add(cockpit);
 
-    // E. Signature Amber/Yellow Dual Engine Vents on Rear Deck (Exact from reference image!)
+    // E. Amber/Yellow Dual Engine Vents
     const ventMat = new THREE.MeshStandardMaterial({
-      color: 0xffb700, // Bright Cyberpunk Yellow
+      color: 0xffb700,
       metalness: 0.5,
       roughness: 0.2,
       emissive: 0xffa200,
@@ -511,10 +517,10 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     rightVent.rotation.x = -0.14;
     carRoot.add(rightVent);
 
-    // F. Twin Roof Antenna Rods (Exact from reference image!)
+    // F. Twin Roof Antenna Rods
     const antennaMat = new THREE.MeshBasicMaterial({ color: 0xe2e8f0 });
     const antennaGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.75, 8);
-    antennaGeo.rotateX(0.35); // Angled backward
+    antennaGeo.rotateX(0.35);
 
     const leftAntenna = new THREE.Mesh(antennaGeo, antennaMat);
     leftAntenna.position.set(-0.25, 0.65, 0.5);
@@ -524,7 +530,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     rightAntenna.position.set(0.25, 0.65, 0.5);
     carRoot.add(rightAntenna);
 
-    // G. Rear Deck Aerodynamic Louvers
+    // G. Rear Deck Louvers
     for (let l = 0; l < 4; l++) {
       const louverGeo = new THREE.BoxGeometry(1.22, 0.035, 0.16);
       const louver = new THREE.Mesh(louverGeo, bodyDarkCarbonMat);
@@ -539,7 +545,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     spoilerBlade.position.set(0, 0.48, 1.88);
     carRoot.add(spoilerBlade);
 
-    // Spoiler Struts
     const strutGeo = new THREE.BoxGeometry(0.04, 0.26, 0.24);
     const leftStrut = new THREE.Mesh(strutGeo, bodyDarkCarbonMat);
     leftStrut.position.set(-0.68, 0.34, 1.86);
@@ -549,28 +554,27 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     rightStrut.position.set(0.68, 0.34, 1.86);
     carRoot.add(rightStrut);
 
-    // I. Luminous Rear Tech Badge "AURORA / TURBO R" (Exact from image!)
+    // I. Luminous Rear Tech Badge
     const badgeMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
     const badgeGeo = new THREE.PlaneGeometry(0.75, 0.1);
     const badgeMesh = new THREE.Mesh(badgeGeo, badgeMat);
     badgeMesh.position.set(0, 0.23, 1.96);
     carRoot.add(badgeMesh);
 
-    // J. Signature Continuous Glowing Red/Magenta LED Light Bar (Exact image match!)
+    // J. Glowing Red/Magenta LED Light Bar
     const tailBarGeo = new THREE.BoxGeometry(1.92, 0.085, 0.08);
     const tailBarMat = new THREE.MeshBasicMaterial({ color: 0xff0044 });
     const tailBar = new THREE.Mesh(tailBarGeo, tailBarMat);
     tailBar.position.set(0, 0.14, 1.96);
     carRoot.add(tailBar);
 
-    // Secondary Lower Accent Light
     const lowerBarGeo = new THREE.BoxGeometry(1.78, 0.03, 0.06);
     const lowerBarMat = new THREE.MeshBasicMaterial({ color: 0xff0077 });
     const lowerBar = new THREE.Mesh(lowerBarGeo, lowerBarMat);
     lowerBar.position.set(0, 0.04, 1.96);
     carRoot.add(lowerBar);
 
-    // Taillight Radial Bloom Halo Sprite
+    // Taillight Bloom Flare
     const tailBloomGeo = new THREE.PlaneGeometry(3.2, 1.1);
     const tailBloomMat = new THREE.MeshBasicMaterial({
       map: redBloomTex,
@@ -583,7 +587,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     tailBloom.position.set(0, 0.14, 2.0);
     carRoot.add(tailBloom);
 
-    // K. Dual Rocket Exhaust Thrusters & Massive Glowing Purple Plasma Flames!
+    // K. Dual Exhaust Thrusters & Plasma Flames
     const exhaustGroup = new THREE.Group();
     carRoot.add(exhaustGroup);
 
@@ -603,13 +607,13 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     rightNozzle.position.set(0.52, -0.06, 1.94);
     exhaustGroup.add(rightNozzle);
 
-    // Roaring Plasma Flame Cones (Shooting straight backward onto the road!)
+    // Roaring Plasma Flame Cones
     const flameGeo = new THREE.ConeGeometry(0.22, 2.8, 16);
     flameGeo.rotateX(-Math.PI / 2);
     flameGeo.translate(0, 0, 1.4);
 
     const flameMat = new THREE.MeshBasicMaterial({
-      color: 0xd946ef, // Hot Magenta / Violet Plasma
+      color: 0xd946ef,
       transparent: true,
       opacity: 0.92,
       blending: THREE.AdditiveBlending,
@@ -624,7 +628,6 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     rightFlame.position.set(0.52, -0.06, 2.02);
     exhaustGroup.add(rightFlame);
 
-    // Inner White-Hot Core Flame
     const innerFlameGeo = new THREE.ConeGeometry(0.1, 2.2, 16);
     innerFlameGeo.rotateX(-Math.PI / 2);
     innerFlameGeo.translate(0, 0, 1.1);
@@ -644,7 +647,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     rightInnerFlame.position.set(0.52, -0.06, 2.02);
     exhaustGroup.add(rightInnerFlame);
 
-    // Road Ground Plasma Reflection Flares
+    // Road Ground Plasma Glow Flares
     const groundFlameGeo = new THREE.PlaneGeometry(1.8, 4.2);
     groundFlameGeo.rotateX(-Math.PI / 2);
     const groundFlameMat = new THREE.MeshBasicMaterial({
@@ -663,7 +666,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     rightGroundGlow.position.set(0.52, 0.03, 3.4);
     scene.add(rightGroundGlow);
 
-    // L. Wheels (4 High-Performance Wide Cyber Wheels)
+    // L. Wheels
     const wheelGroup = new THREE.Group();
     carRoot.add(wheelGroup);
 
@@ -702,26 +705,33 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
     const wheelRR = createWheel(1.08, -0.12, 1.35);
     const wheels = [wheelFL, wheelFR, wheelRL, wheelRR];
 
-    // ── 9. Interactive Mouse Steering & Parallax ──
+    // ── 9. Interactive Mouse Steering (Active ONLY When Hovered Inside Car Section) ──
     let targetCarX = 0;
     let targetCarRotY = 0;
     let targetCarRoll = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
+      if (!isHoveredRef.current) {
+        // Re-center if not hovered
+        targetCarX = 0;
+        targetCarRotY = 0;
+        targetCarRoll = 0;
+        return;
+      }
       const rect = container.getBoundingClientRect();
       const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1; // -1 to 1
-      targetCarX = normX * 2.4; // Lateral lane steering
-      targetCarRotY = -normX * 0.14; // Slight yaw
-      targetCarRoll = normX * 0.09; // Banking into turn
+      targetCarX = normX * 2.4;
+      targetCarRotY = -normX * 0.14;
+      targetCarRoll = normX * 0.09;
     };
 
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    container.addEventListener("mousemove", handleMouseMove, { passive: true });
 
-    // ── 10. Smooth Locked 60-120FPS Animation Loop ──
+    // ── 10. Locked 60-120FPS Animation Loop (Runs ONLY when hovered, stops when cursor leaves) ──
     let animId: number;
     let isVisible = true;
     let clock = 0;
-    let speed = 90;
+    let speed = 0;
 
     const observer = new IntersectionObserver(([entry]) => {
       isVisible = entry.isIntersecting;
@@ -734,18 +744,23 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
 
       clock += 0.016;
 
-      // Speed Interpolation
-      const targetSpeed = targetSpeedRef.current;
-      speed += (targetSpeed - speed) * 0.09;
+      // Target Speed is 0 when cursor is outside the car card!
+      // When inside, cruises at 115 KM/H or boosts at 295 KM/H!
+      const targetSpeed = isHoveredRef.current
+        ? (boostStateRef.current ? 295 : 115)
+        : 0;
 
-      if (Math.round(clock * 60) % 5 === 0) {
+      speed += (targetSpeed - speed) * 0.085;
+
+      // Update React UI Speedometer state
+      if (Math.round(clock * 60) % 4 === 0) {
         setCurrentSpeed(Math.round(speed));
       }
 
-      const speedFactor = speed / 90;
+      const speedFactor = speed / 115;
 
-      // Move Lane Markings
-      const dashMove = 0.42 * speedFactor;
+      // Move Lane Markings (Stops when speed = 0)
+      const dashMove = 0.44 * speedFactor;
       laneDashMeshes.forEach((dash) => {
         dash.position.z += dashMove;
         if (dash.position.z > 8) {
@@ -759,8 +774,8 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         }
       });
 
-      // Move Buildings
-      const bldgMove = 0.52 * speedFactor;
+      // Move Buildings (Stops when speed = 0)
+      const bldgMove = 0.54 * speedFactor;
       buildings.forEach((item) => {
         item.mesh.position.z += bldgMove;
         if (item.mesh.position.z > 24) {
@@ -768,19 +783,19 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         }
       });
 
-      // Move Speed Light Streaks
+      // Move Speed Light Streaks (Stops when speed = 0)
       streakMeshes.forEach((item) => {
-        item.mesh.position.z += 0.85 * speedFactor * item.speedMult;
+        item.mesh.position.z += 0.88 * speedFactor * item.speedMult;
         if (item.mesh.position.z > 14) {
           item.mesh.position.z = -140 - Math.random() * 25;
         }
-        // Elongate streaks in boost mode
-        const boostStretch = boostStateRef.current ? 2.8 : 1.0;
+        const boostStretch = boostStateRef.current && isHoveredRef.current ? 2.8 : 1.0;
         item.mesh.scale.z = boostStretch;
+        (item.mesh.material as THREE.MeshBasicMaterial).opacity = isHoveredRef.current ? 0.85 : 0.25;
       });
 
-      // Rotate Wheels
-      const wheelRotSpeed = 0.5 * speedFactor;
+      // Rotate Wheels (Stops when speed = 0)
+      const wheelRotSpeed = 0.52 * speedFactor;
       wheels.forEach((w) => {
         w.rotation.x += wheelRotSpeed;
       });
@@ -789,22 +804,25 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       wheelFL.rotation.y = targetCarRotY * 1.6;
       wheelFR.rotation.y = targetCarRotY * 1.6;
 
-      // Smooth Car Physics
+      // Smooth Car Physics & Re-centering
       carRoot.position.x += (targetCarX - carRoot.position.x) * 0.09;
       carRoot.rotation.y += (targetCarRotY - carRoot.rotation.y) * 0.09;
       carRoot.rotation.z += (targetCarRoll - carRoot.rotation.z) * 0.09;
 
-      // Engine Rumble Vibration
-      const rumble = Math.sin(clock * 48) * (boostStateRef.current ? 0.024 : 0.009);
+      // Engine Rumble Vibration (Active only while running)
+      const rumble = speed > 5 ? Math.sin(clock * 48) * (boostStateRef.current ? 0.024 : 0.009) : 0;
       carRoot.position.y = 0.46 + rumble;
 
       // Acceleration Squat
-      const squat = boostStateRef.current ? -0.05 : -0.018;
-      carRoot.rotation.x += (squat - carRoot.rotation.x) * 0.1;
+      const targetSquat = speed > 5 ? (boostStateRef.current ? -0.05 : -0.018) : 0;
+      carRoot.rotation.x += (targetSquat - carRoot.rotation.x) * 0.1;
 
-      // Dual Exhaust Plasma Flames Scaling & Pulsing
+      // Dual Exhaust Plasma Flames (Extinguishes/shrinks when stopped, roars when running!)
       const flamePulse = Math.sin(clock * 65) * 0.18;
-      const boostFlameLen = boostStateRef.current ? 2.9 + flamePulse : 1.0 + flamePulse * 0.5;
+      const boostFlameLen = isHoveredRef.current
+        ? (boostStateRef.current ? 2.9 + flamePulse : 1.1 + flamePulse * 0.5)
+        : (speed > 5 ? (speed / 115) * 0.5 : 0.001);
+
       leftFlame.scale.set(1.0, 1.0, boostFlameLen);
       rightFlame.scale.set(1.0, 1.0, boostFlameLen);
       leftInnerFlame.scale.set(1.0, 1.0, boostFlameLen * 0.88);
@@ -813,15 +831,17 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       // Follow car ground flame reflections
       leftGroundGlow.position.x = carRoot.position.x - 0.52;
       rightGroundGlow.position.x = carRoot.position.x + 0.52;
-      const groundGlowOpacity = boostStateRef.current ? 0.98 : 0.55;
-      groundFlameMat.opacity = groundGlowOpacity + Math.sin(clock * 45) * 0.12;
+      const groundGlowOpacity = isHoveredRef.current
+        ? (boostStateRef.current ? 0.98 : 0.6)
+        : (speed > 5 ? (speed / 115) * 0.3 : 0);
+      groundFlameMat.opacity = groundGlowOpacity;
 
-      // Dynamic Camera Reaction to Acceleration
-      const targetCamZ = boostStateRef.current ? 4.5 : 3.85;
+      // Dynamic Camera Reaction to Acceleration & Braking
+      const targetCamZ = isHoveredRef.current && boostStateRef.current ? 4.5 : 3.85;
       camera.position.z += (targetCamZ - camera.position.z) * 0.07;
       camera.position.x += (carRoot.position.x * 0.32 - camera.position.x) * 0.09;
 
-      // Render
+      // Render Scene
       renderer.render(scene, camera);
     };
 
@@ -839,7 +859,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animId);
       if (renderer.domElement && container.contains(renderer.domElement)) {
@@ -855,16 +875,18 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
   return (
     <div
       ref={mountRef}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       onClick={handleBoostToggle}
       className={`relative w-full h-full cursor-pointer select-none overflow-hidden group/carscene ${className}`}
-      title="Click anywhere to activate Nitro Boost!"
+      title="Hover over car to run · Click for Nitro Boost · Move mouse outside to stop"
     >
       {/* ── Top HUD Header: Game Status & Telemetry ── */}
       <div className="absolute top-2.5 inset-x-3 flex items-center justify-between pointer-events-none z-20">
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 border border-white/10 backdrop-blur-md">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+          <span className={`w-1.5 h-1.5 rounded-full ${isHovered ? "bg-cyan-400 animate-pulse" : "bg-white/40"}`} />
           <span className="font-mono text-[9px] sm:text-[10px] text-cyan-300 font-bold tracking-widest uppercase">
-            NIGHT DRIVE · TOKYO
+            {isHovered ? "NIGHT DRIVE · TOKYO" : "PARKED · STANDBY"}
           </span>
         </div>
 
@@ -893,40 +915,54 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
         </div>
       </div>
 
-      {/* ── Center Click-to-Run Interactive Action Prompt ── */}
+      {/* ── Center Dynamic Prompt Banner ── */}
       <div className="absolute top-11 inset-x-0 flex justify-center pointer-events-none z-20">
         <div
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] sm:text-xs font-mono font-bold tracking-wider transition-all duration-300 shadow-lg ${
-            isBoosting
+            !isHovered
+              ? "bg-black/80 border-white/20 text-white/70 shadow-md"
+              : isBoosting
               ? "bg-fuchsia-600/35 border-fuchsia-400 text-fuchsia-200 shadow-[0_0_20px_rgba(217,70,239,0.5)] scale-105"
-              : "bg-black/70 border-cyan-400/40 text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.25)] hover:border-cyan-400"
+              : "bg-cyan-950/80 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.3)] scale-100"
           }`}
         >
-          <Zap className={`w-3.5 h-3.5 ${isBoosting ? "text-yellow-300 animate-bounce" : "text-cyan-400"}`} />
+          <Zap
+            className={`w-3.5 h-3.5 ${
+              !isHovered
+                ? "text-white/40"
+                : isBoosting
+                ? "text-yellow-300 animate-bounce"
+                : "text-cyan-400 animate-pulse"
+            }`}
+          />
           <span>
-            {isBoosting ? "🔥 NITRO ENGAGED · 295 KM/H (CLICK TO CRUISE)" : "⚡ CLICK TO ACCELERATE (NITRO BOOST)"}
+            {!isHovered
+              ? "⚡ HOVER OVER CAR TO DRIVE · CLICK FOR NITRO"
+              : isBoosting
+              ? "🚀 NITRO ACTIVE · 295 KM/H (CLICK TO CRUISE)"
+              : "🔥 DRIVING (CLICK FOR NITRO BOOST)"}
           </span>
         </div>
       </div>
 
-      {/* ── Bottom-Left Mini-Map Radar HUD (Exact from Reference Image!) ── */}
+      {/* ── Bottom-Left Mini-Map Radar HUD ── */}
       <div className="absolute bottom-3 left-3 pointer-events-none z-20 flex items-center gap-2">
         <div className="relative w-12 h-12 rounded-full border border-cyan-500/40 bg-black/70 backdrop-blur-md flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-          {/* Radar Circles */}
           <div className="absolute inset-1.5 rounded-full border border-cyan-500/20" />
           <div className="absolute inset-3 rounded-full border border-cyan-500/15" />
-          {/* Radar Sweep Needle */}
-          <div className="absolute inset-0 rounded-full border-t border-cyan-400 animate-spin opacity-75" />
-          {/* Player Blip */}
+          <div
+            className={`absolute inset-0 rounded-full border-t border-cyan-400 ${
+              isHovered ? "animate-spin opacity-90" : "opacity-30"
+            }`}
+          />
           <div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500 shadow-[0_0_6px_#ff00ff]" />
           <Navigation className="absolute -top-1 w-2.5 h-2.5 text-cyan-400" />
         </div>
       </div>
 
-      {/* ── Bottom-Right Tachometer / Speedometer HUD (Exact from Reference Image!) ── */}
+      {/* ── Bottom-Right Tachometer / Speedometer HUD ── */}
       <div className="absolute bottom-3 right-3 pointer-events-none z-20">
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/15 bg-black/80 backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.8)]">
-          {/* Mini RPM Circular Arc Gauge */}
           <div className="relative w-9 h-9 rounded-full border-2 border-white/10 flex items-center justify-center">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
               <path
@@ -937,7 +973,7 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
               <path
-                className={isBoosting ? "text-fuchsia-500" : "text-cyan-400"}
+                className={isBoosting && isHovered ? "text-fuchsia-500" : isHovered ? "text-cyan-400" : "text-white/20"}
                 strokeDasharray={`${(currentSpeed / 320) * 100}, 100`}
                 strokeWidth="3.2"
                 strokeLinecap="round"
@@ -946,7 +982,15 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
             </svg>
-            <Gauge className={`w-3.5 h-3.5 absolute ${isBoosting ? "text-yellow-300" : "text-white/70"}`} />
+            <Gauge
+              className={`w-3.5 h-3.5 absolute ${
+                !isHovered
+                  ? "text-white/30"
+                  : isBoosting
+                  ? "text-yellow-300 animate-pulse"
+                  : "text-white/70"
+              }`}
+            />
           </div>
 
           <div className="flex flex-col">
@@ -959,7 +1003,11 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
               </span>
             </div>
             <span className="font-mono text-[8px] text-white/50 tracking-wider">
-              {isBoosting ? "GEAR 6 · BOOST" : "GEAR 4 · CRUISE"}
+              {!isHovered
+                ? "PARKED"
+                : isBoosting
+                ? "GEAR 6 · BOOST"
+                : "GEAR 4 · CRUISE"}
             </span>
           </div>
         </div>
