@@ -30,7 +30,7 @@ const MARQUEE_ITEMS = [
     id: "ai-rag",
     title: "Agentic RAG & LLMs",
     tag: "GenAI",
-    highlight: "LangChain · ChromaDB · Vector DB",
+    highlight: "LangChain · LangGraph · Pinecone",
     sub: "Autonomous Retrieval & Web Search",
     icon: Sparkles,
     colorClass: "group-hover:border-[#A855F7]/60 group-hover:bg-[#10081C] group-hover:shadow-[0_0_25px_rgba(168,85,247,0.2)]",
