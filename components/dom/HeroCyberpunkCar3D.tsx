@@ -128,7 +128,60 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       precision: "mediump",
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
+    // ------------------------------------------------------------
+    // 🎨 Simple gradient environment map for reflective highlights
+    const envCanvas = document.createElement("canvas");
+    envCanvas.width = 512;
+    envCanvas.height = 512;
+    const envCtx = envCanvas.getContext("2d")!;
+    const envGrad = envCtx.createLinearGradient(0, 0, 0, 512);
+    envGrad.addColorStop(0, "#0a001f");
+    envGrad.addColorStop(0.5, "#22004b");
+    envGrad.addColorStop(1, "#340064");
+    envCtx.fillStyle = envGrad;
+    envCtx.fillRect(0, 0, 512, 512);
+    const envTexture = new THREE.CanvasTexture(envCanvas);
+    envTexture.mapping = THREE.EquirectangularReflectionMapping;
+    envTexture.encoding = THREE.sRGBEncoding;
+    scene.environment = envTexture;
+    // ------------------------------------------------------------
+    // 🪩 Helper: generate cheap procedural metal textures (albedo/normal/roughness)
+    const createMetalTexture = (size: number, type: "albedo" | "normal" | "roughness") => {
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext("2d")!;
+      if (type === "albedo") {
+        ctx.fillStyle = "#f0f4f8"; // silver base
+        ctx.fillRect(0, 0, size, size);
+        // subtle noise
+        for (let i = 0; i < size * 2; i++) {
+          ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.02})`;
+          ctx.fillRect(Math.random() * size, Math.random() * size, 1, 1);
+        }
+      } else if (type === "normal") {
+        ctx.fillStyle = "#8080ff"; // neutral normal (0.5,0.5,1)
+        ctx.fillRect(0, 0, size, size);
+        for (let i = 0; i < size * 3; i++) {
+          ctx.fillStyle = `rgba(128,128,255,${Math.random() * 0.1})`;
+          ctx.fillRect(Math.random() * size, Math.random() * size, 1, 1);
+        }
+      } else {
+        ctx.fillStyle = "#777777";
+        ctx.fillRect(0, 0, size, size);
+        for (let i = 0; i < size; i++) {
+          ctx.fillStyle = `rgba(200,200,200,${Math.random() * 0.05})`;
+          ctx.fillRect(Math.random() * size, Math.random() * size, 2, 2);
+        }
+      }
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.encoding = THREE.sRGBEncoding;
+      return tex;
+    };
+    const albedoTex = createMetalTexture(512, "albedo");
+    const normalTex = createMetalTexture(512, "normal");
+    const roughTex = createMetalTexture(512, "roughness");
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.5;
     renderer.setClearColor(0x220836, 1);
@@ -638,6 +691,15 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
 
     // Brilliant Gleaming Metallic Silver Chassis
     const bodySilverMat = new THREE.MeshStandardMaterial({
+  color: 0xf0f4f8,
+  metalness: 0.95,
+  roughness: 0.12,
+  map: albedoTex,
+  normalMap: normalTex,
+  roughnessMap: roughTex,
+  envMap: envTexture,
+});
+applyRimLight(bodySilverMat);
       color: 0xf0f4f8, // Gleaming platinum silver
       metalness: 0.95,
       roughness: 0.12,
@@ -655,10 +717,19 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
       roughness: 0.04,
     });
 
-    // Lower Wide Body Wedge
-    const mainBodyGeo = new THREE.BoxGeometry(2.1, 0.38, 3.95);
+        // Lower Wide Body Wedge (higher poly)
+    const carShape = new THREE.Shape();
+    carShape.moveTo(-1.05, 0);
+    carShape.lineTo(-1.05, 0.38);
+    carShape.quadraticCurveTo(-1.05, 0.5, -0.9, 0.6);
+    carShape.lineTo(0.9, 0.6);
+    carShape.quadraticCurveTo(1.05, 0.5, 1.05, 0.38);
+    carShape.lineTo(1.05, 0);
+    carShape.lineTo(-1.05, 0);
+    const extrudeSettings = { depth: 3.95, bevelEnabled: false, steps: 2 };
+    const mainBodyGeo = new THREE.ExtrudeGeometry(carShape, extrudeSettings);
     const mainBody = new THREE.Mesh(mainBodyGeo, bodySilverMat);
-    mainBody.position.set(0, 0, 0);
+    mainBody.position.set(0, 0, -1.975);
     carRoot.add(mainBody);
 
     // Front Hood Wedge
