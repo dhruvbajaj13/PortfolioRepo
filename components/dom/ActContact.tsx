@@ -137,7 +137,7 @@ export function ActContact() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2 }}
             viewport={{ once: true }}
-            className="font-display text-4xl sm:text-6xl font-extrabold text-white tracking-tight uppercase"
+            className="font-display text-5xl sm:text-7xl md:text-8xl font-black text-white tracking-tighter uppercase leading-none"
           >
             Get in <span className="text-white">Touch</span>
           </motion.h2>
