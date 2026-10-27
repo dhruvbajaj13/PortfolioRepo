@@ -75,7 +75,7 @@ export function ActTechStack() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="heading-hover-sweep font-display text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter uppercase leading-none"
+              className="heading-hover-sweep font-display text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase leading-none"
             >
               Skills
             </motion.h2>
