@@ -1,72 +1,52 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion';
 
-// ── Glitching random digit that flickers to the real digit as progress passes
-function GlitchDigit({ target, active }: { target: string; active: boolean }) {
-  const [displayed, setDisplayed] = useState(target);
-  const chars = '0123456789';
-  const ref = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    if (!active) { setDisplayed(target); return; }
-    let count = 0;
-    ref.current = setInterval(() => {
-      count++;
-      if (count > 7) { setDisplayed(target); clearInterval(ref.current!); return; }
-      setDisplayed(chars[Math.floor(Math.random() * chars.length)]);
-    }, 40);
-    return () => clearInterval(ref.current!);
-  }, [target, active]);
-
-  return <span>{displayed}</span>;
-}
-
-// ── Corner bracket decoration
-function CornerBracket({ pos }: { pos: 'tl' | 'tr' | 'bl' | 'br' }) {
-  const size = 20;
-  const stroke = 'rgba(255,255,255,0.25)';
-  const sw = 1.5;
-  const corners = {
-    tl: <><line x1={size} y1="0" x2="0" y2="0" stroke={stroke} strokeWidth={sw} /><line x1="0" y1="0" x2="0" y2={size} stroke={stroke} strokeWidth={sw} /></>,
-    tr: <><line x1="0" y1="0" x2={size} y2="0" stroke={stroke} strokeWidth={sw} /><line x1={size} y1="0" x2={size} y2={size} stroke={stroke} strokeWidth={sw} /></>,
-    bl: <><line x1="0" y1="0" x2="0" y2={size} stroke={stroke} strokeWidth={sw} /><line x1="0" y1={size} x2={size} y2={size} stroke={stroke} strokeWidth={sw} /></>,
-    br: <><line x1={size} y1="0" x2={size} y2={size} stroke={stroke} strokeWidth={sw} /><line x1="0" y1={size} x2={size} y2={size} stroke={stroke} strokeWidth={sw} /></>,
-  };
+// ── Corner bracket
+function Corner({ pos }: { pos: 'tl' | 'tr' | 'bl' | 'br' }) {
+  const s = 24;
+  const sw = 1;
+  const c = 'rgba(255,255,255,0.2)';
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="absolute" style={{
-      top: pos.startsWith('t') ? 0 : undefined,
-      bottom: pos.startsWith('b') ? 0 : undefined,
-      left: pos.endsWith('l') ? 0 : undefined,
-      right: pos.endsWith('r') ? 0 : undefined,
-    }}>
-      {corners[pos]}
+    <svg
+      width={s} height={s} viewBox={`0 0 ${s} ${s}`}
+      className="absolute"
+      style={{
+        top:    pos.startsWith('t') ? 0 : undefined,
+        bottom: pos.startsWith('b') ? 0 : undefined,
+        left:   pos.endsWith('l')   ? 0 : undefined,
+        right:  pos.endsWith('r')   ? 0 : undefined,
+      }}
+    >
+      {pos === 'tl' && <><line x1={s} y1={sw/2} x2={sw/2} y2={sw/2} stroke={c} strokeWidth={sw}/><line x1={sw/2} y1={sw/2} x2={sw/2} y2={s} stroke={c} strokeWidth={sw}/></>}
+      {pos === 'tr' && <><line x1="0" y1={sw/2} x2={s-sw/2} y2={sw/2} stroke={c} strokeWidth={sw}/><line x1={s-sw/2} y1={sw/2} x2={s-sw/2} y2={s} stroke={c} strokeWidth={sw}/></>}
+      {pos === 'bl' && <><line x1={sw/2} y1="0" x2={sw/2} y2={s-sw/2} stroke={c} strokeWidth={sw}/><line x1={sw/2} y1={s-sw/2} x2={s} y2={s-sw/2} stroke={c} strokeWidth={sw}/></>}
+      {pos === 'br' && <><line x1={s-sw/2} y1="0" x2={s-sw/2} y2={s-sw/2} stroke={c} strokeWidth={sw}/><line x1={s-sw/2} y1={s-sw/2} x2="0" y2={s-sw/2} stroke={c} strokeWidth={sw}/></>}
     </svg>
   );
 }
 
 export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
-  const [progress, setProgress] = useState(0);
-  const [done, setDone] = useState(false);
+  const [display, setDisplay] = useState(0);   // integer shown on screen
+  const [done,    setDone]    = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const scanRef = useRef<HTMLDivElement>(null);
+  const scanRef   = useRef<HTMLDivElement>(null);
+  const mv        = useMotionValue(0);          // smooth 0-100 motion value
 
-  // ── Progress ticker
+  // ── Smooth 0-100 over ~1.8s with slight ease-in ease-out
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => setDone(true), 200);
-          setTimeout(onComplete, 560);
-          return 100;
-        }
-        return Math.min(prev + Math.floor(Math.random() * 7) + 4, 100);
-      });
-    }, 18);
-    return () => clearInterval(interval);
-  }, [onComplete]);
+    const ctrl = animate(mv, 100, {
+      duration: 1.85,
+      ease: [0.25, 0.1, 0.25, 1],
+      onUpdate: (v) => setDisplay(Math.round(v)),
+      onComplete: () => {
+        setTimeout(() => setDone(true), 220);
+        setTimeout(onComplete, 620);
+      },
+    });
+    return () => ctrl.stop();
+  }, [onComplete, mv]);
 
   // ── Film grain
   useEffect(() => {
@@ -74,42 +54,47 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    let animId: number;
-    const draw = () => {
-      animId = requestAnimationFrame(draw);
-      canvas.width = window.innerWidth;
+    let id: number;
+    const grain = () => {
+      id = requestAnimationFrame(grain);
+      canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
       const img = ctx.createImageData(canvas.width, canvas.height);
       for (let i = 0; i < img.data.length; i += 4) {
         const v = (Math.random() * 255) | 0;
-        img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
-        img.data[i + 3] = 9;
+        img.data[i] = img.data[i+1] = img.data[i+2] = v;
+        img.data[i+3] = 8;
       }
       ctx.putImageData(img, 0, 0);
     };
-    draw();
-    return () => cancelAnimationFrame(animId);
+    grain();
+    return () => cancelAnimationFrame(id);
   }, []);
 
-  // ── Horizontal scanline sweep
+  // ── Scanline sweep
   useEffect(() => {
     const el = scanRef.current;
     if (!el) return;
-    let y = 0;
-    let animId: number;
+    let y = 0, id: number;
     const sweep = () => {
-      animId = requestAnimationFrame(sweep);
-      y = (y + 0.8) % window.innerHeight;
+      id = requestAnimationFrame(sweep);
+      y  = (y + 1) % window.innerHeight;
       el.style.transform = `translateY(${y}px)`;
     };
     sweep();
-    return () => cancelAnimationFrame(animId);
+    return () => cancelAnimationFrame(id);
   }, []);
 
-  const padded = progress < 10 ? `0${progress}` : `${progress}`;
-  const nameChars = 'DHRUV BAJAJ'.split('');
-  const revealAt = nameChars.length; // chars revealed = floor(progress / (100 / len))
-  const revealed = Math.floor((progress / 100) * nameChars.length);
+  const padded  = display < 10 ? `0${display}` : `${display}`;
+  const percent = display;
+
+  // Name reveal: each letter fades in as progress crosses its threshold
+  const NAME = 'DHRUV BAJAJ';
+  const chars = NAME.split('');
+  const revealed = Math.floor((percent / 100) * chars.length);
+
+  // Ambient glow opacity scales with progress
+  const glowOpacity = percent / 100 * 0.18;
 
   return (
     <AnimatePresence>
@@ -117,133 +102,157 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
         <motion.div
           key="preloader"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, y: -12, transition: { duration: 0.4, ease: [0.76, 0, 0.24, 1] } }}
+          exit={{ opacity: 0, transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] } }}
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505] overflow-hidden select-none"
         >
           {/* Film grain */}
-          <canvas ref={canvasRef} aria-hidden className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.28] mix-blend-overlay" />
+          <canvas ref={canvasRef} aria-hidden className="absolute inset-0 w-full h-full pointer-events-none opacity-25 mix-blend-overlay" />
 
           {/* Dot grid */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.055)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:34px_34px] pointer-events-none" />
 
-          {/* Scanline sweep */}
-          <div ref={scanRef} className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/[0.04] to-transparent pointer-events-none z-10" />
+          {/* Scanline */}
+          <div ref={scanRef} className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.035] to-transparent pointer-events-none z-10" />
 
           {/* Vignette */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_65%_at_50%_50%,transparent_55%,rgba(0,0,0,0.92)_100%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,transparent_50%,rgba(0,0,0,0.94)_100%)] pointer-events-none" />
 
-          {/* Horizontal rule lines — top & bottom thirds */}
-          <div className="absolute left-10 right-10 top-[28%] h-px bg-white/[0.06] pointer-events-none" />
-          <div className="absolute left-10 right-10 bottom-[28%] h-px bg-white/[0.06] pointer-events-none" />
+          {/* Ambient glow — expands as progress grows */}
+          <div
+            className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+            style={{
+              background: `radial-gradient(ellipse 55% 45% at 50% 50%, rgba(255,255,255,${glowOpacity}) 0%, transparent 100%)`,
+            }}
+          />
 
-          {/* ── Corner decorations */}
-          <div className="absolute top-6 sm:top-10 left-6 sm:left-12 w-10 h-10">
-            <CornerBracket pos="tl" />
-          </div>
-          <div className="absolute top-6 sm:top-10 right-6 sm:right-12 w-10 h-10">
-            <CornerBracket pos="tr" />
-          </div>
-          <div className="absolute bottom-6 sm:bottom-10 left-6 sm:left-12 w-10 h-10">
-            <CornerBracket pos="bl" />
-          </div>
-          <div className="absolute bottom-6 sm:bottom-10 right-6 sm:right-12 w-10 h-10">
-            <CornerBracket pos="br" />
-          </div>
+          {/* Thin horizontal rule lines */}
+          <div className="absolute left-12 right-12 top-[30%] h-px bg-white/[0.05] pointer-events-none" />
+          <div className="absolute left-12 right-12 bottom-[30%] h-px bg-white/[0.05] pointer-events-none" />
 
-          {/* ── Top bar */}
-          <div className="absolute top-6 sm:top-10 left-16 sm:left-24 right-16 sm:right-24 flex items-center justify-between z-10">
+          {/* Vertical side lines */}
+          <div className="absolute top-[30%] bottom-[30%] left-12 w-px bg-white/[0.05] pointer-events-none" />
+          <div className="absolute top-[30%] bottom-[30%] right-12 w-px bg-white/[0.05] pointer-events-none" />
+
+          {/* Corner brackets at rule intersections */}
+          {(['tl','tr','bl','br'] as const).map(p => (
+            <div
+              key={p}
+              className="absolute w-6 h-6"
+              style={{
+                top:    p.startsWith('t') ? 'calc(30% - 0px)' : undefined,
+                bottom: p.startsWith('b') ? 'calc(30% - 0px)' : undefined,
+                left:   p.endsWith('l')   ? '46px' : undefined,
+                right:  p.endsWith('r')   ? '46px' : undefined,
+              }}
+            >
+              <Corner pos={p} />
+            </div>
+          ))}
+
+          {/* ── Top status bar */}
+          <div className="absolute top-7 sm:top-10 left-8 sm:left-14 right-8 sm:right-14 flex items-center justify-between z-20">
             <span className="font-mono text-[9px] tracking-[0.35em] text-white/25 uppercase">Portfolio · 2026</span>
             <motion.span
-              animate={{ opacity: [0.2, 0.6, 0.2] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="font-mono text-[9px] tracking-[0.35em] text-white/25 uppercase"
+              animate={{ opacity: [0.2, 0.55, 0.2] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              className="font-mono text-[9px] tracking-[0.35em] text-white/30 uppercase"
             >
-              {progress === 100 ? 'Ready' : 'Loading'}
+              {percent === 100 ? 'Ready' : 'Loading'}
             </motion.span>
           </div>
 
-          {/* ── Main center content */}
-          <div className="relative z-10 flex flex-col items-center gap-8 sm:gap-10 w-full px-8">
+          {/* ── Center block */}
+          <div className="relative z-20 flex flex-col items-center w-full px-8 gap-7 sm:gap-9">
 
-            {/* Name reveal — letter by letter */}
-            <div className="flex items-center gap-[0.08em] overflow-hidden">
-              {nameChars.map((ch, i) => (
+            {/* Name — letter-by-letter drop */}
+            <div className="flex items-center overflow-hidden h-[3.5vw] sm:h-[2.8vw] min-h-[18px]">
+              {chars.map((ch, i) => (
                 <motion.span
                   key={i}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={i <= revealed ? { opacity: ch === ' ' ? 0 : 0.12, y: 0 } : { opacity: 0, y: 14 }}
-                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-display font-black text-[5vw] sm:text-[3.5vw] md:text-[2.8vw] text-white tracking-[0.18em] uppercase"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={i < revealed
+                    ? { opacity: ch === ' ' ? 0 : 0.15, y: 0 }
+                    : { opacity: 0, y: 10 }
+                  }
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display font-black text-[3.8vw] sm:text-[2.6vw] md:text-[2vw] text-white tracking-[0.3em] uppercase"
                 >
-                  {ch === ' ' ? '\u00A0' : ch}
+                  {ch === ' ' ? '\u2003' : ch}
                 </motion.span>
               ))}
             </div>
 
-            {/* Giant glitch counter */}
-            <div className="flex items-end gap-2 leading-none">
-              <span className="font-display font-black text-[22vw] sm:text-[18vw] md:text-[15vw] text-white tracking-tighter tabular-nums" style={{ lineHeight: 0.85 }}>
-                <GlitchDigit target={padded[0]} active={true} />
-                <GlitchDigit target={padded[1]} active={true} />
+            {/* Giant counter */}
+            <div className="flex items-end leading-none">
+              <span
+                className="font-display font-black text-white tabular-nums tracking-tighter"
+                style={{ fontSize: 'clamp(80px, 20vw, 220px)', lineHeight: 0.85 }}
+              >
+                {padded}
               </span>
-              <span className="font-display font-extralight text-[7vw] sm:text-[5.5vw] text-white/20 mb-[2vw]">%</span>
+              <span
+                className="font-display font-thin text-white/15 ml-1"
+                style={{ fontSize: 'clamp(28px, 6vw, 72px)', marginBottom: '1.5vw' }}
+              >
+                %
+              </span>
             </div>
 
-            {/* Progress bar */}
-            <div className="relative w-full max-w-[280px] sm:max-w-[360px]">
-              {/* Track */}
-              <div className="w-full h-px bg-white/10" />
-              {/* Fill */}
-              <motion.div
-                className="absolute top-0 left-0 h-px bg-white"
-                style={{ width: `${progress}%` }}
-                transition={{ duration: 0.07, ease: 'linear' }}
-              />
-              {/* Glowing tip */}
-              <motion.div
-                className="absolute top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-white shadow-[0_0_10px_4px_rgba(255,255,255,0.55)]"
-                style={{ left: `calc(${Math.min(progress, 99)}% - 2px)` }}
-                transition={{ duration: 0.07, ease: 'linear' }}
-              />
+            {/* Progress track */}
+            <div className="relative w-full max-w-[260px] sm:max-w-[340px] py-3">
               {/* Tick marks */}
-              {[25, 50, 75].map((t) => (
+              {[0, 25, 50, 75, 100].map(t => (
                 <div
                   key={t}
-                  className="absolute top-[-4px] w-px h-[9px]"
+                  className="absolute top-0 w-px"
                   style={{
                     left: `${t}%`,
-                    background: progress >= t ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)',
-                    transition: 'background 0.3s',
+                    height: t % 50 === 0 ? '8px' : '5px',
+                    background: percent >= t ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.1)',
+                    transition: 'background 0.25s',
                   }}
                 />
               ))}
+              {/* Track */}
+              <div className="absolute top-[11px] left-0 right-0 h-px bg-white/10" />
+              {/* Fill */}
+              <motion.div
+                className="absolute top-[11px] left-0 h-px bg-white origin-left"
+                style={{ width: `${percent}%`, transition: 'width 0.06s linear' }}
+              />
+              {/* Glow dot */}
+              <motion.div
+                className="absolute w-[5px] h-[5px] rounded-full bg-white shadow-[0_0_12px_5px_rgba(255,255,255,0.5)]"
+                style={{
+                  top: '9px',
+                  left: `calc(${Math.min(percent, 99.5)}% - 2.5px)`,
+                  transition: 'left 0.06s linear',
+                }}
+              />
             </div>
 
-            {/* Status */}
+            {/* Status text */}
             <motion.p
-              key={Math.floor(progress / 25)}
-              initial={{ opacity: 0, y: 4 }}
+              key={Math.floor(percent / 25)}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="font-mono text-[9px] sm:text-[10px] tracking-[0.4em] text-white/20 uppercase"
+              transition={{ duration: 0.2 }}
+              className="font-mono text-[9px] sm:text-[10px] tracking-[0.45em] text-white/20 uppercase"
             >
-              {progress < 30 ? 'Initializing' : progress < 60 ? 'Building modules' : progress < 90 ? 'Preparing assets' : 'Launching'}
+              {percent < 25 ? 'Initializing' : percent < 50 ? 'Building modules' : percent < 80 ? 'Preparing assets' : percent < 100 ? 'Launching' : 'Ready'}
             </motion.p>
           </div>
 
           {/* ── Bottom bar */}
-          <div className="absolute bottom-6 sm:bottom-10 left-16 sm:left-24 right-16 sm:right-24 flex items-center justify-between z-10">
-            <span className="font-mono text-[9px] tracking-[0.3em] text-white/20 uppercase">Full-Stack · AI</span>
-            <motion.div
-              className="flex gap-1.5"
-              animate={{ opacity: [0.15, 0.5, 0.15] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              {[0, 1, 2].map((i) => (
+          <div className="absolute bottom-7 sm:bottom-10 left-8 sm:left-14 right-8 sm:right-14 flex items-center justify-between z-20">
+            <span className="font-mono text-[9px] tracking-[0.3em] text-white/18 uppercase">Full-Stack · AI · DSA</span>
+            <motion.div className="flex items-center gap-2">
+              {[0, 1, 2].map(i => (
                 <motion.div
                   key={i}
-                  className="w-1 h-1 rounded-full bg-white"
-                  animate={{ scale: [1, 1.4, 1] }}
-                  transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.25 }}
+                  className="w-[3px] h-[3px] rounded-full bg-white"
+                  animate={{ opacity: [0.1, 0.45, 0.1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3, ease: 'easeInOut' }}
                 />
               ))}
             </motion.div>
