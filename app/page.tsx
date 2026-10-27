@@ -17,6 +17,8 @@ import { ActAchievements } from '@/components/dom/ActAchievements';
 import { ActTechStack } from '@/components/dom/ActTechStack';
 import { ActProjects } from '@/components/dom/ActProjects';
 import { ActContact } from '@/components/dom/ActContact';
+import { StarfieldBackground } from '@/components/dom/StarfieldBackground';
+import { ScrollTimelineScrubber } from '@/components/dom/ScrollTimelineScrubber';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -50,6 +52,8 @@ export default function Home() {
 
   return (
     <main className="relative bg-[#050505] bg-noise min-h-screen text-white overflow-x-hidden selection:bg-white/30 selection:text-[#FFFFFF]">
+      {/* Global twinkling starfield — fixed behind entire site */}
+      <StarfieldBackground />
       {/* Preloader */}
       <AnimatePresence>
         {isLoading && (
@@ -65,6 +69,9 @@ export default function Home() {
 
       {/* Top Floating Pill Navigation */}
       <Navigation activeScene={activeScene} />
+
+      {/* Right-Side Minimalist Scroll Timeline Scrubber */}
+      <ScrollTimelineScrubber activeScene={activeScene} />
 
       {/* Natural Filmlike Continuous Layout */}
       <div className="relative z-10 space-y-8 md:space-y-12">

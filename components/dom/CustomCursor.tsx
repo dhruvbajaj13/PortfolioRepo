@@ -62,8 +62,8 @@ export function CustomCursor() {
         ringRef.current.style.width = `${ringSize}px`;
         ringRef.current.style.height = `${ringSize}px`;
         ringRef.current.style.transform = `translate3d(${ringX - ringOffset}px, ${ringY - ringOffset}px, 0) scale(${isClicked ? 0.85 : 1})`;
-        ringRef.current.style.borderColor = isHovered ? 'rgba(0, 240, 255, 0.85)' : 'rgba(255, 255, 255, 0.35)';
-        ringRef.current.style.backgroundColor = isHovered ? 'rgba(0, 240, 255, 0.12)' : 'transparent';
+        ringRef.current.style.borderColor = isHovered ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.35)';
+        ringRef.current.style.backgroundColor = isHovered ? 'rgba(255, 255, 255, 0.12)' : 'transparent';
       }
     };
     animId = requestAnimationFrame(animate);
@@ -81,14 +81,14 @@ export function CustomCursor() {
       {/* Outer Sleek Glow Ring (GPU Hardware Accelerated) */}
       <div
         ref={ringRef}
-        className="fixed top-0 left-0 pointer-events-none z-50 rounded-full border border-white/35 transition-[border-color,background-color] duration-150 shadow-[0_0_12px_rgba(0,240,255,0.25)] will-change-transform"
+        className="fixed top-0 left-0 pointer-events-none z-50 rounded-full border border-white/35 transition-[border-color,background-color] duration-150 shadow-[0_0_12px_rgba(255,255,255,0.25)] will-change-transform"
         style={{ transform: 'translate3d(-100px, -100px, 0)' }}
       />
 
       {/* Inner Precision Center Dot */}
       <div
         ref={dotRef}
-        className="fixed top-0 left-0 pointer-events-none z-50 w-1.5 h-1.5 bg-[#00f0ff] rounded-full shadow-[0_0_8px_#00f0ff] will-change-transform"
+        className="fixed top-0 left-0 pointer-events-none z-50 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.9)] will-change-transform"
         style={{ transform: 'translate3d(-100px, -100px, 0)' }}
       />
     </div>

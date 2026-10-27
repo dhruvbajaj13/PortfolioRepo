@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Flame, Trophy, Award } from 'lucide-react';
+import { useTactileSound } from '@/hooks/useTactileSound';
 
 const PLATFORM_ICON_COLORS: Record<string, string> = {
   leetcode: '#FFA116',
@@ -136,6 +137,7 @@ const PLATFORMS_DATA = [
 ];
 
 export function ActCPStats() {
+  const { playClick, playPop } = useTactileSound();
   const [activeIdx, setActiveIdx] = useState(0);
   const active = PLATFORMS_DATA[activeIdx];
 
@@ -147,14 +149,14 @@ export function ActCPStats() {
       <div className="max-w-4xl mx-auto">
 
         {/* Section Header */}
-        <div className="mb-8 md:mb-10">
+        <div className="mb-6 md:mb-8">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-3"
           >
-            — Competitive Programming —
+            — 04 / Competitive Programming &amp; Algorithmic Rigor —
           </motion.p>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <motion.h2
@@ -168,6 +170,39 @@ export function ActCPStats() {
           </div>
         </div>
 
+        {/* 2026 Live Milestone Highlights Strip */}
+        <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="flex items-center gap-3 p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+              <Trophy className="w-4 h-4 text-amber-400" />
+            </div>
+            <div>
+              <p className="font-display font-black text-base text-white tracking-tight">LeetCode Knight</p>
+              <p className="font-mono text-[10px] text-white/50">Top 3% Global • Max 1951</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+            <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
+              <Flame className="w-4 h-4 text-orange-400" />
+            </div>
+            <div>
+              <p className="font-display font-black text-base text-white tracking-tight">365+ Day Streak</p>
+              <p className="font-mono text-[10px] text-white/50">Consistent Daily Problem Solving</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+              <Award className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div>
+              <p className="font-display font-black text-base text-white tracking-tight">1,300+ Solved</p>
+              <p className="font-mono text-[10px] text-white/50">Across LC, GFG, CF &amp; CC</p>
+            </div>
+          </div>
+        </div>
+
         {/* Top Horizontal Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 no-scrollbar">
           {PLATFORMS_DATA.map((plat, i) => {
@@ -178,11 +213,14 @@ export function ActCPStats() {
               <button
                 key={plat.id}
                 type="button"
-                onClick={() => setActiveIdx(i)}
+                onClick={() => {
+                  playClick();
+                  setActiveIdx(i);
+                }}
                 className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-sans transition-all duration-300 shrink-0 border hover:-translate-y-0.5 active:scale-95 ${
                   isSelected
                     ? 'bg-white text-black font-bold border-white shadow-[0_0_18px_rgba(255,255,255,0.35)] scale-105'
-                    : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-cyan-500/30 hover:text-white hover:bg-white/[0.06]'
+                    : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
                 <Logo color={isSelected ? '#000' : iconColor} />
@@ -200,10 +238,10 @@ export function ActCPStats() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-            className="group relative rounded-3xl border border-white/10 bg-[#0A0A0E]/95 p-5 sm:p-7 md:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col gap-5 hover:-translate-y-1.5 hover:border-cyan-500/35 hover:shadow-[0_25px_65px_rgba(0,240,255,0.08)] transition-all duration-300 overflow-hidden"
+            className="group relative rounded-3xl border border-white/10 bg-[#0A0A0E]/95 p-5 sm:p-7 md:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col gap-5 hover:-translate-y-1.5 hover:border-white/35 hover:shadow-[0_25px_65px_rgba(255,255,255,0.06)] transition-all duration-300 overflow-hidden"
           >
             {/* Subtle Ambient Glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/10 transition-colors duration-500" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none group-hover:bg-white/10 transition-colors duration-500" />
 
             {/* Header: Platform Branding & Direct Profile Link Button */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10 relative z-10">
@@ -216,7 +254,7 @@ export function ActCPStats() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight group-hover:text-cyan-50 transition-colors">
+                    <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight group-hover:text-white transition-colors">
                       {active.name}
                     </h3>
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981] animate-pulse" />
@@ -228,7 +266,7 @@ export function ActCPStats() {
               </div>
 
               <div className="flex items-center gap-2.5">
-                <span className="text-[10px] font-bold font-mono px-3 py-1 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-cyan-300 shadow-sm">
+                <span className="text-[10px] font-bold font-mono px-3 py-1 rounded-full border border-white/30 bg-white/10 text-white shadow-sm">
                   {active.badge}
                 </span>
 
@@ -236,7 +274,7 @@ export function ActCPStats() {
                   href={active.profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl border border-white/15 bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:bg-cyan-400 hover:scale-105 hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] transition-all shadow-md group/btn"
+                  className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl border border-white/15 bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:bg-white hover:scale-105 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all shadow-md group/btn"
                 >
                   <span>Profile</span>
                   <ArrowUpRight className="w-3 h-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
@@ -249,9 +287,9 @@ export function ActCPStats() {
               {active.stats.map((s) => (
                 <div
                   key={s.label}
-                  className="flex flex-col gap-1 p-3 sm:p-3.5 rounded-2xl border border-white/8 bg-white/[0.02] text-center hover:border-cyan-400/30 hover:bg-white/[0.05] hover:-translate-y-1 transition-all duration-200 cursor-default group/stat shadow-sm"
+                  className="flex flex-col gap-1 p-3 sm:p-3.5 rounded-2xl border border-white/8 bg-white/[0.02] text-center hover:border-white/30 hover:bg-white/[0.05] hover:-translate-y-1 transition-all duration-200 cursor-default group/stat shadow-sm"
                 >
-                  <span className="font-display font-black text-xl sm:text-3xl text-white tracking-tight group-hover/stat:text-cyan-300 transition-colors">
+                  <span className="font-display font-black text-xl sm:text-3xl text-white tracking-tight group-hover/stat:text-white transition-colors">
                     <AnimatedCounter target={s.value} />
                   </span>
                   <span className="font-mono text-[9px] sm:text-[10px] tracking-widest text-white/50 uppercase group-hover/stat:text-white/80 transition-colors">
@@ -273,7 +311,7 @@ export function ActCPStats() {
                 {active.graphs.map((g) => (
                   <div
                     key={g.src}
-                    className="rounded-2xl overflow-hidden border border-white/10 bg-[#08080a] p-2.5 sm:p-3 flex items-center justify-center hover:border-cyan-500/30 hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(0,240,255,0.08)] transition-all duration-300 group/graph"
+                    className="rounded-2xl overflow-hidden border border-white/10 bg-[#08080a] p-2.5 sm:p-3 flex items-center justify-center hover:border-white/30 hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(255,255,255,0.06)] transition-all duration-300 group/graph"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

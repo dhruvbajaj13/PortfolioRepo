@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Volume2, VolumeX } from 'lucide-react';
+import { useTactileSound } from '@/hooks/useTactileSound';
 
 export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { soundEnabled, toggleSound, playClick } = useTactileSound();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,6 +43,7 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                 <a
                   key={link.label}
                   href={link.href}
+                  onClick={() => playClick()}
                   className={`relative py-1 font-sans text-sm lg:text-[15px] font-medium tracking-wide transition-colors duration-300 group ${
                     isActive ? 'text-white font-bold' : 'text-[#A8A8A8] hover:text-white'
                   }`}
@@ -61,11 +64,29 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
               );
             })}
 
+            {/* Tactile UI Sound Toggle */}
+            <button
+              type="button"
+              onClick={toggleSound}
+              className={`ml-2 p-1.5 rounded-full transition-all duration-300 flex items-center justify-center border ${
+                soundEnabled
+                  ? 'border-white/40 bg-white/10 text-white shadow-[0_0_12px_rgba(255,255,255,0.4)]'
+                  : 'border-white/10 text-white/40 hover:text-white hover:border-white/20'
+              }`}
+              title={soundEnabled ? 'Mute Tactile UI Audio' : 'Enable Tactile UI Audio'}
+              aria-label="Toggle UI Audio"
+            >
+              {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+            </button>
+
             {/* Quick Command Palette Trigger (Cmd+K) */}
             <button
               type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-              className="ml-2 pl-3 border-l border-white/15 flex items-center gap-1.5 py-1 text-white/40 hover:text-white transition-colors group"
+              onClick={() => {
+                playClick();
+                window.dispatchEvent(new CustomEvent('open-command-palette'));
+              }}
+              className="ml-1 pl-2 border-l border-white/15 flex items-center gap-1.5 py-1 text-white/40 hover:text-white transition-colors group"
               title="Search & Quick Actions (⌘K)"
             >
               <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 group-hover:border-white/30 group-hover:bg-white/10 transition-all">

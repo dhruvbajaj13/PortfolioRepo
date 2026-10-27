@@ -19,7 +19,10 @@ import {
   Code2,
   ExternalLink,
   Command,
+  Zap,
+  Send,
 } from 'lucide-react';
+import { useTactileSound } from '@/hooks/useTactileSound';
 
 interface CommandItem {
   id: string;
@@ -32,6 +35,7 @@ interface CommandItem {
 }
 
 export function CommandPalette() {
+  const { playClick, playWhoosh, playPop } = useTactileSound();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -44,6 +48,7 @@ export function CommandPalette() {
   };
 
   const copyEmail = async () => {
+    playPop();
     try {
       await navigator.clipboard.writeText('d4bajaj@gmail.com');
       showToast('Copied d4bajaj@gmail.com to clipboard! 📋');
@@ -143,10 +148,35 @@ export function CommandPalette() {
       subtitle: 'Open latest CV in Google Drive',
       icon: FileDown,
       action: () => {
+        playPop();
         window.open('https://drive.google.com/file/d/1muHU96RCNS1iCxL6H6SonHjeL6nJlkrA/view', '_blank');
         setIsOpen(false);
       },
       shortcut: 'R',
+    },
+    {
+      id: 'act-hire',
+      category: 'Actions',
+      title: 'Hire Dhruv / Send Message',
+      subtitle: 'Jump to contact form & direct inquiry',
+      icon: Send,
+      action: () => {
+        playPop();
+        scrollTo('contact');
+      },
+      shortcut: 'M',
+    },
+    {
+      id: 'act-turbo',
+      category: 'Actions',
+      title: 'Supercar Turbo Boost',
+      subtitle: 'Jump to Hero 3D Cyberpunk Supercar',
+      icon: Zap,
+      action: () => {
+        playPop();
+        scrollTo('hero');
+      },
+      shortcut: 'B',
     },
     {
       id: 'act-copy-email',
@@ -168,6 +198,7 @@ export function CommandPalette() {
       subtitle: 'github.com/dhruvbajaj13 (Repos & open source)',
       icon: Github,
       action: () => {
+        playPop();
         window.open('https://github.com/dhruvbajaj13', '_blank');
         setIsOpen(false);
       },
@@ -179,7 +210,32 @@ export function CommandPalette() {
       subtitle: 'leetcode.com/u/nobodyknowswhy (Knight 1951)',
       icon: Code2,
       action: () => {
+        playPop();
         window.open('https://leetcode.com/u/nobodyknowswhy/', '_blank');
+        setIsOpen(false);
+      },
+    },
+    {
+      id: 'soc-codeforces',
+      category: 'Socials',
+      title: 'Codeforces Profile',
+      subtitle: 'codeforces.com/profile/nobodyknowswhy',
+      icon: Code2,
+      action: () => {
+        playPop();
+        window.open('https://codeforces.com/profile/nobodyknowswhy', '_blank');
+        setIsOpen(false);
+      },
+    },
+    {
+      id: 'soc-codechef',
+      category: 'Socials',
+      title: 'CodeChef Profile',
+      subtitle: 'codechef.com/users/nobodyknowswhy (3★ Rating: 1613)',
+      icon: Trophy,
+      action: () => {
+        playPop();
+        window.open('https://www.codechef.com/users/nobodyknowswhy', '_blank');
         setIsOpen(false);
       },
     },
@@ -190,6 +246,7 @@ export function CommandPalette() {
       subtitle: 'linkedin.com/in/dhruvbajaj13',
       icon: Linkedin,
       action: () => {
+        playPop();
         window.open('https://www.linkedin.com/in/dhruvbajaj13', '_blank');
         setIsOpen(false);
       },
@@ -212,13 +269,42 @@ export function CommandPalette() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setIsOpen((prev) => !prev);
-      } else if (e.key === 'Escape') {
+        setIsOpen((prev) => {
+          if (!prev) playWhoosh();
+          return !prev;
+        });
+        return;
+      }
+      if (e.key === 'Escape') {
         setIsOpen(false);
+        return;
+      }
+
+      // Quick numbers 1 to 8 jump to sections when not inside input
+      const isInputFocused = ['INPUT', 'TEXTAREA'].includes(
+        (document.activeElement?.tagName || '').toUpperCase()
+      );
+      if (!isInputFocused && !isOpen && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const sectionKeys: Record<string, string> = {
+          '1': 'hero',
+          '2': 'about',
+          '3': 'experience',
+          '4': 'cp-stats',
+          '5': 'achievements',
+          '6': 'skills',
+          '7': 'projects',
+          '8': 'contact',
+        };
+        if (sectionKeys[e.key]) {
+          e.preventDefault();
+          playClick();
+          scrollTo(sectionKeys[e.key]);
+        }
       }
     };
 
     const handleCustomOpen = () => {
+      playWhoosh();
       setIsOpen(true);
     };
 
@@ -249,13 +335,16 @@ export function CommandPalette() {
   const handleInputKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
+      playClick();
       setSelectedIndex((prev) => (prev + 1) % (filtered.length || 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
+      playClick();
       setSelectedIndex((prev) => (prev - 1 + filtered.length) % (filtered.length || 1));
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (filtered[selectedIndex]) {
+        playPop();
         filtered[selectedIndex].action();
       }
     }
@@ -407,6 +496,23 @@ export function CommandPalette() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Floating Quick Action Hint Pill */}
+      <div className="fixed bottom-5 right-5 z-30 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-[#08080A]/90 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] text-[10px] font-mono text-white/50 select-none pointer-events-auto hover:border-white/30 transition-all">
+        <button
+          type="button"
+          onClick={() => {
+            playClick();
+            setIsOpen(true);
+          }}
+          className="flex items-center gap-1.5 text-white/70 hover:text-white transition-colors"
+        >
+          <span className="px-1.5 py-0.5 rounded bg-white/10 text-white font-semibold">⌘K</span>
+          <span>Commands</span>
+        </button>
+        <span className="text-white/20">•</span>
+        <span className="text-white/40">1-8 Jump</span>
+      </div>
     </>
   );
 }
