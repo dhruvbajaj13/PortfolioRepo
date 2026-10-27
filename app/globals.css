@@ -118,3 +118,32 @@ html.lenis, html.lenis body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 107, 44, 0.5);
 }
+
+/* 2026 Interactive Heading Sweep: Light-Grey / Silver Sheen Travels Left-to-Right on Hover */
+.heading-hover-sweep {
+  display: inline-block;
+  cursor: pointer;
+  background-image: linear-gradient(
+    110deg,
+    #ffffff 20%,
+    #9ca3af 44%,
+    #e2e8f0 50%,
+    #9ca3af 56%,
+    #ffffff 80%
+  );
+  background-size: 250% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-position 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  will-change: background-position;
+}
+
+.heading-hover-sweep:hover {
+  background-position: 0% 0;
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.2));
+}

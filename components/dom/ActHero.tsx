@@ -281,9 +281,9 @@ export function ActHero({
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-tight text-center"
+              className="heading-hover-sweep font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-tight text-center cursor-pointer"
             >
-              Dhruv <span className="text-[#FFFFFF]">Bajaj</span>
+              Dhruv Bajaj
             </motion.h1>
 
             {/* Typewriter Dynamic Role Subtitle */}

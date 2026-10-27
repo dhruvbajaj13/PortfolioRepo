@@ -137,9 +137,9 @@ export function ActContact() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2 }}
             viewport={{ once: true }}
-            className="font-display text-5xl sm:text-7xl md:text-8xl font-black text-white tracking-tighter uppercase leading-none"
+            className="heading-hover-sweep font-display text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter uppercase leading-none"
           >
-            Get in <span className="text-white">Touch</span>
+            Get in Touch
           </motion.h2>
 
           <motion.p
