@@ -25,7 +25,7 @@ export function ActAbout() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="heading-hover-sweep font-display text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase leading-none"
+            className="heading-hover-sweep font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter uppercase leading-none"
           >
             About Me
           </motion.h2>
