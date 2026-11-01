@@ -260,11 +260,11 @@ export function ActHero({
       {/* Main Hero Layout: 2 Columns (Responsive Stack on Mobile, Side-by-Side on Desktop) */}
       <div className="max-w-7xl mx-auto w-full my-auto flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-14 relative z-10">
         
-        {/* Left Column: Text & Actions */}
-        <div className="w-full lg:w-[52%] flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 sm:space-y-6">
+        {/* Left Column: Text & Actions (Centered Alignment) */}
+        <div className="w-full lg:w-[52%] flex flex-col items-center text-center space-y-4 sm:space-y-6">
           
-          {/* Header Title Lockup: Badge & Typewriter Centered relative to Name */}
-          <div className="flex flex-col items-center lg:items-start max-w-fit w-full lg:w-auto">
+          {/* Header Title Lockup: Badge, Name & Typewriter Centered */}
+          <div className="flex flex-col items-center max-w-fit w-full mx-auto">
             {/* Status Pill Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -281,7 +281,7 @@ export function ActHero({
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="heading-hover-sweep font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-tight text-center lg:text-left cursor-pointer"
+              className="heading-hover-sweep font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-tight text-center cursor-pointer"
             >
               Dhruv Bajaj
             </motion.h1>
@@ -291,9 +291,9 @@ export function ActHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="h-8 sm:h-10 flex items-center justify-center lg:justify-start mt-0.5"
+              className="h-8 sm:h-10 flex items-center justify-center mt-0.5"
             >
-              <span className="font-display text-sm sm:text-xl md:text-2xl font-semibold text-white tracking-wide text-center lg:text-left">
+              <span className="font-display text-sm sm:text-xl md:text-2xl font-semibold text-white tracking-wide text-center">
                 {currentText}
                 <span className="text-white animate-pulse ml-0.5">|</span>
               </span>
@@ -305,17 +305,17 @@ export function ActHero({
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.6 }}
-            className="font-sans text-xs sm:text-base md:text-lg text-[#A8A8A8] max-w-xl leading-relaxed font-light"
+            className="font-sans text-xs sm:text-base md:text-lg text-[#A8A8A8] max-w-xl leading-relaxed font-light text-center mx-auto"
           >
             Software engineer building production-grade full-stack web platforms and autonomous AI systems. Dedicated to algorithms, scalable architecture, and clean code.
           </motion.p>
 
-          {/* Hero Action CTA Buttons (Fully Mobile Responsive) */}
+          {/* Hero Action CTA Buttons (Centered) */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.7 }}
-            className="pt-1 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2.5 sm:gap-3 w-full sm:w-auto"
+            className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto mx-auto"
           >
             {/* Primary CTA: View My Work ↗ */}
             <a
@@ -346,12 +346,12 @@ export function ActHero({
             </a>
           </motion.div>
 
-          {/* Social Icons Row (Centered on Mobile, Left-aligned on Desktop) */}
+          {/* Social Icons Row (Centered) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="pt-1 flex items-center justify-center lg:justify-start gap-3 w-full max-w-lg"
+            className="pt-1 flex items-center justify-center gap-3 w-full max-w-lg mx-auto"
           >
             <a
               href="https://github.com/dhruvbajaj13"
@@ -385,7 +385,7 @@ export function ActHero({
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.9 }}
-            className="pt-2 w-full max-w-lg"
+            className="pt-2 w-full max-w-lg mx-auto"
           >
             <div className="flex flex-row items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl border border-white/10 bg-[#0C0C0E]/90 shadow-xl backdrop-blur-xl">
               <div className="text-center flex-1">
