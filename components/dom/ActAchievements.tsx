@@ -62,18 +62,18 @@ export function ActAchievements() {
   return (
     <section
       id="achievements"
-      className="relative w-full px-4 sm:px-8 md:px-16 py-20 md:py-28 bg-[#050505]"
+      className="relative w-full px-4 sm:px-8 md:px-16 py-16 sm:py-20 md:py-28 bg-[#050505]"
     >
       <div className="max-w-5xl mx-auto">
 
         {/* Section Header */}
-        <div className="mb-10 sm:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="mb-8 sm:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6">
           <div>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-3"
+              className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-2 sm:mb-3"
             >
               — Verified Milestones —
             </motion.p>
@@ -93,7 +93,7 @@ export function ActAchievements() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             onClick={handleCopyHighlights}
-            className="self-start md:self-auto px-4 py-2 rounded-xl border border-white/15 bg-white/[0.03] hover:bg-white/10 hover:border-white/40 transition-all flex items-center gap-2 text-xs font-mono text-white/80 hover:text-white shadow-sm group"
+            className="self-start md:self-auto px-3.5 sm:px-4 py-2 rounded-xl border border-white/15 bg-white/[0.03] hover:bg-white/10 hover:border-white/40 active:scale-95 transition-all flex items-center gap-2 text-xs font-mono text-white/80 hover:text-white shadow-sm group"
             title="Copy bullet points to clipboard for interview evaluation"
           >
             {copied ? (
@@ -119,12 +119,12 @@ export function ActAchievements() {
           className="rounded-2xl border border-white/10 bg-[#0A0A0C]/90 backdrop-blur-xl overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.8)] divide-y divide-white/8"
         >
           {/* Header Bar */}
-          <div className="px-5 py-3 bg-[#111114] border-b border-white/8 flex items-center justify-between">
-            <div className="flex items-center gap-2 font-mono text-xs text-white/50">
+          <div className="px-4 sm:px-5 py-2.5 sm:py-3 bg-[#111114] border-b border-white/8 flex items-center justify-between">
+            <div className="flex items-center gap-2 font-mono text-[11px] sm:text-xs text-white/50">
               <Terminal className="w-3.5 h-3.5 text-white/40" />
               <span>key_milestones.md</span>
             </div>
-            <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest">
+            <span className="font-mono text-[9px] sm:text-[10px] text-white/40 uppercase tracking-widest">
               5 Verified Highlights
             </span>
           </div>
@@ -137,7 +137,7 @@ export function ActAchievements() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: idx * 0.06 }}
-              className="group px-5 sm:px-7 py-4 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 hover:bg-white transition-all duration-300 cursor-pointer"
+              className="group px-4 sm:px-7 py-3.5 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-6 hover:bg-white transition-all duration-300 cursor-pointer"
             >
               {/* Left: Index + Text */}
               <div className="flex items-start sm:items-center gap-3.5 sm:gap-4 flex-1">

@@ -7,17 +7,17 @@ export function ActAbout() {
   return (
     <section
       id="about"
-      className="relative w-full px-4 sm:px-8 md:px-16 py-24 md:py-32 bg-[#050505]"
+      className="relative w-full px-4 sm:px-8 md:px-16 py-16 sm:py-24 md:py-32 bg-[#050505]"
     >
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <div className="mb-16 md:mb-20">
+        <div className="mb-8 sm:mb-14 md:mb-18">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-4"
+            className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-3 sm:mb-4"
           >
             — Who I Am —
           </motion.p>
@@ -32,7 +32,7 @@ export function ActAbout() {
         </div>
 
         {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-stretch">
+        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 items-center lg:items-stretch">
 
           {/* Left — profile photo */}
           <div className="w-full lg:w-[36%] flex justify-center">
@@ -41,7 +41,7 @@ export function ActAbout() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="relative w-full aspect-square max-w-[310px] lg:max-w-[350px] rounded-2xl overflow-hidden border border-white/15 bg-white/[0.03] group shadow-2xl"
+              className="relative w-full aspect-square max-w-[260px] sm:max-w-[310px] lg:max-w-[350px] rounded-2xl overflow-hidden border border-white/15 bg-white/[0.03] group shadow-2xl"
             >
               <img
                 src="/images/dhruv_profile.jpg"
@@ -57,7 +57,7 @@ export function ActAbout() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="flex-1 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 md:p-10 flex flex-col justify-center gap-4"
+            className="flex-1 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-8 md:p-10 flex flex-col justify-center gap-4"
           >
             <h3 className="font-display font-black text-white text-2xl md:text-3xl tracking-tight mb-2">
               Dhruv Bajaj

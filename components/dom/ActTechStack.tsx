@@ -56,21 +56,21 @@ export function ActTechStack() {
   return (
     <section
       id="skills"
-      className="relative w-full px-4 sm:px-8 md:px-16 py-20 md:py-28 bg-[#050505]"
+      className="relative w-full px-4 sm:px-8 md:px-16 py-16 sm:py-20 md:py-28 bg-[#050505]"
     >
       <div className="max-w-6xl mx-auto">
 
         {/* Section Header */}
-        <div className="mb-10 md:mb-12">
+        <div className="mb-6 sm:mb-10 md:mb-12">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-3"
+            className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-2 sm:mb-3"
           >
             — Tech Arsenal —
           </motion.p>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-4">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -80,13 +80,13 @@ export function ActTechStack() {
               Skills
             </motion.h2>
             <span className="font-mono text-xs text-white/40 tracking-wider">
-              [ {ALL_TECH.length} Active Technologies & Tools ]
+              [ {ALL_TECH.length} Active Technologies &amp; Tools ]
             </span>
           </div>
         </div>
 
         {/* Top Horizontal Filter Tabs (Zero Empty Space) */}
-        <div className="flex items-center gap-2 sm:gap-3 mb-8 overflow-x-auto no-scrollbar pb-2 sm:pb-0">
+        <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8 overflow-x-auto no-scrollbar pb-2.5 sm:pb-0 -webkit-overflow-scrolling-touch">
           {TABS.map((tab) => {
             const count = tab === 'All' ? ALL_TECH.length : ALL_TECH.filter(t => t.category === tab).length;
             const isActive = activeTab === tab;
@@ -94,14 +94,14 @@ export function ActTechStack() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-3.5 sm:px-5 py-2 rounded-full font-mono text-xs transition-all duration-300 flex items-center gap-2 border whitespace-nowrap shrink-0 ${
+                className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-full font-mono text-[11px] sm:text-xs transition-all duration-300 flex items-center gap-1.5 sm:gap-2 border whitespace-nowrap shrink-0 active:scale-95 ${
                   isActive
                     ? 'bg-white text-black font-bold border-white shadow-[0_0_20px_rgba(255,255,255,0.35)] scale-105'
                     : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-white/40 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
                 <span>{tab}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full ${
                   isActive ? 'bg-black/20 text-black font-semibold' : 'bg-white/10 text-white/40'
                 }`}>
                   {count}
@@ -114,7 +114,7 @@ export function ActTechStack() {
         {/* Full-width Responsive Tech Grid */}
         <motion.div
           layout
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5"
+          className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5"
         >
           <AnimatePresence mode="popLayout">
             {filtered.map((tech, i) => (

@@ -162,33 +162,33 @@ export function ActContact() {
           className="rounded-2xl border border-white/10 overflow-hidden pointer-events-auto shadow-[0_20px_60px_rgba(0,0,0,0.9)] bg-[#141414]"
         >
           {/* Mac Window Title Bar */}
-          <div className="flex items-center justify-between px-5 py-3.5 bg-[#1C1C1C] border-b border-white/8">
+          <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-3.5 bg-[#1C1C1C] border-b border-white/8">
             {/* Traffic light dots */}
-            <div className="flex items-center gap-2">
-              <div className="w-3.5 h-3.5 rounded-full bg-[#FF5F57] shadow-[0_0_6px_rgba(255,95,87,0.6)] hover:brightness-110 cursor-default transition-all" />
-              <div className="w-3.5 h-3.5 rounded-full bg-[#FEBC2E] shadow-[0_0_6px_rgba(254,188,46,0.5)] hover:brightness-110 cursor-default transition-all" />
-              <div className="w-3.5 h-3.5 rounded-full bg-[#28C840] shadow-[0_0_6px_rgba(40,200,64,0.5)] hover:brightness-110 cursor-default transition-all" />
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-[#FF5F57] shadow-[0_0_6px_rgba(255,95,87,0.6)] hover:brightness-110 cursor-default transition-all" />
+              <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-[#FEBC2E] shadow-[0_0_6px_rgba(254,188,46,0.5)] hover:brightness-110 cursor-default transition-all" />
+              <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-[#28C840] shadow-[0_0_6px_rgba(40,200,64,0.5)] hover:brightness-110 cursor-default transition-all" />
             </div>
             {/* Title */}
-            <span className="font-mono text-xs text-white/40 select-none">
-              dhruvbajaj.dev — contact@quantum-terminal
+            <span className="font-mono text-[10px] sm:text-xs text-white/40 select-none truncate px-2">
+              contact@quantum-terminal
             </span>
             {/* Right icon */}
-            <div className="flex items-center gap-1.5 text-white/40">
+            <div className="flex items-center gap-1.5 text-white/40 shrink-0">
               <Terminal className="w-3.5 h-3.5" />
               <span className="font-mono text-[10px] hidden sm:inline">ENCRYPTED CHANNEL</span>
             </div>
           </div>
 
           {/* Prompt line */}
-          <div className="px-6 pt-4 pb-1">
-            <span className="font-mono text-xs text-white/30">
+          <div className="px-4 sm:px-6 pt-3.5 pb-1">
+            <span className="font-mono text-[11px] sm:text-xs text-white/30 truncate block">
               $ <span className="text-white/50">new_message --to=d4bajaj@gmail.com</span>
             </span>
           </div>
 
           {/* Form Content */}
-          <div className="px-5 pb-6 pt-3">
+          <div className="px-4 sm:px-5 pb-5 sm:pb-6 pt-2 sm:pt-3">
             <AnimatePresence mode="wait">
               {!isSubmitted ? (
                 <motion.form
@@ -196,9 +196,9 @@ export function ActContact() {
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onSubmit={handleSubmit}
-                  className="space-y-5"
+                  className="space-y-4 sm:space-y-5"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                     <div>
                       <label className="block font-mono text-[10px] text-white/35 uppercase tracking-wider mb-1.5">
                         // YOUR NAME
@@ -209,7 +209,7 @@ export function ActContact() {
                         placeholder="e.g. John Doe"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20"
+                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-base sm:text-sm focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20"
                       />
                     </div>
 
@@ -223,7 +223,7 @@ export function ActContact() {
                         placeholder="you@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20"
+                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-base sm:text-sm focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20"
                       />
                     </div>
                   </div>
@@ -238,7 +238,7 @@ export function ActContact() {
                       placeholder="Tell me about your project or opportunity..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-sm focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20 resize-none"
+                      className="w-full px-4 py-2.5 sm:py-3 rounded-xl bg-[#0A0A0A] border border-white/8 text-white font-sans text-base sm:text-sm focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-white/20 resize-none"
                     />
                   </div>
 
@@ -327,7 +327,7 @@ export function ActContact() {
         </div>
 
         {/* 5 Social Media Cards Grid */}
-        <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 pointer-events-auto">
+        <div className="mt-8 sm:mt-10 grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 gap-2.5 sm:gap-4 pointer-events-auto">
           {SOCIAL_CARDS.map((card, idx) => (
             <motion.a
               key={card.label}
@@ -338,11 +338,11 @@ export function ActContact() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="relative overflow-hidden group p-4 sm:p-6 rounded-2xl border border-white/10 hover:border-white/40 hover:bg-white/[0.04] flex flex-col items-center justify-center gap-3 transition-all duration-300 shadow-xl bg-[#0C0C0C] hover:scale-105"
+              className="relative overflow-hidden group p-3.5 sm:p-6 rounded-2xl border border-white/10 hover:border-white/40 hover:bg-white/[0.04] active:scale-95 flex flex-col items-center justify-center gap-2 sm:gap-3 transition-all duration-300 shadow-xl bg-[#0C0C0C] hover:scale-105"
             >
-              <div className="relative z-10 flex flex-col items-center gap-2.5">
+              <div className="relative z-10 flex flex-col items-center gap-2 sm:gap-2.5">
                 {card.icon}
-                <span className="font-sans text-sm font-bold text-[#A8A8A8] group-hover:text-white transition-colors">
+                <span className="font-sans text-xs sm:text-sm font-bold text-[#A8A8A8] group-hover:text-white transition-colors">
                   {card.label}
                 </span>
               </div>

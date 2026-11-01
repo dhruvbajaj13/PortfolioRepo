@@ -370,14 +370,14 @@ export function CommandPalette() {
       {/* Command Palette Modal */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 sm:pt-28 px-4">
+          <div className="fixed inset-0 z-50 flex items-start justify-center pt-12 sm:pt-28 px-3 sm:px-4">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/75 backdrop-blur-md"
+              className="fixed inset-0 bg-black/80 backdrop-blur-md"
             />
 
             {/* Modal Dialog */}
@@ -387,7 +387,7 @@ export function CommandPalette() {
               exit={{ opacity: 0, scale: 0.96, y: -10 }}
               transition={{ duration: 0.2 }}
               data-lenis-prevent="true"
-              className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-[#0C0C0E]/95 backdrop-blur-2xl shadow-[0_20px_70px_rgba(0,0,0,0.95)] overflow-hidden z-10 flex flex-col max-h-[80vh]"
+              className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-[#0C0C0E]/98 backdrop-blur-2xl shadow-[0_20px_70px_rgba(0,0,0,0.95)] overflow-hidden z-10 flex flex-col max-h-[85vh]"
             >
               {/* Search Bar Input */}
               <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-[#121215] shrink-0">

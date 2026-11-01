@@ -144,17 +144,17 @@ export function ActCPStats() {
   return (
     <section
       id="cp-stats"
-      className="relative w-full px-4 sm:px-8 md:px-16 py-20 md:py-28 bg-[#050505]"
+      className="relative w-full px-4 sm:px-8 md:px-16 py-16 sm:py-20 md:py-28 bg-[#050505]"
     >
       <div className="max-w-4xl mx-auto">
 
         {/* Section Header */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-5 sm:mb-8">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-3"
+            className="font-mono text-xs tracking-[0.25em] text-white/40 uppercase mb-2 sm:mb-3"
           >
             — 04 / Competitive Programming &amp; Algorithmic Rigor —
           </motion.p>
@@ -171,40 +171,40 @@ export function ActCPStats() {
         </div>
 
         {/* 2026 Live Milestone Highlights Strip */}
-        <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+        <div className="mb-5 sm:mb-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
               <Trophy className="w-4 h-4 text-amber-400" />
             </div>
             <div>
-              <p className="font-display font-black text-base text-white tracking-tight">LeetCode Knight</p>
-              <p className="font-mono text-[10px] text-white/50">Top 3% Global • Max 1951</p>
+              <p className="font-display font-black text-sm sm:text-base text-white tracking-tight">LeetCode Knight</p>
+              <p className="font-mono text-[9.5px] sm:text-[10px] text-white/50">Top 3% Global • Max 1951</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
             <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
               <Flame className="w-4 h-4 text-orange-400" />
             </div>
             <div>
-              <p className="font-display font-black text-base text-white tracking-tight">365+ Day Streak</p>
-              <p className="font-mono text-[10px] text-white/50">Consistent Daily Problem Solving</p>
+              <p className="font-display font-black text-sm sm:text-base text-white tracking-tight">365+ Day Streak</p>
+              <p className="font-mono text-[9.5px] sm:text-[10px] text-white/50">Consistent Daily Problem Solving</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
               <Award className="w-4 h-4 text-emerald-400" />
             </div>
             <div>
-              <p className="font-display font-black text-base text-white tracking-tight">1,300+ Solved</p>
-              <p className="font-mono text-[10px] text-white/50">Across LC, GFG, CF &amp; CC</p>
+              <p className="font-display font-black text-sm sm:text-base text-white tracking-tight">1,300+ Solved</p>
+              <p className="font-mono text-[9.5px] sm:text-[10px] text-white/50">Across LC, GFG, CF &amp; CC</p>
             </div>
           </div>
         </div>
 
         {/* Top Horizontal Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2.5 mb-4 sm:mb-5 no-scrollbar -webkit-overflow-scrolling-touch">
           {PLATFORMS_DATA.map((plat, i) => {
             const { Logo } = plat;
             const isSelected = activeIdx === i;
@@ -283,16 +283,16 @@ export function ActCPStats() {
             </div>
 
             {/* Stats Row — interactive cards */}
-            <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 relative z-10">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3.5 relative z-10">
               {active.stats.map((s) => (
                 <div
                   key={s.label}
-                  className="flex flex-col gap-1 p-3 sm:p-3.5 rounded-2xl border border-white/8 bg-white/[0.02] text-center hover:border-white/30 hover:bg-white/[0.05] hover:-translate-y-1 transition-all duration-200 cursor-default group/stat shadow-sm"
+                  className="flex flex-col gap-0.5 sm:gap-1 p-2.5 sm:p-3.5 rounded-2xl border border-white/8 bg-white/[0.02] text-center hover:border-white/30 hover:bg-white/[0.05] hover:-translate-y-1 transition-all duration-200 cursor-default group/stat shadow-sm"
                 >
-                  <span className="font-display font-black text-xl sm:text-3xl text-white tracking-tight group-hover/stat:text-white transition-colors">
+                  <span className="font-display font-black text-base xs:text-xl sm:text-3xl text-white tracking-tight group-hover/stat:text-white transition-colors">
                     <AnimatedCounter target={s.value} />
                   </span>
-                  <span className="font-mono text-[9px] sm:text-[10px] tracking-widest text-white/50 uppercase group-hover/stat:text-white/80 transition-colors">
+                  <span className="font-mono text-[7.5px] xs:text-[9px] sm:text-[10px] tracking-widest text-white/50 uppercase group-hover/stat:text-white/80 transition-colors truncate">
                     {s.label}
                   </span>
                 </div>

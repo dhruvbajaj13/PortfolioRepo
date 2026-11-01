@@ -133,7 +133,17 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
   };
 
   const handleBoostToggle = () => {
-    if (!isHoveredRef.current) return;
+    // If parked (e.g. on mobile/touch screen where hover does not exist), first tap starts driving
+    if (!isHoveredRef.current) {
+      isHoveredRef.current = true;
+      setIsHovered(true);
+      if (soundEnabled && audioContextRef.current && engineGainRef.current && engineOscRef.current) {
+        const now = audioContextRef.current.currentTime;
+        engineGainRef.current.gain.setTargetAtTime(0.04, now, 0.2);
+        engineOscRef.current.frequency.setTargetAtTime(70, now, 0.25);
+      }
+      return;
+    }
     const next = !boostStateRef.current;
     boostStateRef.current = next;
     setIsBoosting(next);
@@ -1668,33 +1678,33 @@ export const HeroCyberpunkCar3D: React.FC<HeroCyberpunkCar3DProps> = ({ classNam
           />
           <span>
             {!isHovered
-              ? "⚡ HOVER OVER CAR TO DRIVE · CLICK FOR NITRO"
+              ? "⚡ TAP / HOVER TO DRIVE"
               : isBoosting
-              ? "🚀 NITRO ACTIVE · 295 KM/H (CLICK TO CRUISE)"
-              : "🔥 DRIVING (CLICK FOR NITRO BOOST)"}
+              ? "🚀 NITRO ACTIVE · 295 KM/H"
+              : "🔥 DRIVING (TAP FOR NITRO)"}
           </span>
         </div>
       </div>
 
       {/* ── Bottom-Left Mini-Map Radar HUD ── */}
-      <div className="absolute bottom-3 left-3 pointer-events-none z-20 flex items-center gap-2">
-        <div className="relative w-12 h-12 rounded-full border border-cyan-500/40 bg-black/70 backdrop-blur-md flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-          <div className="absolute inset-1.5 rounded-full border border-cyan-500/20" />
-          <div className="absolute inset-3 rounded-full border border-cyan-500/15" />
+      <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 pointer-events-none z-20 flex items-center gap-2">
+        <div className="relative w-9 h-9 sm:w-12 sm:h-12 rounded-full border border-cyan-500/40 bg-black/70 backdrop-blur-md flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+          <div className="absolute inset-1 rounded-full border border-cyan-500/20" />
+          <div className="absolute inset-2 sm:inset-3 rounded-full border border-cyan-500/15" />
           <div
             className={`absolute inset-0 rounded-full border-t border-cyan-400 ${
               isHovered ? "animate-spin opacity-90" : "opacity-30"
             }`}
           />
           <div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500 shadow-[0_0_6px_#ff00ff]" />
-          <Navigation className="absolute -top-1 w-2.5 h-2.5 text-cyan-400" />
+          <Navigation className="absolute -top-1 w-2 sm:w-2.5 h-2 sm:h-2.5 text-cyan-400" />
         </div>
       </div>
 
       {/* ── Bottom-Right Tachometer / Speedometer HUD ── */}
-      <div className="absolute bottom-3 right-3 pointer-events-none z-20">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/15 bg-black/80 backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.8)]">
-          <div className="relative w-9 h-9 rounded-full border-2 border-white/10 flex items-center justify-center">
+      <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 pointer-events-none z-20">
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-white/15 bg-black/80 backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.8)]">
+          <div className="relative w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-white/10 flex items-center justify-center shrink-0">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
               <path
                 className="text-white/10"

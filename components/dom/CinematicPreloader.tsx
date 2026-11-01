@@ -126,12 +126,12 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
           />
 
           {/* Thin horizontal rule lines */}
-          <div className="absolute left-12 right-12 top-[30%] h-px bg-white/[0.05] pointer-events-none" />
-          <div className="absolute left-12 right-12 bottom-[30%] h-px bg-white/[0.05] pointer-events-none" />
+          <div className="absolute left-4 sm:left-12 right-4 sm:right-12 top-[30%] h-px bg-white/[0.05] pointer-events-none" />
+          <div className="absolute left-4 sm:left-12 right-4 sm:right-12 bottom-[30%] h-px bg-white/[0.05] pointer-events-none" />
 
           {/* Vertical side lines */}
-          <div className="absolute top-[30%] bottom-[30%] left-12 w-px bg-white/[0.05] pointer-events-none" />
-          <div className="absolute top-[30%] bottom-[30%] right-12 w-px bg-white/[0.05] pointer-events-none" />
+          <div className="absolute top-[30%] bottom-[30%] left-4 sm:left-12 w-px bg-white/[0.05] pointer-events-none" />
+          <div className="absolute top-[30%] bottom-[30%] right-4 sm:right-12 w-px bg-white/[0.05] pointer-events-none" />
 
           {/* Corner brackets at rule intersections */}
           {(['tl','tr','bl','br'] as const).map(p => (
@@ -141,8 +141,8 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
               style={{
                 top:    p.startsWith('t') ? 'calc(30% - 0px)' : undefined,
                 bottom: p.startsWith('b') ? 'calc(30% - 0px)' : undefined,
-                left:   p.endsWith('l')   ? '46px' : undefined,
-                right:  p.endsWith('r')   ? '46px' : undefined,
+                left:   p.endsWith('l')   ? '10px' : undefined,
+                right:  p.endsWith('r')   ? '10px' : undefined,
               }}
             >
               <Corner pos={p} />
@@ -150,7 +150,7 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
           ))}
 
           {/* ── Top status bar */}
-          <div className="absolute top-7 sm:top-10 left-8 sm:left-14 right-8 sm:right-14 flex items-center justify-between z-20">
+          <div className="absolute top-5 sm:top-10 left-5 sm:left-14 right-5 sm:right-14 flex items-center justify-between z-20">
             <span className="font-mono text-[9px] tracking-[0.35em] text-white/25 uppercase">Portfolio · 2026</span>
             <motion.span
               animate={{ opacity: [0.2, 0.55, 0.2] }}
@@ -162,7 +162,7 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
           </div>
 
           {/* ── Center block */}
-          <div className="relative z-20 flex flex-col items-center w-full px-8 gap-7 sm:gap-9">
+          <div className="relative z-20 flex flex-col items-center w-full px-4 sm:px-8 gap-6 sm:gap-9">
 
             {/* Name — letter-by-letter drop */}
             <div className="flex items-center overflow-hidden h-[3.5vw] sm:h-[2.8vw] min-h-[18px]">
@@ -244,7 +244,7 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
           </div>
 
           {/* ── Bottom bar */}
-          <div className="absolute bottom-7 sm:bottom-10 left-8 sm:left-14 right-8 sm:right-14 flex items-center justify-between z-20">
+          <div className="absolute bottom-5 sm:bottom-10 left-5 sm:left-14 right-5 sm:right-14 flex items-center justify-between z-20">
             <span className="font-mono text-[9px] tracking-[0.3em] text-white/18 uppercase">Full-Stack · AI · DSA</span>
             <motion.div className="flex items-center gap-2">
               {[0, 1, 2].map(i => (
