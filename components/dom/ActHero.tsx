@@ -260,8 +260,8 @@ export function ActHero({
       {/* Main Hero Layout: 2 Columns (Responsive Stack on Mobile, Side-by-Side on Desktop) */}
       <div className="max-w-7xl mx-auto w-full my-auto flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-14 relative z-10">
         
-        {/* Left Column: Text & Actions (Centered Alignment) */}
-        <div className="w-full lg:w-[52%] flex flex-col items-center text-center space-y-4 sm:space-y-6">
+        {/* Left Column: Text & Actions (Centered Alignment with subtle left offset on desktop) */}
+        <div className="w-full lg:w-[52%] flex flex-col items-center text-center space-y-4 sm:space-y-6 lg:-translate-x-6 xl:-translate-x-10">
           
           {/* Header Title Lockup: Badge, Name & Typewriter Centered */}
           <div className="flex flex-col items-center max-w-fit w-full mx-auto">
