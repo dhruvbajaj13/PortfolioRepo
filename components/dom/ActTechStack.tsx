@@ -13,45 +13,60 @@ interface TechItem {
 }
 
 const ALL_TECH: TechItem[] = [
-  // Languages
+  // ─── Languages ────────────────────────────────────────────────────────
   { name: 'Java',         category: 'Languages', color: '#E76F00', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg', isCore: true },
+  { name: 'C++',          category: 'Languages', color: '#00599C', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg', isCore: true },
+  { name: 'Python',      category: 'Languages', color: '#3776AB', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', isCore: true },
   { name: 'JavaScript',  category: 'Languages', color: '#F7DF1E', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
   { name: 'TypeScript',  category: 'Languages', color: '#3178C6', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg', isCore: true },
-  { name: 'Python',      category: 'Languages', color: '#3776AB', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', isCore: true },
+  { name: 'SQL',         category: 'Languages', color: '#00758F', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azuresqldatabase/azuresqldatabase-original.svg' },
 
-  // Frontend
+  // ─── Frontend ─────────────────────────────────────────────────────────
   { name: 'React.js',    category: 'Frontend',  color: '#61DAFB', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', isCore: true },
   { name: 'Next.js',     category: 'Frontend',  color: '#FFFFFF', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg', isCore: true },
-  { name: 'Tailwind CSS',category: 'Frontend',  color: '#06B6D4', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg' },
-  { name: 'Framer Motion',category:'Frontend',  color: '#BB4BFF', logo: 'https://cdn.simpleicons.org/framer/BB4BFF' },
   { name: 'HTML5 / CSS3',category: 'Frontend',  color: '#E34F26', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
+  { name: 'JavaScript',  category: 'Frontend',  color: '#F7DF1E', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
+  { name: 'TypeScript',  category: 'Frontend',  color: '#3178C6', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg' },
+  { name: 'Tailwind CSS',category: 'Frontend',  color: '#06B6D4', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg', isCore: true },
+  { name: 'shadcn/ui',   category: 'Frontend',  color: '#FFFFFF', logo: 'https://cdn.simpleicons.org/shadcnui/FFFFFF', isCore: true },
+  { name: 'Framer Motion',category:'Frontend',  color: '#BB4BFF', logo: 'https://cdn.simpleicons.org/framer/BB4BFF' },
+  { name: 'GSAP',        category: 'Frontend',  color: '#88CE02', logo: 'https://cdn.simpleicons.org/greensock/88CE02' },
 
-  // Backend
+  // ─── Backend ──────────────────────────────────────────────────────────
   { name: 'Node.js',     category: 'Backend',   color: '#339933', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg', isCore: true },
   { name: 'Express.js',  category: 'Backend',   color: '#FFFFFF', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg' },
+  { name: 'FastAPI',     category: 'Backend',   color: '#009688', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg', isCore: true },
   { name: 'REST APIs',   category: 'Backend',   color: '#FFFFFF', logo: 'https://cdn.simpleicons.org/fastapi/00E5FF' },
-  { name: 'MongoDB',     category: 'Backend',   color: '#47A248', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
+  { name: 'MongoDB',     category: 'Backend',   color: '#47A248', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg', isCore: true },
+  { name: 'Convex',      category: 'Backend',   color: '#FF5722', logo: 'https://cdn.simpleicons.org/convex/FF5722', isCore: true },
+  { name: 'PostgreSQL',  category: 'Backend',   color: '#4169E1', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
   { name: 'MySQL',       category: 'Backend',   color: '#4479A1', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
   { name: 'ChromaDB',    category: 'Backend',   color: '#A855F7', logo: 'https://cdn.simpleicons.org/chromatic/A855F7' },
+  { name: 'Pinecone',    category: 'Backend',   color: '#000000', logo: 'https://api.iconify.design/logos/pinecone.svg' },
 
-  // AI / ML
+  // ─── AI / ML ──────────────────────────────────────────────────────────
   { name: 'LangChain',   category: 'AI / ML',   color: '#1CD399', logo: 'https://cdn.simpleicons.org/langchain/1CD399', isCore: true },
   { name: 'LangGraph',   category: 'AI / ML',   color: '#FF6B6B', logo: 'https://cdn.simpleicons.org/langchain/FF6B6B', isCore: true },
-  { name: 'OpenAI',      category: 'AI / ML',   color: '#FFFFFF', logo: 'https://cdn.simpleicons.org/openai/FFFFFF' },
-  { name: 'RAG',         category: 'AI / ML',   color: '#F59E0B', logo: 'https://cdn.simpleicons.org/googlebard/F59E0B' },
-  { name: 'Vector DBs',  category: 'AI / ML',   color: '#EC4899', logo: 'https://cdn.simpleicons.org/pinecone/EC4899' },
+  { name: 'RAG',         category: 'AI / ML',   color: '#F59E0B', logo: 'https://cdn.simpleicons.org/googlebard/F59E0B', isCore: true },
+  { name: 'Groq',        category: 'AI / ML',   color: '#F55036', logo: 'https://api.iconify.design/logos/groq.svg', isCore: true },
+  { name: 'Llama',       category: 'AI / ML',   color: '#046CE5', logo: 'https://cdn.simpleicons.org/meta/046CE5', isCore: true },
   { name: 'HuggingFace', category: 'AI / ML',   color: '#FFD21E', logo: 'https://cdn.simpleicons.org/huggingface/FFD21E' },
+  { name: 'Streamlit',   category: 'AI / ML',   color: '#FF4B4B', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/streamlit/streamlit-original.svg' },
+  { name: 'FastAPI',     category: 'AI / ML',   color: '#009688', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg' },
+  { name: 'ChromaDB',    category: 'AI / ML',   color: '#A855F7', logo: 'https://cdn.simpleicons.org/chromatic/A855F7' },
+  { name: 'Pinecone',    category: 'AI / ML',   color: '#000000', logo: 'https://api.iconify.design/logos/pinecone.svg' },
+  { name: 'Vector DBs',  category: 'AI / ML',   color: '#EC4899', logo: 'https://api.iconify.design/logos/pinecone.svg' },
 
-  // Tools
+  // ─── Tools ────────────────────────────────────────────────────────────
   { name: 'Git',         category: 'Tools',     color: '#F05032', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg', isCore: true },
-  { name: 'GitHub',      category: 'Tools',     color: '#FFFFFF', logo: 'https://cdn.simpleicons.org/github/FFFFFF' },
+  { name: 'GitHub',      category: 'Tools',     color: '#FFFFFF', logo: 'https://cdn.simpleicons.org/github/FFFFFF', isCore: true },
   { name: 'Docker',      category: 'Tools',     color: '#2496ED', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
   { name: 'Postman',     category: 'Tools',     color: '#FF6C37', logo: 'https://cdn.simpleicons.org/postman/FF6C37' },
   { name: 'Jira',        category: 'Tools',     color: '#0052CC', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jira/jira-original.svg' },
   { name: 'Jupyter',     category: 'Tools',     color: '#F37626', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg' },
 ];
 
-export const TECH_NODES = ALL_TECH.map((t) => t.name);
+export const TECH_NODES = Array.from(new Set(ALL_TECH.map((t) => t.name)));
 
 const TABS = ['All', 'Languages', 'Frontend', 'Backend', 'AI / ML', 'Tools'] as const;
 
@@ -59,13 +74,16 @@ export function ActTechStack() {
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filtered = ALL_TECH.filter((t) => {
-    const matchesTab = activeTab === 'All' || t.category === activeTab;
+  // In 'All' tab, deduplicate items by name so identical skills don't repeat unnecessarily
+  const sourceList = activeTab === 'All'
+    ? ALL_TECH.filter((item, idx, arr) => arr.findIndex(t => t.name === item.name) === idx)
+    : ALL_TECH.filter((t) => t.category === activeTab);
+
+  const filtered = sourceList.filter((t) => {
     const q = searchQuery.toLowerCase().trim();
-    const matchesSearch = !q ||
+    return !q ||
       t.name.toLowerCase().includes(q) ||
       t.category.toLowerCase().includes(q);
-    return matchesTab && matchesSearch;
   });
 
   return (
@@ -96,7 +114,7 @@ export function ActTechStack() {
             </motion.h2>
             <div className="flex items-center gap-3">
               <span className="font-mono text-xs text-white/40 tracking-wider">
-                [ {ALL_TECH.length} Active Technologies &amp; Tools ]
+                [ {TECH_NODES.length} Unique Technologies &amp; Tools ]
               </span>
             </div>
           </div>
@@ -107,7 +125,9 @@ export function ActTechStack() {
           {/* Filter Tabs */}
           <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar pb-1.5 sm:pb-0 -webkit-overflow-scrolling-touch">
             {TABS.map((tab) => {
-              const count = tab === 'All' ? ALL_TECH.length : ALL_TECH.filter(t => t.category === tab).length;
+              const count = tab === 'All' 
+                ? TECH_NODES.length 
+                : ALL_TECH.filter(t => t.category === tab).length;
               const isActive = activeTab === tab;
               return (
                 <button
@@ -137,7 +157,7 @@ export function ActTechStack() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Find tech (e.g. Java, Docker)..."
+              placeholder="Find tech (e.g. C++, Llama, Groq)..."
               className="w-full bg-white/[0.03] hover:bg-white/[0.05] focus:bg-white/[0.06] border border-white/10 focus:border-white/40 rounded-full pl-8 pr-8 py-1.5 text-xs font-mono text-white placeholder-white/30 focus:outline-none transition-all duration-200"
             />
             {searchQuery && (
@@ -172,7 +192,7 @@ export function ActTechStack() {
         >
           <AnimatePresence mode="popLayout">
             {filtered.map((tech, i) => (
-              <TechCard key={tech.name} tech={tech} index={i} />
+              <TechCard key={`${tech.category}-${tech.name}`} tech={tech} index={i} />
             ))}
           </AnimatePresence>
         </motion.div>
