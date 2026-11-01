@@ -30,66 +30,64 @@ const Hero3DGeometricBackground = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
-    // 1. Left spinning wireframe icosahedron — Vibrant Cyan (0x00f0ff)
+    // 1. Left spinning wireframe icosahedron — Monochrome Pure White
     const icoGeo1 = new THREE.IcosahedronGeometry(1.6, 1);
     const icoMat1 = new THREE.MeshBasicMaterial({
-      color: 0x00f0ff,
+      color: 0xffffff,
       wireframe: true,
       transparent: true,
-      opacity: 0.18,
+      opacity: 0.1,
     });
     const icoMesh1 = new THREE.Mesh(icoGeo1, icoMat1);
     icoMesh1.position.set(-3.5, 0.5, -2);
     scene.add(icoMesh1);
 
-    // 2. Right spinning wireframe icosahedron — Electric Violet (0xa855f7)
+    // 2. Right spinning wireframe icosahedron — Monochrome Silver Grey
     const icoGeo2 = new THREE.IcosahedronGeometry(2.0, 1);
     const icoMat2 = new THREE.MeshBasicMaterial({
-      color: 0xa855f7,
+      color: 0xcccccc,
       wireframe: true,
       transparent: true,
-      opacity: 0.18,
+      opacity: 0.08,
     });
     const icoMesh2 = new THREE.Mesh(icoGeo2, icoMat2);
     icoMesh2.position.set(3.8, -0.2, -3);
     scene.add(icoMesh2);
 
-
-    // 4. Bottom-Left floating wireframe Octahedron — Warm Amber (0xf59e0b)
+    // 3. Bottom-Left floating wireframe Octahedron — Monochrome White
     const octGeo = new THREE.OctahedronGeometry(1.1, 0);
     const octMat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
+      color: 0xffffff,
       wireframe: true,
       transparent: true,
-      opacity: 0.18,
+      opacity: 0.09,
     });
     const octMesh = new THREE.Mesh(octGeo, octMat);
     octMesh.position.set(-2.8, -2.2, -2);
     scene.add(octMesh);
 
-    // 5. Far Top-Left floating wireframe Dodecahedron — Radiant Blue (0x3b82f6)
+    // 4. Far Top-Left floating wireframe Dodecahedron — Stealth Neutral Grey
     const dodecGeo = new THREE.DodecahedronGeometry(0.95, 0);
     const dodecMat = new THREE.MeshBasicMaterial({
-      color: 0x3b82f6,
+      color: 0xaaaaaa,
       wireframe: true,
       transparent: true,
-      opacity: 0.16,
+      opacity: 0.08,
     });
     const dodecMesh = new THREE.Mesh(dodecGeo, dodecMat);
     dodecMesh.position.set(-1.8, 2.4, -3.2);
     scene.add(dodecMesh);
 
-    // 260 Ambient Multicolor Floating Particles
+    // 260 Ambient Monochrome Starlight Dust Particles
     const count = 260;
     const pGeo = new THREE.BufferGeometry();
     const pos = new Float32Array(count * 3);
     const cols = new Float32Array(count * 3);
     const palette = [
-      new THREE.Color(0x00f0ff), // Cyan
-      new THREE.Color(0xa855f7), // Violet
-      new THREE.Color(0x10b981), // Emerald
-      new THREE.Color(0xf59e0b), // Amber
-      new THREE.Color(0x3b82f6), // Blue
+      new THREE.Color(0xffffff), // Pure White
+      new THREE.Color(0xd4d4d4), // Silver
+      new THREE.Color(0xa3a3a3), // Light Grey
+      new THREE.Color(0x737373), // Subtle Neutral Grey
     ];
 
     for (let i = 0; i < count; i++) {
@@ -104,10 +102,10 @@ const Hero3DGeometricBackground = () => {
     pGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     pGeo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
     const pMat = new THREE.PointsMaterial({
-      size: 0.035,
+      size: 0.03,
       vertexColors: true,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.45,
       blending: THREE.AdditiveBlending,
     });
     const particles = new THREE.Points(pGeo, pMat);

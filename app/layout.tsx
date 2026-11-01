@@ -19,9 +19,15 @@ export const metadata: Metadata = {
     'Next.js 15',
     'AI Engineer',
     'NSUT',
-    'LeetCode 1933',
+    'LeetCode 1951 (Knight)',
+    'Competitive Programming',
   ],
   authors: [{ name: 'Dhruv Bajaj' }],
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: 'Dhruv Bajaj — Software Engineer & Creative Developer',
     description:
