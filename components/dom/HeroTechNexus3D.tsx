@@ -2,7 +2,16 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import { Zap, Activity, Maximize2, RotateCcw } from 'lucide-react';
+import {
+  Zap,
+  Activity,
+  RotateCcw,
+  Layers,
+  Volume2,
+  VolumeX,
+  Palette,
+  Eye,
+} from 'lucide-react';
 import { useTactileSound } from '@/hooks/useTactileSound';
 
 interface TechNodeData {
@@ -15,25 +24,31 @@ interface TechNodeData {
   orbitSpeed: number;
   orbitPhase: number;
   orbitTilt: number;
+  schematicY: number; // Y position in exploded schematic tier
+  schematicRadius: number;
   details: string;
+  techStack: string;
 }
 
 const TECH_NODES: TechNodeData[] = [
   {
     id: 'ai-rag',
-    name: 'AI & RAG',
-    category: 'GenAI Systems',
+    name: 'AI & RAG Engine',
+    category: 'GenAI Architecture',
     color: 0x1cd399,
     hex: '#1CD399',
     orbitRadius: 2.15,
     orbitSpeed: 0.38,
     orbitPhase: 0,
     orbitTilt: 0.28,
-    details: 'LangChain • LangGraph • RAG',
+    schematicY: 0.5,
+    schematicRadius: 1.6,
+    details: 'LangChain • LangGraph • Agentic Workflows',
+    techStack: 'Groq • Llama 3 • Pinecone RAG',
   },
   {
     id: 'algorithms',
-    name: 'Algorithms',
+    name: 'Algorithmic Engine',
     category: 'Competitive DSA',
     color: 0xffa116,
     hex: '#FFA116',
@@ -41,47 +56,59 @@ const TECH_NODES: TechNodeData[] = [
     orbitSpeed: 0.3,
     orbitPhase: (Math.PI * 2) / 6,
     orbitTilt: -0.32,
-    details: 'LeetCode Knight 1951',
+    schematicY: 0.5,
+    schematicRadius: 1.8,
+    details: 'LeetCode Knight (Rating 1951) • Top 3%',
+    techStack: 'Graph Algorithms • Dynamic Programming',
   },
   {
     id: 'systems',
-    name: 'Full Stack',
-    category: 'Web Architecture',
+    name: 'Frontend Client Tier',
+    category: 'Spatial & Web UI',
     color: 0x3178c6,
     hex: '#3178C6',
     orbitRadius: 2.05,
     orbitSpeed: 0.35,
     orbitPhase: (Math.PI * 4) / 6,
     orbitTilt: 0.45,
-    details: 'Next.js 15 • TypeScript • React',
+    schematicY: 1.4,
+    schematicRadius: 1.5,
+    details: 'Next.js 15 App Router • TypeScript • React',
+    techStack: 'Tailwind CSS • Framer Motion • Three.js',
   },
   {
     id: 'backend',
-    name: 'Services',
-    category: 'Distributed APIs',
+    name: 'Distributed Services',
+    category: 'Async Backend',
     color: 0x009688,
     hex: '#009688',
     orbitRadius: 2.25,
     orbitSpeed: -0.32,
     orbitPhase: (Math.PI * 6) / 6,
     orbitTilt: -0.22,
-    details: 'FastAPI • Node.js • REST APIs',
+    schematicY: -0.5,
+    schematicRadius: 1.6,
+    details: 'FastAPI • Node.js • RESTful Architecture',
+    techStack: 'Background Workers • Python • Express',
   },
   {
     id: 'realtime',
-    name: 'Realtime',
-    category: 'State & Workflows',
+    name: 'Realtime & Telemetry',
+    category: 'State & Events',
     color: 0xff5722,
     hex: '#FF5722',
     orbitRadius: 2.18,
     orbitSpeed: 0.28,
     orbitPhase: (Math.PI * 8) / 6,
     orbitTilt: 0.36,
-    details: 'Convex • Inngest • WebSockets',
+    schematicY: 1.4,
+    schematicRadius: 1.7,
+    details: 'Convex Realtime DB • Inngest Queues',
+    techStack: 'WebSockets • Reactive Synchronization',
   },
   {
     id: 'data',
-    name: 'Vector DB',
+    name: 'Vector & Data Store',
     category: 'High-Dim Storage',
     color: 0xa855f7,
     hex: '#A855F7',
@@ -89,27 +116,106 @@ const TECH_NODES: TechNodeData[] = [
     orbitSpeed: -0.28,
     orbitPhase: (Math.PI * 10) / 6,
     orbitTilt: -0.42,
-    details: 'Pinecone • ChromaDB • MongoDB',
+    schematicY: -1.3,
+    schematicRadius: 1.7,
+    details: 'ChromaDB • Pinecone • MongoDB Atlas',
+    techStack: 'Cosine Similarity • Document Indexing',
   },
+];
+
+// Energy State Color Palettes
+const THEMES = [
+  { id: 'cyan', name: 'QUANTUM CYAN', coreColor: 0x38bdf8, rimColor: 0x00f0ff, hex: '#38BDF8' },
+  { id: 'matrix', name: 'MATRIX EMERALD', coreColor: 0x10b981, rimColor: 0x00ff88, hex: '#10B981' },
+  { id: 'amber', name: 'SOLAR COMPUTE', coreColor: 0xf59e0b, rimColor: 0xffaa00, hex: '#F59E0B' },
+  { id: 'violet', name: 'NEURAL VIOLET', coreColor: 0xa855f7, rimColor: 0xc084fc, hex: '#A855F7' },
 ];
 
 export function HeroTechNexus3D() {
   const mountRef = useRef<HTMLDivElement>(null);
-  const { playPop, playWhoosh } = useTactileSound();
+  const { playPop, playWhoosh, playClick } = useTactileSound();
 
+  // Mode states
   const [isOverclocked, setIsOverclocked] = useState(false);
-  const [hoveredNode, setHoveredNode] = useState<TechNodeData | null>(null);
+  const [isSchematic, setIsSchematic] = useState(false);
+  const [themeIdx, setThemeIdx] = useState(0);
+  const [soundActive, setSoundActive] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<TechNodeData | null>(null);
   const [fps, setFps] = useState(60);
+
+  // References for live animation loop
+  const isSchematicRef = useRef(false);
+  isSchematicRef.current = isSchematic;
+
+  const currentThemeRef = useRef(THEMES[themeIdx]);
+  currentThemeRef.current = THEMES[themeIdx];
 
   const overclockRef = useRef(false);
   const triggerPulseRef = useRef<(() => void) | null>(null);
   const resetCameraRef = useRef<(() => void) | null>(null);
 
-  // Interaction: Trigger Quantum Core Overclock Burst
+  // Web Audio Synth engine refs
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const synthFilterRef = useRef<BiquadFilterNode | null>(null);
+  const synthGainRef = useRef<GainNode | null>(null);
+
+  // Toggle Web Audio Synth
+  const toggleSound = useCallback(() => {
+    if (!soundActive) {
+      try {
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const ctx = new AudioCtx();
+        audioCtxRef.current = ctx;
+
+        const osc = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(55, ctx.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(320, ctx.currentTime);
+        filter.Q.setValueAtTime(4, ctx.currentTime);
+
+        gain.gain.setValueAtTime(0.04, ctx.currentTime);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        synthFilterRef.current = filter;
+        synthGainRef.current = gain;
+        setSoundActive(true);
+        playClick();
+      } catch {
+        // Audio policy
+      }
+    } else {
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+        audioCtxRef.current = null;
+      }
+      setSoundActive(false);
+      playClick();
+    }
+  }, [soundActive, playClick]);
+
+  // Trigger Quantum Pulse
   const handlePulse = useCallback(() => {
     playWhoosh();
     setIsOverclocked(true);
     overclockRef.current = true;
+
+    // Modulate audio filter if synth is active
+    if (synthFilterRef.current && audioCtxRef.current) {
+      const now = audioCtxRef.current.currentTime;
+      synthFilterRef.current.frequency.cancelScheduledValues(now);
+      synthFilterRef.current.frequency.setValueAtTime(1400, now);
+      synthFilterRef.current.frequency.exponentialRampToValueAtTime(320, now + 1.6);
+    }
+
     if (triggerPulseRef.current) {
       triggerPulseRef.current();
     }
@@ -119,6 +225,18 @@ export function HeroTechNexus3D() {
     }, 1900);
   }, [playWhoosh]);
 
+  // Cycle Energy State Theme
+  const handleNextTheme = useCallback(() => {
+    playPop();
+    setThemeIdx((prev) => (prev + 1) % THEMES.length);
+  }, [playPop]);
+
+  // Toggle Schematic Blueprint View
+  const handleToggleSchematic = useCallback(() => {
+    playClick();
+    setIsSchematic((prev) => !prev);
+  }, [playClick]);
+
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
@@ -126,7 +244,7 @@ export function HeroTechNexus3D() {
     let width = container.clientWidth || 480;
     let height = container.clientHeight || 340;
 
-    // ─── 1. Scene & Perspective Camera ────────────────────────────────
+    // ─── 1. Scene, Camera, Renderer ──────────────────────────────────
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(46, width / height, 0.1, 100);
     camera.position.set(0, 0, 5.8);
@@ -145,7 +263,7 @@ export function HeroTechNexus3D() {
     const masterPivot = new THREE.Group();
     scene.add(masterPivot);
 
-    // ─── 3. Lighting ────────────────────────────────────────────────
+    // ─── 3. Lighting with Dynamic Theme Response ─────────────────────
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
     scene.add(ambientLight);
 
@@ -161,15 +279,14 @@ export function HeroTechNexus3D() {
     rimLight2.position.set(-4, -4, 2);
     scene.add(rimLight2);
 
-    // ─── 4. Holographic Floor Grid (Depth perspective) ───────────────
-    const gridHelper = new THREE.PolarGridHelper(3.2, 16, 8, 64, 0x3f3f46, 0x18181b);
+    // ─── 4. Holographic Floor Grid & Radar Sweep ──────────────────────
+    const gridHelper = new THREE.PolarGridHelper(3.4, 16, 8, 64, 0x3f3f46, 0x18181b);
     gridHelper.position.y = -2.1;
     masterPivot.add(gridHelper);
 
-    // Rotating radar scan line across the floor grid
     const radarGeo = new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(0, -2.08, 0),
-      new THREE.Vector3(3.2, -2.08, 0),
+      new THREE.Vector3(3.4, -2.08, 0),
     ]);
     const radarMat = new THREE.LineBasicMaterial({
       color: 0xffffff,
@@ -179,19 +296,34 @@ export function HeroTechNexus3D() {
     const radarLine = new THREE.Line(radarGeo, radarMat);
     masterPivot.add(radarLine);
 
-    // ─── 5. Central Quantum Core Cluster ─────────────────────────────
+    // ─── 5. Schematic Architectural Tier Plates (Blueprint Mode) ─────
+    const schematicTiersGroup = new THREE.Group();
+    schematicTiersGroup.visible = false;
+    masterPivot.add(schematicTiersGroup);
+
+    const tierHeights = [1.4, 0.5, -0.5, -1.3];
+    const tierPlates: THREE.LineSegments[] = [];
+
+    tierHeights.forEach((th) => {
+      const tierGrid = new THREE.GridHelper(3.0, 10, 0x71717a, 0x27272a);
+      tierGrid.position.y = th;
+      (tierGrid.material as THREE.Material).transparent = true;
+      (tierGrid.material as THREE.Material).opacity = 0.4;
+      schematicTiersGroup.add(tierGrid);
+      tierPlates.push(tierGrid);
+    });
+
+    // ─── 6. Central Quantum Core Cluster ─────────────────────────────
     const coreGroup = new THREE.Group();
     masterPivot.add(coreGroup);
 
-    // 5.1 Inner glowing energetic seed
+    // 6.1 Inner energetic seed
     const seedGeo = new THREE.IcosahedronGeometry(0.44, 2);
-    const seedMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-    });
+    const seedMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const seedMesh = new THREE.Mesh(seedGeo, seedMat);
     coreGroup.add(seedMesh);
 
-    // 5.2 Middle wireframe crystalline cage with subtle emissive pulse
+    // 6.2 Middle wireframe crystalline cage
     const midCageGeo = new THREE.IcosahedronGeometry(0.74, 1);
     const midCageMat = new THREE.MeshStandardMaterial({
       color: 0xe0e7ff,
@@ -204,7 +336,7 @@ export function HeroTechNexus3D() {
     const midCageMesh = new THREE.Mesh(midCageGeo, midCageMat);
     coreGroup.add(midCageMesh);
 
-    // 5.3 Outer faceted geometric shell
+    // 6.3 Outer faceted shell
     const outerGeo = new THREE.DodecahedronGeometry(1.02, 0);
     const outerMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
@@ -217,8 +349,8 @@ export function HeroTechNexus3D() {
     const outerMesh = new THREE.Mesh(outerGeo, outerMat);
     coreGroup.add(outerMesh);
 
-    // ─── 6. Floating Digital Data Ring (Micro Bits Orbiting Core) ─────
-    const bitCount = 48;
+    // ─── 7. Floating Digital Data Ring (Micro Bits Orbiting Core) ─────
+    const bitCount = 52;
     const bitInstancedGeo = new THREE.BoxGeometry(0.035, 0.035, 0.035);
     const bitInstancedMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
@@ -229,7 +361,7 @@ export function HeroTechNexus3D() {
     const dummy = new THREE.Object3D();
     masterPivot.add(bitMesh);
 
-    // ─── 7. Gyroscopic Gimbal Orbital Rings ───────────────────────────
+    // ─── 8. Gyroscopic Gimbal Orbital Rings ───────────────────────────
     const ringMatBase = {
       color: 0xffffff,
       transparent: true,
@@ -237,40 +369,26 @@ export function HeroTechNexus3D() {
       metalness: 0.85,
     };
 
-    // Ring 1 — Equatorial
     const ring1Geo = new THREE.TorusGeometry(1.5, 0.015, 16, 100);
-    const ring1Mat = new THREE.MeshStandardMaterial({
-      ...ringMatBase,
-      opacity: 0.4,
-    });
+    const ring1Mat = new THREE.MeshStandardMaterial({ ...ringMatBase, opacity: 0.4 });
     const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
     masterPivot.add(ring1);
 
-    // Ring 2 — Middle Inclined
     const ring2Geo = new THREE.TorusGeometry(1.88, 0.013, 16, 100);
-    const ring2Mat = new THREE.MeshStandardMaterial({
-      ...ringMatBase,
-      opacity: 0.3,
-      color: 0xd4d4d8,
-    });
+    const ring2Mat = new THREE.MeshStandardMaterial({ ...ringMatBase, opacity: 0.3, color: 0xd4d4d8 });
     const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
     ring2.rotation.x = Math.PI / 3;
     ring2.rotation.y = Math.PI / 6;
     masterPivot.add(ring2);
 
-    // Ring 3 — Outer Polar
     const ring3Geo = new THREE.TorusGeometry(2.38, 0.011, 16, 100);
-    const ring3Mat = new THREE.MeshStandardMaterial({
-      ...ringMatBase,
-      opacity: 0.25,
-      color: 0xa1a1aa,
-    });
+    const ring3Mat = new THREE.MeshStandardMaterial({ ...ringMatBase, opacity: 0.25, color: 0xa1a1aa });
     const ring3 = new THREE.Mesh(ring3Geo, ring3Mat);
     ring3.rotation.x = -Math.PI / 4;
     ring3.rotation.z = Math.PI / 3;
     masterPivot.add(ring3);
 
-    // ─── 8. Orbital Tech Nodes with Direct 3D Raycasting ──────────────
+    // ─── 9. Orbital Tech Nodes with 3D Interaction ────────────────────
     interface LiveNodeMesh {
       data: TechNodeData;
       pivot: THREE.Group;
@@ -279,6 +397,7 @@ export function HeroTechNexus3D() {
       line: THREE.Line;
       packet: THREE.Mesh;
       packetProgress: number;
+      currentPos: THREE.Vector3;
     }
 
     const liveNodes: LiveNodeMesh[] = [];
@@ -288,7 +407,6 @@ export function HeroTechNexus3D() {
       const nodePivot = new THREE.Group();
       masterPivot.add(nodePivot);
 
-      // Node mesh
       const nGeo = new THREE.SphereGeometry(0.14, 24, 24);
       const nMat = new THREE.MeshStandardMaterial({
         color: nodeData.color,
@@ -302,7 +420,6 @@ export function HeroTechNexus3D() {
       nodePivot.add(nodeMesh);
       interactiveMeshes.push(nodeMesh);
 
-      // Halo ring
       const haloGeo = new THREE.RingGeometry(0.19, 0.24, 32);
       const haloMat = new THREE.MeshBasicMaterial({
         color: nodeData.color,
@@ -313,7 +430,6 @@ export function HeroTechNexus3D() {
       const haloMesh = new THREE.Mesh(haloGeo, haloMat);
       nodePivot.add(haloMesh);
 
-      // Synaptic connection line to core
       const lineGeo = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(0, 0, 0),
@@ -327,11 +443,8 @@ export function HeroTechNexus3D() {
       const line = new THREE.Line(lineGeo, lineMat);
       masterPivot.add(line);
 
-      // Traveling data packet
       const packetGeo = new THREE.SphereGeometry(0.045, 12, 12);
-      const packetMat = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-      });
+      const packetMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
       const packet = new THREE.Mesh(packetGeo, packetMat);
       masterPivot.add(packet);
 
@@ -343,23 +456,38 @@ export function HeroTechNexus3D() {
         line,
         packet,
         packetProgress: Math.random(),
+        currentPos: new THREE.Vector3(),
       });
     });
 
-    // ─── 9. Quantum Ambient Particle Field ───────────────────────────
-    const particleCount = 240;
+    // ─── 10. Quantum Particle Swarm with Gravitational Attractor ──────
+    const particleCount = 260;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(particleCount * 3);
+    const pInitialPos = new Float32Array(particleCount * 3);
+    const pVel = new Float32Array(particleCount * 3);
     const pCol = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount; i++) {
-      const radius = 1.3 + Math.random() * 2.6;
+      const radius = 1.3 + Math.random() * 2.7;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
-      pPos[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      pPos[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      pPos[i * 3 + 2] = radius * Math.cos(phi);
+      const px = radius * Math.sin(phi) * Math.cos(theta);
+      const py = radius * Math.sin(phi) * Math.sin(theta);
+      const pz = radius * Math.cos(phi);
+
+      pPos[i * 3] = px;
+      pPos[i * 3 + 1] = py;
+      pPos[i * 3 + 2] = pz;
+
+      pInitialPos[i * 3] = px;
+      pInitialPos[i * 3 + 1] = py;
+      pInitialPos[i * 3 + 2] = pz;
+
+      pVel[i * 3] = 0;
+      pVel[i * 3 + 1] = 0;
+      pVel[i * 3 + 2] = 0;
 
       const intensity = 0.45 + Math.random() * 0.55;
       pCol[i * 3] = intensity;
@@ -380,7 +508,7 @@ export function HeroTechNexus3D() {
     const particles = new THREE.Points(pGeo, pMat);
     masterPivot.add(particles);
 
-    // ─── 10. Dual Overclock Shockwaves ────────────────────────────────
+    // ─── 11. Dual Shockwave Rings ────────────────────────────────────
     const shockwaveGeo1 = new THREE.RingGeometry(0.1, 0.16, 64);
     const shockwaveMat1 = new THREE.MeshBasicMaterial({
       color: 0xffffff,
@@ -414,27 +542,27 @@ export function HeroTechNexus3D() {
       shockwaveOpacity = 1;
     };
 
-    // ─── 11. Raycaster for Interactive 3D Node Hover ─────────────────
-    const raycaster = new THREE.Raycaster();
-    const mouseVector = new THREE.Vector2(-1000, -1000);
-    let currentlyHoveredNodeId: string | null = null;
-
-    // ─── 12. Controls: Smooth Drag Orbit + Zoom Wheel ─────────────────
-    let isDragging = false;
+    // ─── 12. Controls: Smooth Drag, Gravitational Attractor, Zoom ────
+    let isMouseDown = false;
     let prevMousePos = { x: 0, y: 0 };
     const targetRotation = { x: 0.2, y: 0.4 };
     const currentRotation = { x: 0.2, y: 0.4 };
     let targetZoom = 5.8;
     let currentZoom = 5.8;
 
+    const mouseRay = new THREE.Vector2(-1000, -1000);
+    const raycaster = new THREE.Raycaster();
+    const mouse3DPoint = new THREE.Vector3(0, 0, 0);
+
     resetCameraRef.current = () => {
       targetRotation.x = 0.2;
       targetRotation.y = 0.4;
       targetZoom = 5.8;
+      setSelectedNode(null);
     };
 
     const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
+      isMouseDown = true;
       prevMousePos = { x: e.clientX, y: e.clientY };
     };
 
@@ -443,40 +571,65 @@ export function HeroTechNexus3D() {
       const clientX = e.clientX - rect.left;
       const clientY = e.clientY - rect.top;
 
-      mouseVector.x = (clientX / rect.width) * 2 - 1;
-      mouseVector.y = -(clientY / rect.height) * 2 + 1;
+      mouseRay.x = (clientX / rect.width) * 2 - 1;
+      mouseRay.y = -(clientY / rect.height) * 2 + 1;
 
-      if (isDragging) {
+      // Project mouse into 3D plane for particle attractor
+      mouse3DPoint.set(mouseRay.x * 2.8, mouseRay.y * 2.0, 0.8);
+
+      if (isMouseDown) {
         const deltaX = e.clientX - prevMousePos.x;
         const deltaY = e.clientY - prevMousePos.y;
         targetRotation.y += deltaX * 0.008;
         targetRotation.x += deltaY * 0.008;
         prevMousePos = { x: e.clientX, y: e.clientY };
+
+        // Modulate synth pitch based on dragging speed
+        if (synthFilterRef.current && audioCtxRef.current) {
+          const dragSpeed = Math.hypot(deltaX, deltaY);
+          const freq = Math.min(300 + dragSpeed * 40, 1600);
+          synthFilterRef.current.frequency.setTargetAtTime(freq, audioCtxRef.current.currentTime, 0.05);
+        }
       } else {
-        targetRotation.y = mouseVector.x * 0.45;
-        targetRotation.x = -mouseVector.y * 0.35 + 0.15;
+        targetRotation.y = mouseRay.x * 0.45;
+        targetRotation.x = -mouseRay.y * 0.35 + 0.15;
       }
     };
 
     const onMouseUp = () => {
-      isDragging = false;
+      isMouseDown = false;
+    };
+
+    const onClick = () => {
+      raycaster.setFromCamera(mouseRay, camera);
+      const intersects = raycaster.intersectObjects(interactiveMeshes);
+
+      if (intersects.length > 0) {
+        const clickedData = intersects[0].object.userData.nodeData as TechNodeData;
+        if (clickedData) {
+          playPop();
+          setSelectedNode((prev) => (prev?.id === clickedData.id ? null : clickedData));
+        }
+      } else {
+        setSelectedNode(null);
+      }
     };
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      targetZoom = Math.min(Math.max(targetZoom + e.deltaY * 0.003, 3.8), 7.5);
+      targetZoom = Math.min(Math.max(targetZoom + e.deltaY * 0.003, 3.6), 7.8);
     };
 
-    // Touch events for mobile
+    // Mobile touch controls
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
-        isDragging = true;
+        isMouseDown = true;
         prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       }
     };
 
     const onTouchMove = (e: TouchEvent) => {
-      if (isDragging && e.touches.length === 1) {
+      if (isMouseDown && e.touches.length === 1) {
         const deltaX = e.touches[0].clientX - prevMousePos.x;
         const deltaY = e.touches[0].clientY - prevMousePos.y;
         targetRotation.y += deltaX * 0.01;
@@ -486,12 +639,13 @@ export function HeroTechNexus3D() {
     };
 
     const onTouchEnd = () => {
-      isDragging = false;
+      isMouseDown = false;
     };
 
     container.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+    container.addEventListener('click', onClick);
     container.addEventListener('wheel', onWheel, { passive: false });
     container.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: true });
@@ -510,7 +664,7 @@ export function HeroTechNexus3D() {
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
-    // ─── 14. Animation Loop ──────────────────────────────────────────
+    // ─── 14. Animation Loop (Locked 60FPS) ───────────────────────────
     let animationFrameId: number;
     let clock = new THREE.Clock();
     let frameCount = 0;
@@ -522,7 +676,7 @@ export function HeroTechNexus3D() {
       const elapsedTime = clock.getElapsedTime();
       const speedMultiplier = overclockRef.current ? 2.8 : 1.0;
 
-      // FPS tracking
+      // Track FPS
       frameCount++;
       const now = performance.now();
       if (now - lastTime >= 1000) {
@@ -531,19 +685,31 @@ export function HeroTechNexus3D() {
         lastTime = now;
       }
 
-      // Smooth camera zoom & pivot rotation lerp
+      // Smooth camera zoom
       currentZoom += (targetZoom - currentZoom) * 0.08;
       camera.position.z = currentZoom;
 
+      // Smooth rotation
       currentRotation.x += (targetRotation.x - currentRotation.x) * 0.06;
       currentRotation.y += (targetRotation.y - currentRotation.y) * 0.06;
       masterPivot.rotation.x = currentRotation.x;
-      masterPivot.rotation.y = currentRotation.y + elapsedTime * 0.09 * speedMultiplier;
+      masterPivot.rotation.y = currentRotation.y + elapsedTime * 0.08 * speedMultiplier;
+
+      // Dynamic theme color morphing
+      const targetTheme = currentThemeRef.current;
+      const themeColor = new THREE.Color(targetTheme.coreColor);
+      rimLight1.color.lerp(themeColor, 0.05);
+      shockwaveMat2.color.lerp(themeColor, 0.05);
+      midCageMat.emissive.lerp(themeColor, 0.05);
 
       // Radar scan rotation
       radarLine.rotation.y = elapsedTime * 1.2 * speedMultiplier;
 
-      // Core rotation & breathing pulse
+      // Schematic Blueprint mode transition
+      const schematicActive = isSchematicRef.current;
+      schematicTiersGroup.visible = schematicActive;
+
+      // Core rotation & breathing
       const breath = 1.0 + Math.sin(elapsedTime * 2.4) * 0.07;
       seedMesh.scale.setScalar(breath);
       midCageMesh.rotation.x = elapsedTime * 0.45 * speedMultiplier;
@@ -551,15 +717,64 @@ export function HeroTechNexus3D() {
       outerMesh.rotation.y = -elapsedTime * 0.3 * speedMultiplier;
       outerMesh.rotation.z = elapsedTime * 0.28 * speedMultiplier;
 
-      // Gimbal Rings rotation
+      // Gimbal Rings transition between spherical and schematic stacked planes
+      const targetRing1Y = schematicActive ? 1.4 : 0;
+      const targetRing2Y = schematicActive ? 0.0 : 0;
+      const targetRing3Y = schematicActive ? -1.3 : 0;
+
+      ring1.position.y += (targetRing1Y - ring1.position.y) * 0.08;
+      ring2.position.y += (targetRing2Y - ring2.position.y) * 0.08;
+      ring3.position.y += (targetRing3Y - ring3.position.y) * 0.08;
+
       ring1.rotation.z = elapsedTime * 0.22 * speedMultiplier;
       ring2.rotation.y += 0.005 * speedMultiplier;
       ring3.rotation.z -= 0.006 * speedMultiplier;
 
-      // Ambient particle rotation
+      // Particle physics: Gravitational attractor on mouse hold
+      const pPositions = pGeo.attributes.position as THREE.BufferAttribute;
+      const posArray = pPositions.array as Float32Array;
+
+      for (let i = 0; i < particleCount; i++) {
+        const idx = i * 3;
+        let px = posArray[idx];
+        let py = posArray[idx + 1];
+        let pz = posArray[idx + 2];
+
+        if (isMouseDown) {
+          // Gravitational pull toward mouse 3D location
+          const dx = mouse3DPoint.x - px;
+          const dy = mouse3DPoint.y - py;
+          const dz = mouse3DPoint.z - pz;
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) + 0.1;
+
+          const force = (0.015 / (dist * dist)) * speedMultiplier;
+          pVel[idx] += dx * force;
+          pVel[idx + 1] += dy * force;
+          pVel[idx + 2] += dz * force;
+
+          // Drag / damping
+          pVel[idx] *= 0.94;
+          pVel[idx + 1] *= 0.94;
+          pVel[idx + 2] *= 0.94;
+
+          posArray[idx] += pVel[idx];
+          posArray[idx + 1] += pVel[idx + 1];
+          posArray[idx + 2] += pVel[idx + 2];
+        } else {
+          // Slowly spring back to orbital home position
+          const hx = pInitialPos[idx];
+          const hy = pInitialPos[idx + 1];
+          const hz = pInitialPos[idx + 2];
+
+          posArray[idx] += (hx - px) * 0.04;
+          posArray[idx + 1] += (hy - py) * 0.04;
+          posArray[idx + 2] += (hz - pz) * 0.04;
+        }
+      }
+      pPositions.needsUpdate = true;
       particles.rotation.y = -elapsedTime * 0.035;
 
-      // Floating digital bits ring animation
+      // Floating digital bits ring
       for (let i = 0; i < bitCount; i++) {
         const bitAngle = (i / bitCount) * Math.PI * 2 + elapsedTime * 0.25 * speedMultiplier;
         const bitRad = 1.25 + Math.sin(bitAngle * 3 + elapsedTime) * 0.08;
@@ -574,7 +789,7 @@ export function HeroTechNexus3D() {
       }
       bitMesh.instanceMatrix.needsUpdate = true;
 
-      // Dual Shockwaves animation
+      // Dual shockwaves animation
       if (shockwaveActive) {
         shockwaveScale += 0.085;
         shockwaveOpacity -= 0.032;
@@ -590,58 +805,50 @@ export function HeroTechNexus3D() {
         }
       }
 
-      // Raycasting for direct 3D node hover
-      raycaster.setFromCamera(mouseVector, camera);
-      const intersects = raycaster.intersectObjects(interactiveMeshes);
-
-      if (intersects.length > 0) {
-        const hitData = intersects[0].object.userData.nodeData as TechNodeData;
-        if (hitData && hitData.id !== currentlyHoveredNodeId) {
-          currentlyHoveredNodeId = hitData.id;
-          setHoveredNode(hitData);
-          playPop();
-        }
-      } else if (currentlyHoveredNodeId) {
-        currentlyHoveredNodeId = null;
-        setHoveredNode(null);
-      }
-
-      // Update Tech Nodes & Synaptic streams
+      // Update Tech Nodes (Spherical Orbit vs Schematic Tier layout)
       liveNodes.forEach((live, idx) => {
-        const { data, pivot, nodeMesh, haloMesh, line, packet } = live;
-        const isThisNodeHovered = currentlyHoveredNodeId === data.id;
+        const { data, pivot, nodeMesh, haloMesh, line, packet, currentPos } = live;
 
-        // Calculate 3D orbit coordinates
-        const angle = data.orbitPhase + elapsedTime * data.orbitSpeed * speedMultiplier;
-        const x = Math.cos(angle) * data.orbitRadius;
-        const z = Math.sin(angle) * data.orbitRadius;
-        const y = Math.sin(angle * 1.5 + data.orbitTilt) * 0.52;
+        let targetX = 0;
+        let targetY = 0;
+        let targetZ = 0;
 
-        pivot.position.set(x, y, z);
+        if (schematicActive) {
+          // Tiered blueprint schematic position
+          const tierAngle = data.orbitPhase + elapsedTime * 0.15;
+          targetX = Math.cos(tierAngle) * data.schematicRadius;
+          targetZ = Math.sin(tierAngle) * data.schematicRadius;
+          targetY = data.schematicY;
+        } else {
+          // Spherical Gyroscope orbit
+          const angle = data.orbitPhase + elapsedTime * data.orbitSpeed * speedMultiplier;
+          targetX = Math.cos(angle) * data.orbitRadius;
+          targetZ = Math.sin(angle) * data.orbitRadius;
+          targetY = Math.sin(angle * 1.5 + data.orbitTilt) * 0.52;
+        }
+
+        // Smooth position lerp
+        currentPos.x += (targetX - currentPos.x) * 0.08;
+        currentPos.y += (targetY - currentPos.y) * 0.08;
+        currentPos.z += (targetZ - currentPos.z) * 0.08;
+
+        pivot.position.copy(currentPos);
         haloMesh.lookAt(camera.position);
 
-        // Node scale on hover / overclock
-        const targetScale = isThisNodeHovered ? 1.6 : overclockRef.current ? 1.25 : 1.0;
-        nodeMesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.15);
-
-        // Halo pulse
-        const haloScale = 1.0 + Math.sin(elapsedTime * 4 + idx) * (isThisNodeHovered ? 0.35 : 0.15);
+        const haloScale = 1.0 + Math.sin(elapsedTime * 4 + idx) * 0.18;
         haloMesh.scale.setScalar(haloScale);
-        (haloMesh.material as THREE.MeshBasicMaterial).opacity = isThisNodeHovered ? 0.95 : 0.55;
-        (nodeMesh.material as THREE.MeshStandardMaterial).emissiveIntensity = isThisNodeHovered ? 2.2 : (overclockRef.current ? 1.8 : 0.9);
 
-        // Dynamic laser stream line
+        // Synaptic laser line update
         const linePositions = (line.geometry as THREE.BufferGeometry).attributes.position as THREE.BufferAttribute;
         linePositions.setXYZ(0, 0, 0, 0);
-        linePositions.setXYZ(1, x, y, z);
+        linePositions.setXYZ(1, currentPos.x, currentPos.y, currentPos.z);
         linePositions.needsUpdate = true;
-        (line.material as THREE.LineBasicMaterial).opacity = isThisNodeHovered ? 0.8 : (overclockRef.current ? 0.65 : 0.3);
 
         // Packet travel
-        live.packetProgress = (live.packetProgress + 0.014 * speedMultiplier) % 1;
-        const px = x * (1 - live.packetProgress);
-        const py = y * (1 - live.packetProgress);
-        const pz = z * (1 - live.packetProgress);
+        live.packetProgress = (live.packetProgress + 0.015 * speedMultiplier) % 1;
+        const px = currentPos.x * (1 - live.packetProgress);
+        const py = currentPos.y * (1 - live.packetProgress);
+        const pz = currentPos.z * (1 - live.packetProgress);
         packet.position.set(px, py, pz);
       });
 
@@ -658,10 +865,16 @@ export function HeroTechNexus3D() {
       container.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+      container.removeEventListener('click', onClick);
       container.removeEventListener('wheel', onWheel);
       container.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
+
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+        audioCtxRef.current = null;
+      }
 
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
@@ -669,57 +882,93 @@ export function HeroTechNexus3D() {
       renderer.dispose();
       scene.clear();
     };
-  }, [playPop]);
+  }, []);
 
   return (
     <div className="relative w-full h-full flex flex-col justify-between select-none overflow-hidden">
       {/* 3D WebGL Canvas Mount */}
       <div
         ref={mountRef}
-        onClick={handlePulse}
         className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
       />
 
-      {/* Sleek Minimalist Top HUD Header */}
+      {/* Futuristic Cyberpunk Top Control Deck */}
       <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/60 border border-white/10 backdrop-blur-md">
-          <span className={`w-2 h-2 rounded-full ${isOverclocked ? 'bg-[#FF5722] animate-ping' : 'bg-[#1CD399] animate-pulse'}`} />
+        {/* Left Status Pill */}
+        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/70 border border-white/10 backdrop-blur-md">
+          <span
+            className={`w-2 h-2 rounded-full ${isOverclocked ? 'animate-ping' : 'animate-pulse'}`}
+            style={{ backgroundColor: THEMES[themeIdx].hex }}
+          />
           <span className="font-mono text-[9px] sm:text-[10px] tracking-wider text-white font-bold uppercase">
-            {isOverclocked ? 'QUANTUM PULSE // MAX' : 'NEURAL NEXUS // ONLINE'}
+            {isOverclocked ? 'OVERCLOCK // MAX' : isSchematic ? 'BLUEPRINT // SCHEMATIC' : 'NEURAL NEXUS // 3D'}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Right Action Icons Deck */}
+        <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           {/* FPS Counter */}
-          <div className="hidden xs:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 border border-white/10 backdrop-blur-md font-mono text-[9px] sm:text-[10px] text-white/60">
+          <div className="hidden xs:flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 border border-white/10 backdrop-blur-md font-mono text-[9px] sm:text-[10px] text-white/60">
             <Activity className="w-3 h-3 text-[#1CD399]" />
             <span>{fps} FPS</span>
           </div>
 
-          {/* Reset Camera View */}
+          {/* Toggle 3D Schematic Mode (Exploded Architecture Blueprint) */}
           <button
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={handleToggleSchematic}
+            className={`px-2 py-1 rounded-full font-mono text-[9.5px] font-bold flex items-center gap-1 border transition-all duration-300 active:scale-95 backdrop-blur-md ${
+              isSchematic
+                ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.7)]'
+                : 'bg-black/50 text-white/70 border-white/10 hover:border-white/30 hover:text-white'
+            }`}
+            title="Toggle Exploded Architectural Schematic Mode"
+          >
+            <Layers className="w-3 h-3" />
+            <span className="hidden sm:inline">{isSchematic ? 'SPHERE' : 'SCHEMATIC'}</span>
+          </button>
+
+          {/* Theme Color Cycle Button */}
+          <button
+            onClick={handleNextTheme}
+            className="p-1.5 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 hover:border-white/40 text-white/70 hover:text-white transition-all backdrop-blur-md active:scale-95"
+            title={`Cycle Energy State: ${THEMES[themeIdx].name}`}
+          >
+            <Palette className="w-3.5 h-3.5" style={{ color: THEMES[themeIdx].hex }} />
+          </button>
+
+          {/* Synth Sound Toggle */}
+          <button
+            onClick={toggleSound}
+            className={`p-1.5 rounded-full border transition-all backdrop-blur-md active:scale-95 ${
+              soundActive
+                ? 'bg-white text-black border-white shadow-[0_0_12px_rgba(255,255,255,0.6)]'
+                : 'bg-black/50 text-white/60 border-white/10 hover:border-white/30 hover:text-white'
+            }`}
+            title={soundActive ? 'Mute Cyber Synth' : 'Enable Realtime Cyber Synth'}
+          >
+            {soundActive ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+          </button>
+
+          {/* Reset View */}
+          <button
+            onClick={() => {
               if (resetCameraRef.current) resetCameraRef.current();
             }}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 hover:border-white/30 text-white/60 hover:text-white transition-all backdrop-blur-md active:scale-95"
-            title="Reset 3D Camera Orientation & Zoom"
+            className="p-1.5 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 hover:border-white/30 text-white/60 hover:text-white transition-all backdrop-blur-md active:scale-95"
+            title="Reset Camera Position"
           >
             <RotateCcw className="w-3 h-3" />
           </button>
 
-          {/* Interactive Quantum Overclock Button */}
+          {/* Overclock Pulse */}
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handlePulse();
-            }}
-            className={`pointer-events-auto px-2.5 py-1 rounded-full font-mono text-[9.5px] sm:text-[10.5px] font-bold flex items-center gap-1 border transition-all duration-300 active:scale-95 ${
+            onClick={handlePulse}
+            className={`px-2.5 py-1 rounded-full font-mono text-[9.5px] sm:text-[10px] font-bold flex items-center gap-1 border transition-all duration-300 active:scale-95 backdrop-blur-md ${
               isOverclocked
-                ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.8)]'
-                : 'bg-white/10 text-white border-white/20 hover:bg-white/25 hover:border-white/50 backdrop-blur-md'
+                ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.9)]'
+                : 'bg-white/10 text-white border-white/20 hover:bg-white/25 hover:border-white/50'
             }`}
-            title="Trigger Quantum Pulse Shockwave (Or click anywhere on the 3D model)"
+            title="Trigger Quantum Pulse Shockwave"
           >
             <Zap className={`w-3 h-3 ${isOverclocked ? 'fill-black' : 'fill-white'}`} />
             <span>PULSE</span>
@@ -727,22 +976,37 @@ export function HeroTechNexus3D() {
         </div>
       </div>
 
-      {/* Floating Holographic Node Inspector (Only appears when hovering directly over a 3D node) */}
-      <div className="relative z-10 px-4 pointer-events-none flex justify-center pb-4">
-        {hoveredNode ? (
-          <div className="px-4 py-2 rounded-2xl border border-white/25 bg-black/85 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.8)] flex items-center gap-2.5 animate-in fade-in zoom-in-95 duration-200">
+      {/* Floating Holographic 3D Node Inspector (Appears on clicking or selecting any 3D Node) */}
+      <div className="relative z-10 px-4 pointer-events-none flex justify-center pb-3">
+        {selectedNode ? (
+          <div className="pointer-events-auto px-4 py-2.5 rounded-2xl border border-white/25 bg-black/90 backdrop-blur-2xl shadow-[0_15px_45px_rgba(0,0,0,0.9)] flex items-center gap-3 animate-in fade-in zoom-in-95 duration-200 max-w-sm">
             <span
-              className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_currentColor]"
-              style={{ backgroundColor: hoveredNode.hex, color: hoveredNode.hex }}
+              className="w-3 h-3 rounded-full shrink-0 shadow-[0_0_12px_currentColor]"
+              style={{ backgroundColor: selectedNode.hex, color: selectedNode.hex }}
             />
-            <div>
-              <span className="text-xs sm:text-sm font-extrabold text-white block leading-tight font-display tracking-tight">
-                {hoveredNode.name}
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <span className="text-xs sm:text-sm font-extrabold text-white block leading-tight font-display tracking-tight">
+                  {selectedNode.name}
+                </span>
+                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded bg-white/10 text-white/70 border border-white/15">
+                  {selectedNode.category}
+                </span>
+              </div>
+              <span className="text-[9.5px] font-mono text-white/80 block leading-tight">
+                {selectedNode.details}
               </span>
-              <span className="text-[9px] sm:text-[10px] font-mono text-white/70 block">
-                {hoveredNode.details}
+              <span className="text-[8.5px] font-mono text-white/50 block">
+                {selectedNode.techStack}
               </span>
             </div>
+            <button
+              onClick={() => setSelectedNode(null)}
+              className="text-white/40 hover:text-white text-xs ml-1 p-1"
+              aria-label="Close Inspector"
+            >
+              ✕
+            </button>
           </div>
         ) : (
           <div className="opacity-0 transition-opacity duration-300">
