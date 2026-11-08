@@ -10,7 +10,6 @@ import {
   Volume2,
   VolumeX,
   Palette,
-  Sparkles,
 } from 'lucide-react';
 import { useTactileSound } from '@/hooks/useTactileSound';
 
@@ -346,7 +345,82 @@ export function HeroTechNexus3D() {
     const outerMesh = new THREE.Mesh(outerGeo, outerMat);
     coreGroup.add(outerMesh);
 
-    // ─── 7. Sweeping Vertical Holographic Laser Scanner Ring ──────────
+    // ─── 7. Vertical Ion Core Conduit (Translucent Cyber Cylinder) ───
+    const conduitGeo = new THREE.CylinderGeometry(0.05, 0.05, 4.2, 16, 1, true);
+    const conduitMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.22,
+    });
+    const conduitMesh = new THREE.Mesh(conduitGeo, conduitMat);
+    masterPivot.add(conduitMesh);
+
+    // ─── 8. Planetary Quantum Accretion Belt (Saturn Ring of 160 particles) ──
+    const accretionCount = 160;
+    const accretionGeo = new THREE.BufferGeometry();
+    const accretionPos = new Float32Array(accretionCount * 3);
+    const accretionCol = new Float32Array(accretionCount * 3);
+
+    for (let i = 0; i < accretionCount; i++) {
+      const angle = (i / accretionCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.1;
+      const r = 1.18 + Math.random() * 0.52;
+      accretionPos[i * 3] = Math.cos(angle) * r;
+      accretionPos[i * 3 + 1] = (Math.random() - 0.5) * 0.08;
+      accretionPos[i * 3 + 2] = Math.sin(angle) * r;
+
+      const lum = 0.5 + Math.random() * 0.5;
+      accretionCol[i * 3] = lum;
+      accretionCol[i * 3 + 1] = lum;
+      accretionCol[i * 3 + 2] = 1.0;
+    }
+    accretionGeo.setAttribute('position', new THREE.BufferAttribute(accretionPos, 3));
+    accretionGeo.setAttribute('color', new THREE.BufferAttribute(accretionCol, 3));
+
+    const accretionMat = new THREE.PointsMaterial({
+      size: 0.032,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.75,
+      blending: THREE.AdditiveBlending,
+    });
+    const accretionDisk = new THREE.Points(accretionGeo, accretionMat);
+    accretionDisk.rotation.x = Math.PI / 5;
+    accretionDisk.rotation.z = Math.PI / 8;
+    masterPivot.add(accretionDisk);
+
+    // ─── 9. Crystalline Qubit Signal Relays (4 Floating Quantum Octahedrons) ──
+    const qubitGroup = new THREE.Group();
+    masterPivot.add(qubitGroup);
+    const qubitMeshes: THREE.Mesh[] = [];
+
+    for (let q = 0; q < 4; q++) {
+      const qGeo = new THREE.OctahedronGeometry(0.085, 0);
+      const qMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: 0x38bdf8,
+        emissiveIntensity: 1.1,
+        roughness: 0.1,
+        metalness: 0.9,
+      });
+      const qMesh = new THREE.Mesh(qGeo, qMat);
+      qubitGroup.add(qMesh);
+      qubitMeshes.push(qMesh);
+    }
+
+    // ─── 10. Dynamic 3D Equalizer Pulse Bars (32 Bars in a Ring) ──────
+    const eqCount = 32;
+    const eqGeo = new THREE.BoxGeometry(0.018, 0.22, 0.018);
+    const eqMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.6,
+    });
+    const eqInstanced = new THREE.InstancedMesh(eqGeo, eqMat, eqCount);
+    const eqDummy = new THREE.Object3D();
+    masterPivot.add(eqInstanced);
+
+    // ─── 11. Sweeping Vertical Holographic Laser Scanner Ring ──────────
     const scannerRingGeo = new THREE.TorusGeometry(2.5, 0.009, 16, 90);
     const scannerRingMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
@@ -358,7 +432,7 @@ export function HeroTechNexus3D() {
     scannerRing.rotation.x = Math.PI / 2;
     masterPivot.add(scannerRing);
 
-    // ─── 8. Vertical Double-Helix Quantum Data Stream (DNA of Compute) ─
+    // ─── 12. Vertical Double-Helix Quantum Data Stream ────────────────
     const helixCount = 60;
     const helixGeo = new THREE.BufferGeometry();
     const helixPos = new Float32Array(helixCount * 3);
@@ -386,7 +460,7 @@ export function HeroTechNexus3D() {
     const helixStream = new THREE.Points(helixGeo, helixMat);
     masterPivot.add(helixStream);
 
-    // ─── 9. Floating Digital Data Ring (Micro Bits Orbiting Core) ─────
+    // ─── 13. Floating Digital Data Ring (Micro Bits Orbiting Core) ────
     const bitCount = 52;
     const bitInstancedGeo = new THREE.BoxGeometry(0.035, 0.035, 0.035);
     const bitInstancedMat = new THREE.MeshBasicMaterial({
@@ -398,7 +472,7 @@ export function HeroTechNexus3D() {
     const dummy = new THREE.Object3D();
     masterPivot.add(bitMesh);
 
-    // ─── 10. Gyroscopic Gimbal Orbital Rings ──────────────────────────
+    // ─── 14. Gyroscopic Gimbal Orbital Rings ──────────────────────────
     const ringMatBase = {
       color: 0xffffff,
       transparent: true,
@@ -425,7 +499,7 @@ export function HeroTechNexus3D() {
     ring3.rotation.z = Math.PI / 3;
     masterPivot.add(ring3);
 
-    // ─── 11. Orbital Tech Nodes with Dynamic Plasma Lightning Arcs ───
+    // ─── 15. Orbital Tech Nodes with 3D Reticle Crosshairs ────────────
     const SEGMENTS_PER_LINE = 20;
 
     interface LiveNodeMesh {
@@ -433,6 +507,7 @@ export function HeroTechNexus3D() {
       pivot: THREE.Group;
       nodeMesh: THREE.Mesh;
       haloMesh: THREE.Mesh;
+      reticleGroup: THREE.Group;
       line: THREE.Line;
       packet: THREE.Mesh;
       packetProgress: number;
@@ -469,7 +544,20 @@ export function HeroTechNexus3D() {
       const haloMesh = new THREE.Mesh(haloGeo, haloMat);
       nodePivot.add(haloMesh);
 
-      // Multi-segment BufferGeometry for dynamic sine plasma lightning
+      // 3D Holographic Reticle Crosshair Brackets around node
+      const reticleGroup = new THREE.Group();
+      nodePivot.add(reticleGroup);
+
+      const reticleRingGeo = new THREE.RingGeometry(0.26, 0.28, 16);
+      const reticleRingMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.4,
+      });
+      const reticleMesh = new THREE.Mesh(reticleRingGeo, reticleRingMat);
+      reticleGroup.add(reticleMesh);
+
       const points = [];
       for (let p = 0; p < SEGMENTS_PER_LINE; p++) {
         points.push(new THREE.Vector3(0, 0, 0));
@@ -494,6 +582,7 @@ export function HeroTechNexus3D() {
         pivot: nodePivot,
         nodeMesh,
         haloMesh,
+        reticleGroup,
         line,
         packet,
         packetProgress: Math.random(),
@@ -501,7 +590,7 @@ export function HeroTechNexus3D() {
       });
     });
 
-    // ─── 12. Quantum Particle Swarm with Gravitational Attractor ─────
+    // ─── 16. Quantum Particle Swarm with Gravitational Attractor ─────
     const particleCount = 260;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(particleCount * 3);
@@ -549,7 +638,7 @@ export function HeroTechNexus3D() {
     const particles = new THREE.Points(pGeo, pMat);
     masterPivot.add(particles);
 
-    // ─── 13. Dual Shockwave Rings ────────────────────────────────────
+    // ─── 17. Dual Shockwave Rings ────────────────────────────────────
     const shockwaveGeo1 = new THREE.RingGeometry(0.1, 0.16, 64);
     const shockwaveMat1 = new THREE.MeshBasicMaterial({
       color: 0xffffff,
@@ -582,10 +671,10 @@ export function HeroTechNexus3D() {
       shockwaveActive = true;
       shockwaveScale = 0.1;
       shockwaveOpacity = 1;
-      cameraRecoil = 0.42; // Kinetic recoil on impulse!
+      cameraRecoil = 0.42;
     };
 
-    // ─── 14. Controls: Smooth Drag, Attractor, Zoom ──────────────────
+    // ─── 18. Controls: Drag, Attractor, Zoom ─────────────────────────
     let isMouseDown = false;
     let prevMousePos = { x: 0, y: 0 };
     const targetRotation = { x: 0.2, y: 0.4 };
@@ -691,7 +780,7 @@ export function HeroTechNexus3D() {
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd);
 
-    // ─── 15. Resize Observer ─────────────────────────────────────────
+    // ─── 19. Resize Observer ─────────────────────────────────────────
     const handleResize = () => {
       if (!container) return;
       width = container.clientWidth;
@@ -704,7 +793,7 @@ export function HeroTechNexus3D() {
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
-    // ─── 16. Animation Loop (Locked 60FPS) ───────────────────────────
+    // ─── 20. Animation Loop (Locked 60FPS) ───────────────────────────
     let animationFrameId: number;
     let clock = new THREE.Clock();
     let frameCount = 0;
@@ -743,6 +832,7 @@ export function HeroTechNexus3D() {
       shockwaveMat2.color.lerp(themeColor, 0.05);
       midCageMat.emissive.lerp(themeColor, 0.05);
       scannerRingMat.color.lerp(themeColor, 0.05);
+      conduitMat.color.lerp(themeColor, 0.05);
 
       // Radar scan rotation
       radarLine.rotation.y = elapsedTime * 1.2 * speedMultiplier;
@@ -750,11 +840,44 @@ export function HeroTechNexus3D() {
       // Sweeping vertical holographic laser scanner ring
       scannerRing.position.y = Math.sin(elapsedTime * 1.4) * 1.85;
 
+      // Accretion disk spinning
+      accretionDisk.rotation.y = elapsedTime * 0.35 * speedMultiplier;
+
+      // 4 Floating Qubit Signal Relays animation
+      qubitMeshes.forEach((qm, qIdx) => {
+        const qAngle = (qIdx / 4) * Math.PI * 2 + elapsedTime * 0.4 * speedMultiplier;
+        const qRadius = 1.6 + Math.sin(elapsedTime * 2 + qIdx) * 0.12;
+        const qx = Math.cos(qAngle) * qRadius;
+        const qz = Math.sin(qAngle) * qRadius;
+        const qy = Math.cos(qAngle * 2 + qIdx) * 0.35;
+        qm.position.set(qx, qy, qz);
+        qm.rotation.set(elapsedTime * 1.8 + qIdx, elapsedTime * 2.2, 0);
+      });
+
+      // 3D Equalizer Pulse Bars animation
+      for (let e = 0; e < eqCount; e++) {
+        const eqAngle = (e / eqCount) * Math.PI * 2;
+        const ex = Math.cos(eqAngle) * 1.35;
+        const ez = Math.sin(eqAngle) * 1.35;
+
+        const waveHeight =
+          0.3 +
+          Math.sin(elapsedTime * 7 + e * 0.8) * 0.25 +
+          (overclockRef.current ? 0.45 : 0);
+
+        eqDummy.position.set(ex, 0, ez);
+        eqDummy.scale.set(1, waveHeight, 1);
+        eqDummy.lookAt(0, 0, 0);
+        eqDummy.updateMatrix();
+        eqInstanced.setMatrixAt(e, eqDummy.matrix);
+      }
+      eqInstanced.instanceMatrix.needsUpdate = true;
+
       // Schematic Blueprint mode transition
       const schematicActive = isSchematicRef.current;
       schematicTiersGroup.visible = schematicActive;
 
-      // ── NEW ANIMATION: Heartbeat Rhythmic Sentient Pulse ───────────
+      // Heartbeat Rhythmic Sentient Pulse
       const heartPulse =
         Math.pow(Math.sin(elapsedTime * 3.0), 12) * 0.14 +
         Math.pow(Math.sin(elapsedTime * 3.0 - 0.35), 16) * 0.07;
@@ -783,7 +906,7 @@ export function HeroTechNexus3D() {
       ring2.rotation.y += 0.005 * speedMultiplier;
       ring3.rotation.z -= 0.006 * speedMultiplier;
 
-      // ── NEW ANIMATION: Vertical Double Helix Quantum Data Strand ───
+      // Vertical Double Helix Quantum Data Strand
       const helixPositions = helixGeo.attributes.position as THREE.BufferAttribute;
       const hPos = helixPositions.array as Float32Array;
       for (let i = 0; i < helixCount; i++) {
@@ -871,9 +994,9 @@ export function HeroTechNexus3D() {
         }
       }
 
-      // Update Tech Nodes & ── NEW ANIMATION: Sinusoidal Plasma Lightning Tendrils ──
+      // Update Tech Nodes & Reticle Frames
       liveNodes.forEach((live, idx) => {
-        const { data, pivot, haloMesh, line, packet, currentPos } = live;
+        const { data, pivot, haloMesh, reticleGroup, line, packet, currentPos } = live;
 
         let targetX = 0;
         let targetY = 0;
@@ -898,10 +1021,14 @@ export function HeroTechNexus3D() {
         pivot.position.copy(currentPos);
         haloMesh.lookAt(camera.position);
 
+        // Spin the 3D reticle bracket
+        reticleGroup.lookAt(camera.position);
+        reticleGroup.rotation.z = elapsedTime * (0.8 + idx * 0.2);
+
         const haloScale = 1.0 + Math.sin(elapsedTime * 4 + idx) * 0.18;
         haloMesh.scale.setScalar(haloScale);
 
-        // Dynamic electric plasma arc wave update
+        // Dynamic electric plasma arc wave
         const linePositions = (line.geometry as THREE.BufferGeometry).attributes.position as THREE.BufferAttribute;
         for (let seg = 0; seg < SEGMENTS_PER_LINE; seg++) {
           const frac = seg / (SEGMENTS_PER_LINE - 1);
@@ -909,7 +1036,6 @@ export function HeroTechNexus3D() {
           const by = currentPos.y * frac;
           const bz = currentPos.z * frac;
 
-          // Envelope: 0 at ends, peak in center
           const envelope = Math.sin(frac * Math.PI);
           const jitterAmp = (overclockRef.current ? 0.12 : 0.04) * envelope;
           const waveX = Math.sin(elapsedTime * 14 + idx * 2.5 + seg * 0.7) * jitterAmp;
@@ -932,7 +1058,7 @@ export function HeroTechNexus3D() {
 
     animate();
 
-    // ─── 17. Cleanup ─────────────────────────────────────────────────
+    // ─── 21. Cleanup ─────────────────────────────────────────────────
     return () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
