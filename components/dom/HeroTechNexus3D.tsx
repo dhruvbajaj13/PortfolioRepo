@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import { Zap, Activity, Cpu, Database, Network, Code, Layers, Sparkles } from 'lucide-react';
+import { Zap, Activity, Maximize2, RotateCcw } from 'lucide-react';
 import { useTactileSound } from '@/hooks/useTactileSound';
 
 interface TechNodeData {
@@ -25,11 +25,11 @@ const TECH_NODES: TechNodeData[] = [
     category: 'GenAI Systems',
     color: 0x1cd399,
     hex: '#1CD399',
-    orbitRadius: 2.1,
-    orbitSpeed: 0.35,
+    orbitRadius: 2.15,
+    orbitSpeed: 0.38,
     orbitPhase: 0,
-    orbitTilt: 0.25,
-    details: 'LangChain • LangGraph • Hybrid RAG',
+    orbitTilt: 0.28,
+    details: 'LangChain • LangGraph • RAG',
   },
   {
     id: 'algorithms',
@@ -37,11 +37,11 @@ const TECH_NODES: TechNodeData[] = [
     category: 'Competitive DSA',
     color: 0xffa116,
     hex: '#FFA116',
-    orbitRadius: 2.3,
-    orbitSpeed: 0.28,
+    orbitRadius: 2.35,
+    orbitSpeed: 0.3,
     orbitPhase: (Math.PI * 2) / 6,
-    orbitTilt: -0.3,
-    details: 'LeetCode Knight 1951 • 1100+ Solved',
+    orbitTilt: -0.32,
+    details: 'LeetCode Knight 1951',
   },
   {
     id: 'systems',
@@ -49,8 +49,8 @@ const TECH_NODES: TechNodeData[] = [
     category: 'Web Architecture',
     color: 0x3178c6,
     hex: '#3178C6',
-    orbitRadius: 2.0,
-    orbitSpeed: 0.32,
+    orbitRadius: 2.05,
+    orbitSpeed: 0.35,
     orbitPhase: (Math.PI * 4) / 6,
     orbitTilt: 0.45,
     details: 'Next.js 15 • TypeScript • React',
@@ -61,10 +61,10 @@ const TECH_NODES: TechNodeData[] = [
     category: 'Distributed APIs',
     color: 0x009688,
     hex: '#009688',
-    orbitRadius: 2.2,
-    orbitSpeed: -0.3,
+    orbitRadius: 2.25,
+    orbitSpeed: -0.32,
     orbitPhase: (Math.PI * 6) / 6,
-    orbitTilt: -0.2,
+    orbitTilt: -0.22,
     details: 'FastAPI • Node.js • REST APIs',
   },
   {
@@ -73,10 +73,10 @@ const TECH_NODES: TechNodeData[] = [
     category: 'State & Workflows',
     color: 0xff5722,
     hex: '#FF5722',
-    orbitRadius: 2.15,
-    orbitSpeed: 0.25,
+    orbitRadius: 2.18,
+    orbitSpeed: 0.28,
     orbitPhase: (Math.PI * 8) / 6,
-    orbitTilt: 0.35,
+    orbitTilt: 0.36,
     details: 'Convex • Inngest • WebSockets',
   },
   {
@@ -85,31 +85,27 @@ const TECH_NODES: TechNodeData[] = [
     category: 'High-Dim Storage',
     color: 0xa855f7,
     hex: '#A855F7',
-    orbitRadius: 2.25,
-    orbitSpeed: -0.26,
+    orbitRadius: 2.3,
+    orbitSpeed: -0.28,
     orbitPhase: (Math.PI * 10) / 6,
-    orbitTilt: -0.4,
+    orbitTilt: -0.42,
     details: 'Pinecone • ChromaDB • MongoDB',
   },
 ];
 
 export function HeroTechNexus3D() {
   const mountRef = useRef<HTMLDivElement>(null);
-  const { playClick, playPop, playWhoosh } = useTactileSound();
+  const { playPop, playWhoosh } = useTactileSound();
 
-  const [activeMode, setActiveMode] = useState<'ALL' | 'AI' | 'SYSTEMS' | 'ALGO'>('ALL');
-  const [activeNode, setActiveNode] = useState<TechNodeData | null>(null);
   const [isOverclocked, setIsOverclocked] = useState(false);
+  const [hoveredNode, setHoveredNode] = useState<TechNodeData | null>(null);
   const [fps, setFps] = useState(60);
-
-  // References for animation loop
-  const modeRef = useRef(activeMode);
-  modeRef.current = activeMode;
 
   const overclockRef = useRef(false);
   const triggerPulseRef = useRef<(() => void) | null>(null);
+  const resetCameraRef = useRef<(() => void) | null>(null);
 
-  // Interaction handlers
+  // Interaction: Trigger Quantum Core Overclock Burst
   const handlePulse = useCallback(() => {
     playWhoosh();
     setIsOverclocked(true);
@@ -120,7 +116,7 @@ export function HeroTechNexus3D() {
     setTimeout(() => {
       setIsOverclocked(false);
       overclockRef.current = false;
-    }, 1800);
+    }, 1900);
   }, [playWhoosh]);
 
   useEffect(() => {
@@ -130,10 +126,10 @@ export function HeroTechNexus3D() {
     let width = container.clientWidth || 480;
     let height = container.clientHeight || 340;
 
-    // ─── 1. Scene, Camera, Renderer ──────────────────────────────────
+    // ─── 1. Scene & Perspective Camera ────────────────────────────────
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(48, width / height, 0.1, 100);
-    camera.position.set(0, 0, 5.6);
+    const camera = new THREE.PerspectiveCamera(46, width / height, 0.1, 100);
+    camera.position.set(0, 0, 5.8);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -150,82 +146,111 @@ export function HeroTechNexus3D() {
     scene.add(masterPivot);
 
     // ─── 3. Lighting ────────────────────────────────────────────────
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
     scene.add(ambientLight);
 
-    const coreLight = new THREE.PointLight(0xffffff, 2.8, 12);
+    const coreLight = new THREE.PointLight(0xffffff, 3.2, 14);
     coreLight.position.set(0, 0, 0);
     masterPivot.add(coreLight);
 
-    const rimLight1 = new THREE.DirectionalLight(0x38bdf8, 1.2);
+    const rimLight1 = new THREE.DirectionalLight(0x38bdf8, 1.4);
     rimLight1.position.set(4, 5, 3);
     scene.add(rimLight1);
 
-    const rimLight2 = new THREE.DirectionalLight(0xa855f7, 0.9);
+    const rimLight2 = new THREE.DirectionalLight(0xa855f7, 1.1);
     rimLight2.position.set(-4, -4, 2);
     scene.add(rimLight2);
 
-    // ─── 4. Central Holographic Quantum Core ─────────────────────────
+    // ─── 4. Holographic Floor Grid (Depth perspective) ───────────────
+    const gridHelper = new THREE.PolarGridHelper(3.2, 16, 8, 64, 0x3f3f46, 0x18181b);
+    gridHelper.position.y = -2.1;
+    masterPivot.add(gridHelper);
+
+    // Rotating radar scan line across the floor grid
+    const radarGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, -2.08, 0),
+      new THREE.Vector3(3.2, -2.08, 0),
+    ]);
+    const radarMat = new THREE.LineBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.35,
+    });
+    const radarLine = new THREE.Line(radarGeo, radarMat);
+    masterPivot.add(radarLine);
+
+    // ─── 5. Central Quantum Core Cluster ─────────────────────────────
     const coreGroup = new THREE.Group();
     masterPivot.add(coreGroup);
 
-    // 4.1 Inner glowing solid energy seed
-    const seedGeo = new THREE.IcosahedronGeometry(0.42, 2);
+    // 5.1 Inner glowing energetic seed
+    const seedGeo = new THREE.IcosahedronGeometry(0.44, 2);
     const seedMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
-      wireframe: false,
     });
     const seedMesh = new THREE.Mesh(seedGeo, seedMat);
     coreGroup.add(seedMesh);
 
-    // 4.2 Middle wireframe crystalline cage
-    const midCageGeo = new THREE.IcosahedronGeometry(0.72, 1);
+    // 5.2 Middle wireframe crystalline cage with subtle emissive pulse
+    const midCageGeo = new THREE.IcosahedronGeometry(0.74, 1);
     const midCageMat = new THREE.MeshStandardMaterial({
       color: 0xe0e7ff,
       wireframe: true,
       emissive: 0x818cf8,
-      emissiveIntensity: 0.6,
+      emissiveIntensity: 0.8,
       roughness: 0.2,
       metalness: 0.9,
     });
     const midCageMesh = new THREE.Mesh(midCageGeo, midCageMat);
     coreGroup.add(midCageMesh);
 
-    // 4.3 Outer faceted geometric shell with vertex points
-    const outerGeo = new THREE.DodecahedronGeometry(0.98, 0);
+    // 5.3 Outer faceted geometric shell
+    const outerGeo = new THREE.DodecahedronGeometry(1.02, 0);
     const outerMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       wireframe: true,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.38,
       roughness: 0.1,
       metalness: 0.8,
     });
     const outerMesh = new THREE.Mesh(outerGeo, outerMat);
     coreGroup.add(outerMesh);
 
-    // ─── 5. Gyroscopic Gimbal Orbital Rings ───────────────────────────
+    // ─── 6. Floating Digital Data Ring (Micro Bits Orbiting Core) ─────
+    const bitCount = 48;
+    const bitInstancedGeo = new THREE.BoxGeometry(0.035, 0.035, 0.035);
+    const bitInstancedMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.85,
+    });
+    const bitMesh = new THREE.InstancedMesh(bitInstancedGeo, bitInstancedMat, bitCount);
+    const dummy = new THREE.Object3D();
+    masterPivot.add(bitMesh);
+
+    // ─── 7. Gyroscopic Gimbal Orbital Rings ───────────────────────────
     const ringMatBase = {
       color: 0xffffff,
       transparent: true,
       roughness: 0.3,
-      metalness: 0.8,
+      metalness: 0.85,
     };
 
-    // Ring 1 — Inner Equatorial Ring
-    const ring1Geo = new THREE.TorusGeometry(1.5, 0.014, 16, 100);
+    // Ring 1 — Equatorial
+    const ring1Geo = new THREE.TorusGeometry(1.5, 0.015, 16, 100);
     const ring1Mat = new THREE.MeshStandardMaterial({
       ...ringMatBase,
-      opacity: 0.35,
+      opacity: 0.4,
     });
     const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
     masterPivot.add(ring1);
 
-    // Ring 2 — Middle Inclined Ring
-    const ring2Geo = new THREE.TorusGeometry(1.85, 0.012, 16, 100);
+    // Ring 2 — Middle Inclined
+    const ring2Geo = new THREE.TorusGeometry(1.88, 0.013, 16, 100);
     const ring2Mat = new THREE.MeshStandardMaterial({
       ...ringMatBase,
-      opacity: 0.25,
+      opacity: 0.3,
       color: 0xd4d4d8,
     });
     const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
@@ -233,11 +258,11 @@ export function HeroTechNexus3D() {
     ring2.rotation.y = Math.PI / 6;
     masterPivot.add(ring2);
 
-    // Ring 3 — Outer Polar Ring
-    const ring3Geo = new THREE.TorusGeometry(2.35, 0.01, 16, 100);
+    // Ring 3 — Outer Polar
+    const ring3Geo = new THREE.TorusGeometry(2.38, 0.011, 16, 100);
     const ring3Mat = new THREE.MeshStandardMaterial({
       ...ringMatBase,
-      opacity: 0.2,
+      opacity: 0.25,
       color: 0xa1a1aa,
     });
     const ring3 = new THREE.Mesh(ring3Geo, ring3Mat);
@@ -245,7 +270,7 @@ export function HeroTechNexus3D() {
     ring3.rotation.z = Math.PI / 3;
     masterPivot.add(ring3);
 
-    // ─── 6. Orbital Tech Nodes & Synaptic Laser Lines ─────────────────
+    // ─── 8. Orbital Tech Nodes with Direct 3D Raycasting ──────────────
     interface LiveNodeMesh {
       data: TechNodeData;
       pivot: THREE.Group;
@@ -257,30 +282,33 @@ export function HeroTechNexus3D() {
     }
 
     const liveNodes: LiveNodeMesh[] = [];
+    const interactiveMeshes: THREE.Mesh[] = [];
 
     TECH_NODES.forEach((nodeData) => {
       const nodePivot = new THREE.Group();
       masterPivot.add(nodePivot);
 
-      // Node mesh (sphere with original tech domain color)
-      const nGeo = new THREE.SphereGeometry(0.13, 20, 20);
+      // Node mesh
+      const nGeo = new THREE.SphereGeometry(0.14, 24, 24);
       const nMat = new THREE.MeshStandardMaterial({
         color: nodeData.color,
         emissive: nodeData.color,
-        emissiveIntensity: 0.8,
+        emissiveIntensity: 0.9,
         roughness: 0.2,
-        metalness: 0.8,
+        metalness: 0.85,
       });
       const nodeMesh = new THREE.Mesh(nGeo, nMat);
+      nodeMesh.userData = { nodeData };
       nodePivot.add(nodeMesh);
+      interactiveMeshes.push(nodeMesh);
 
-      // Outer pulsing halo ring
-      const haloGeo = new THREE.RingGeometry(0.18, 0.22, 32);
+      // Halo ring
+      const haloGeo = new THREE.RingGeometry(0.19, 0.24, 32);
       const haloMat = new THREE.MeshBasicMaterial({
         color: nodeData.color,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.5,
+        opacity: 0.55,
       });
       const haloMesh = new THREE.Mesh(haloGeo, haloMat);
       nodePivot.add(haloMesh);
@@ -293,14 +321,14 @@ export function HeroTechNexus3D() {
       const lineMat = new THREE.LineBasicMaterial({
         color: nodeData.color,
         transparent: true,
-        opacity: 0.28,
+        opacity: 0.32,
         blending: THREE.AdditiveBlending,
       });
       const line = new THREE.Line(lineGeo, lineMat);
       masterPivot.add(line);
 
       // Traveling data packet
-      const packetGeo = new THREE.SphereGeometry(0.04, 12, 12);
+      const packetGeo = new THREE.SphereGeometry(0.045, 12, 12);
       const packetMat = new THREE.MeshBasicMaterial({
         color: 0xffffff,
       });
@@ -318,14 +346,14 @@ export function HeroTechNexus3D() {
       });
     });
 
-    // ─── 7. Ambient Particle Field ───────────────────────────────────
-    const particleCount = 200;
+    // ─── 9. Quantum Ambient Particle Field ───────────────────────────
+    const particleCount = 240;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(particleCount * 3);
     const pCol = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount; i++) {
-      const radius = 1.4 + Math.random() * 2.5;
+      const radius = 1.3 + Math.random() * 2.6;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
@@ -333,37 +361,48 @@ export function HeroTechNexus3D() {
       pPos[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       pPos[i * 3 + 2] = radius * Math.cos(phi);
 
-      // Subtle monochromatic / cyan tinted particles
-      const intensity = 0.4 + Math.random() * 0.6;
+      const intensity = 0.45 + Math.random() * 0.55;
       pCol[i * 3] = intensity;
       pCol[i * 3 + 1] = intensity;
-      pCol[i * 3 + 2] = intensity * 1.1;
+      pCol[i * 3 + 2] = intensity * 1.15;
     }
 
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
     pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
 
     const pMat = new THREE.PointsMaterial({
-      size: 0.025,
+      size: 0.028,
       vertexColors: true,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.55,
       blending: THREE.AdditiveBlending,
     });
     const particles = new THREE.Points(pGeo, pMat);
     masterPivot.add(particles);
 
-    // ─── 8. Overclock Shockwave Rings ────────────────────────────────
-    const shockwaveGeo = new THREE.RingGeometry(0.1, 0.16, 64);
-    const shockwaveMat = new THREE.MeshBasicMaterial({
+    // ─── 10. Dual Overclock Shockwaves ────────────────────────────────
+    const shockwaveGeo1 = new THREE.RingGeometry(0.1, 0.16, 64);
+    const shockwaveMat1 = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0,
       blending: THREE.AdditiveBlending,
     });
-    const shockwaveMesh = new THREE.Mesh(shockwaveGeo, shockwaveMat);
-    masterPivot.add(shockwaveMesh);
+    const shockwave1 = new THREE.Mesh(shockwaveGeo1, shockwaveMat1);
+    masterPivot.add(shockwave1);
+
+    const shockwaveGeo2 = new THREE.RingGeometry(0.12, 0.2, 64);
+    const shockwaveMat2 = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+    });
+    const shockwave2 = new THREE.Mesh(shockwaveGeo2, shockwaveMat2);
+    shockwave2.rotation.x = Math.PI / 2;
+    masterPivot.add(shockwave2);
 
     let shockwaveActive = false;
     let shockwaveScale = 0.1;
@@ -375,11 +414,24 @@ export function HeroTechNexus3D() {
       shockwaveOpacity = 1;
     };
 
-    // ─── 9. Mouse & Touch Controls with Smooth Inertia ───────────────
+    // ─── 11. Raycaster for Interactive 3D Node Hover ─────────────────
+    const raycaster = new THREE.Raycaster();
+    const mouseVector = new THREE.Vector2(-1000, -1000);
+    let currentlyHoveredNodeId: string | null = null;
+
+    // ─── 12. Controls: Smooth Drag Orbit + Zoom Wheel ─────────────────
     let isDragging = false;
     let prevMousePos = { x: 0, y: 0 };
     const targetRotation = { x: 0.2, y: 0.4 };
     const currentRotation = { x: 0.2, y: 0.4 };
+    let targetZoom = 5.8;
+    let currentZoom = 5.8;
+
+    resetCameraRef.current = () => {
+      targetRotation.x = 0.2;
+      targetRotation.y = 0.4;
+      targetZoom = 5.8;
+    };
 
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
@@ -388,8 +440,11 @@ export function HeroTechNexus3D() {
 
     const onMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
-      const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const normY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      const clientX = e.clientX - rect.left;
+      const clientY = e.clientY - rect.top;
+
+      mouseVector.x = (clientX / rect.width) * 2 - 1;
+      mouseVector.y = -(clientY / rect.height) * 2 + 1;
 
       if (isDragging) {
         const deltaX = e.clientX - prevMousePos.x;
@@ -398,14 +453,18 @@ export function HeroTechNexus3D() {
         targetRotation.x += deltaY * 0.008;
         prevMousePos = { x: e.clientX, y: e.clientY };
       } else {
-        // Soft hover tracking
-        targetRotation.y = normX * 0.45;
-        targetRotation.x = -normY * 0.35 + 0.15;
+        targetRotation.y = mouseVector.x * 0.45;
+        targetRotation.x = -mouseVector.y * 0.35 + 0.15;
       }
     };
 
     const onMouseUp = () => {
       isDragging = false;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      targetZoom = Math.min(Math.max(targetZoom + e.deltaY * 0.003, 3.8), 7.5);
     };
 
     // Touch events for mobile
@@ -433,11 +492,12 @@ export function HeroTechNexus3D() {
     container.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+    container.addEventListener('wheel', onWheel, { passive: false });
     container.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd);
 
-    // ─── 10. Resize Observer ─────────────────────────────────────────
+    // ─── 13. Resize Observer ─────────────────────────────────────────
     const handleResize = () => {
       if (!container) return;
       width = container.clientWidth;
@@ -450,7 +510,7 @@ export function HeroTechNexus3D() {
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
-    // ─── 11. Animation Loop (Locked 60FPS) ───────────────────────────
+    // ─── 14. Animation Loop ──────────────────────────────────────────
     let animationFrameId: number;
     let clock = new THREE.Clock();
     let frameCount = 0;
@@ -460,9 +520,9 @@ export function HeroTechNexus3D() {
       animationFrameId = requestAnimationFrame(animate);
 
       const elapsedTime = clock.getElapsedTime();
-      const speedMultiplier = overclockRef.current ? 2.6 : 1.0;
+      const speedMultiplier = overclockRef.current ? 2.8 : 1.0;
 
-      // FPS tracking (every 30 frames)
+      // FPS tracking
       frameCount++;
       const now = performance.now();
       if (now - lastTime >= 1000) {
@@ -471,84 +531,118 @@ export function HeroTechNexus3D() {
         lastTime = now;
       }
 
-      // Smooth camera / pivot lerp
+      // Smooth camera zoom & pivot rotation lerp
+      currentZoom += (targetZoom - currentZoom) * 0.08;
+      camera.position.z = currentZoom;
+
       currentRotation.x += (targetRotation.x - currentRotation.x) * 0.06;
       currentRotation.y += (targetRotation.y - currentRotation.y) * 0.06;
       masterPivot.rotation.x = currentRotation.x;
-      masterPivot.rotation.y = currentRotation.y + elapsedTime * 0.08 * speedMultiplier;
+      masterPivot.rotation.y = currentRotation.y + elapsedTime * 0.09 * speedMultiplier;
 
-      // Core rotation & breathing
-      const breath = 1.0 + Math.sin(elapsedTime * 2.2) * 0.06;
+      // Radar scan rotation
+      radarLine.rotation.y = elapsedTime * 1.2 * speedMultiplier;
+
+      // Core rotation & breathing pulse
+      const breath = 1.0 + Math.sin(elapsedTime * 2.4) * 0.07;
       seedMesh.scale.setScalar(breath);
       midCageMesh.rotation.x = elapsedTime * 0.45 * speedMultiplier;
-      midCageMesh.rotation.y = elapsedTime * 0.6 * speedMultiplier;
+      midCageMesh.rotation.y = elapsedTime * 0.65 * speedMultiplier;
       outerMesh.rotation.y = -elapsedTime * 0.3 * speedMultiplier;
-      outerMesh.rotation.z = elapsedTime * 0.25 * speedMultiplier;
+      outerMesh.rotation.z = elapsedTime * 0.28 * speedMultiplier;
 
       // Gimbal Rings rotation
-      ring1.rotation.z = elapsedTime * 0.2 * speedMultiplier;
-      ring2.rotation.y += 0.004 * speedMultiplier;
-      ring3.rotation.z -= 0.005 * speedMultiplier;
+      ring1.rotation.z = elapsedTime * 0.22 * speedMultiplier;
+      ring2.rotation.y += 0.005 * speedMultiplier;
+      ring3.rotation.z -= 0.006 * speedMultiplier;
 
       // Ambient particle rotation
-      particles.rotation.y = -elapsedTime * 0.03;
+      particles.rotation.y = -elapsedTime * 0.035;
 
-      // Shockwave animation
+      // Floating digital bits ring animation
+      for (let i = 0; i < bitCount; i++) {
+        const bitAngle = (i / bitCount) * Math.PI * 2 + elapsedTime * 0.25 * speedMultiplier;
+        const bitRad = 1.25 + Math.sin(bitAngle * 3 + elapsedTime) * 0.08;
+        const bx = Math.cos(bitAngle) * bitRad;
+        const bz = Math.sin(bitAngle) * bitRad;
+        const by = Math.sin(bitAngle * 2 + elapsedTime * 1.5) * 0.25;
+
+        dummy.position.set(bx, by, bz);
+        dummy.rotation.set(elapsedTime * 2 + i, elapsedTime + i, 0);
+        dummy.updateMatrix();
+        bitMesh.setMatrixAt(i, dummy.matrix);
+      }
+      bitMesh.instanceMatrix.needsUpdate = true;
+
+      // Dual Shockwaves animation
       if (shockwaveActive) {
-        shockwaveScale += 0.08;
-        shockwaveOpacity -= 0.035;
-        shockwaveMesh.scale.set(shockwaveScale, shockwaveScale, shockwaveScale);
-        shockwaveMat.opacity = Math.max(0, shockwaveOpacity);
+        shockwaveScale += 0.085;
+        shockwaveOpacity -= 0.032;
+
+        shockwave1.scale.setScalar(shockwaveScale);
+        shockwaveMat1.opacity = Math.max(0, shockwaveOpacity);
+
+        shockwave2.scale.setScalar(shockwaveScale * 1.15);
+        shockwaveMat2.opacity = Math.max(0, shockwaveOpacity * 0.8);
+
         if (shockwaveOpacity <= 0) {
           shockwaveActive = false;
         }
       }
 
-      // Update Tech Nodes & Laser streams
-      const currentMode = modeRef.current;
+      // Raycasting for direct 3D node hover
+      raycaster.setFromCamera(mouseVector, camera);
+      const intersects = raycaster.intersectObjects(interactiveMeshes);
 
+      if (intersects.length > 0) {
+        const hitData = intersects[0].object.userData.nodeData as TechNodeData;
+        if (hitData && hitData.id !== currentlyHoveredNodeId) {
+          currentlyHoveredNodeId = hitData.id;
+          setHoveredNode(hitData);
+          playPop();
+        }
+      } else if (currentlyHoveredNodeId) {
+        currentlyHoveredNodeId = null;
+        setHoveredNode(null);
+      }
+
+      // Update Tech Nodes & Synaptic streams
       liveNodes.forEach((live, idx) => {
         const { data, pivot, nodeMesh, haloMesh, line, packet } = live;
+        const isThisNodeHovered = currentlyHoveredNodeId === data.id;
 
-        // Determine if node is highlighted based on active filter mode
-        let isHighlighted = true;
-        if (currentMode === 'AI' && data.id !== 'ai-rag' && data.id !== 'data') {
-          isHighlighted = false;
-        } else if (currentMode === 'SYSTEMS' && data.id !== 'systems' && data.id !== 'backend' && data.id !== 'realtime') {
-          isHighlighted = false;
-        } else if (currentMode === 'ALGO' && data.id !== 'algorithms') {
-          isHighlighted = false;
-        }
-
-        // Calculate 3D orbit position
+        // Calculate 3D orbit coordinates
         const angle = data.orbitPhase + elapsedTime * data.orbitSpeed * speedMultiplier;
         const x = Math.cos(angle) * data.orbitRadius;
         const z = Math.sin(angle) * data.orbitRadius;
-        const y = Math.sin(angle * 1.5 + data.orbitTilt) * 0.5;
+        const y = Math.sin(angle * 1.5 + data.orbitTilt) * 0.52;
 
         pivot.position.set(x, y, z);
         haloMesh.lookAt(camera.position);
 
-        // Halo pulse
-        const haloScale = isHighlighted ? (1.0 + Math.sin(elapsedTime * 4 + idx) * 0.15) : 0.6;
-        haloMesh.scale.setScalar(haloScale);
-        (haloMesh.material as THREE.MeshBasicMaterial).opacity = isHighlighted ? 0.65 : 0.15;
-        (nodeMesh.material as THREE.MeshStandardMaterial).emissiveIntensity = isHighlighted ? (overclockRef.current ? 1.6 : 1.0) : 0.2;
+        // Node scale on hover / overclock
+        const targetScale = isThisNodeHovered ? 1.6 : overclockRef.current ? 1.25 : 1.0;
+        nodeMesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.15);
 
-        // Line update (connect core center to current node position)
+        // Halo pulse
+        const haloScale = 1.0 + Math.sin(elapsedTime * 4 + idx) * (isThisNodeHovered ? 0.35 : 0.15);
+        haloMesh.scale.setScalar(haloScale);
+        (haloMesh.material as THREE.MeshBasicMaterial).opacity = isThisNodeHovered ? 0.95 : 0.55;
+        (nodeMesh.material as THREE.MeshStandardMaterial).emissiveIntensity = isThisNodeHovered ? 2.2 : (overclockRef.current ? 1.8 : 0.9);
+
+        // Dynamic laser stream line
         const linePositions = (line.geometry as THREE.BufferGeometry).attributes.position as THREE.BufferAttribute;
         linePositions.setXYZ(0, 0, 0, 0);
         linePositions.setXYZ(1, x, y, z);
         linePositions.needsUpdate = true;
-        (line.material as THREE.LineBasicMaterial).opacity = isHighlighted ? (overclockRef.current ? 0.6 : 0.3) : 0.08;
+        (line.material as THREE.LineBasicMaterial).opacity = isThisNodeHovered ? 0.8 : (overclockRef.current ? 0.65 : 0.3);
 
-        // Packet travel along line
-        live.packetProgress = (live.packetProgress + 0.012 * speedMultiplier) % 1;
+        // Packet travel
+        live.packetProgress = (live.packetProgress + 0.014 * speedMultiplier) % 1;
         const px = x * (1 - live.packetProgress);
         const py = y * (1 - live.packetProgress);
         const pz = z * (1 - live.packetProgress);
         packet.position.set(px, py, pz);
-        packet.visible = isHighlighted;
       });
 
       renderer.render(scene, camera);
@@ -556,7 +650,7 @@ export function HeroTechNexus3D() {
 
     animate();
 
-    // ─── 12. Cleanup ─────────────────────────────────────────────────
+    // ─── 15. Cleanup ─────────────────────────────────────────────────
     return () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
@@ -564,6 +658,7 @@ export function HeroTechNexus3D() {
       container.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+      container.removeEventListener('wheel', onWheel);
       container.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
@@ -574,10 +669,10 @@ export function HeroTechNexus3D() {
       renderer.dispose();
       scene.clear();
     };
-  }, []);
+  }, [playPop]);
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between select-none">
+    <div className="relative w-full h-full flex flex-col justify-between select-none overflow-hidden">
       {/* 3D WebGL Canvas Mount */}
       <div
         ref={mountRef}
@@ -585,21 +680,35 @@ export function HeroTechNexus3D() {
         className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
       />
 
-      {/* Top Cybernetic HUD Header */}
+      {/* Sleek Minimalist Top HUD Header */}
       <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/60 border border-white/10 backdrop-blur-md">
           <span className={`w-2 h-2 rounded-full ${isOverclocked ? 'bg-[#FF5722] animate-ping' : 'bg-[#1CD399] animate-pulse'}`} />
           <span className="font-mono text-[9px] sm:text-[10px] tracking-wider text-white font-bold uppercase">
-            {isOverclocked ? 'SYS.CORE // OVERCLOCK' : 'NEURAL NEXUS // ONLINE'}
+            {isOverclocked ? 'QUANTUM PULSE // MAX' : 'NEURAL NEXUS // ONLINE'}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* FPS Counter */}
           <div className="hidden xs:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 border border-white/10 backdrop-blur-md font-mono text-[9px] sm:text-[10px] text-white/60">
             <Activity className="w-3 h-3 text-[#1CD399]" />
             <span>{fps} FPS</span>
           </div>
 
+          {/* Reset Camera View */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (resetCameraRef.current) resetCameraRef.current();
+            }}
+            className="pointer-events-auto p-1.5 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 hover:border-white/30 text-white/60 hover:text-white transition-all backdrop-blur-md active:scale-95"
+            title="Reset 3D Camera Orientation & Zoom"
+          >
+            <RotateCcw className="w-3 h-3" />
+          </button>
+
+          {/* Interactive Quantum Overclock Button */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -607,10 +716,10 @@ export function HeroTechNexus3D() {
             }}
             className={`pointer-events-auto px-2.5 py-1 rounded-full font-mono text-[9.5px] sm:text-[10.5px] font-bold flex items-center gap-1 border transition-all duration-300 active:scale-95 ${
               isOverclocked
-                ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.7)]'
-                : 'bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/50'
+                ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.8)]'
+                : 'bg-white/10 text-white border-white/20 hover:bg-white/25 hover:border-white/50 backdrop-blur-md'
             }`}
-            title="Trigger Neural Core Pulse Shockwave"
+            title="Trigger Quantum Pulse Shockwave (Or click anywhere on the 3D model)"
           >
             <Zap className={`w-3 h-3 ${isOverclocked ? 'fill-black' : 'fill-white'}`} />
             <span>PULSE</span>
@@ -618,52 +727,28 @@ export function HeroTechNexus3D() {
         </div>
       </div>
 
-      {/* Center Dynamic Node Tooltip (when hovered or pulsed) */}
-      <div className="relative z-10 px-4 pointer-events-none flex justify-center">
-        {activeNode && (
-          <div className="px-3.5 py-1.5 rounded-xl border border-white/20 bg-black/80 backdrop-blur-xl shadow-2xl flex items-center gap-2 animate-in fade-in zoom-in-95 duration-200">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: activeNode.hex }} />
+      {/* Floating Holographic Node Inspector (Only appears when hovering directly over a 3D node) */}
+      <div className="relative z-10 px-4 pointer-events-none flex justify-center pb-4">
+        {hoveredNode ? (
+          <div className="px-4 py-2 rounded-2xl border border-white/25 bg-black/85 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.8)] flex items-center gap-2.5 animate-in fade-in zoom-in-95 duration-200">
+            <span
+              className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_currentColor]"
+              style={{ backgroundColor: hoveredNode.hex, color: hoveredNode.hex }}
+            />
             <div>
-              <span className="text-xs font-bold text-white block leading-tight">{activeNode.name}</span>
-              <span className="text-[9px] font-mono text-white/60 block">{activeNode.details}</span>
+              <span className="text-xs sm:text-sm font-extrabold text-white block leading-tight font-display tracking-tight">
+                {hoveredNode.name}
+              </span>
+              <span className="text-[9px] sm:text-[10px] font-mono text-white/70 block">
+                {hoveredNode.details}
+              </span>
             </div>
           </div>
+        ) : (
+          <div className="opacity-0 transition-opacity duration-300">
+            <span className="text-xs">&nbsp;</span>
+          </div>
         )}
-      </div>
-
-      {/* Bottom Filter & Telemetry Bar */}
-      <div className="relative z-10 p-3 sm:p-4 flex flex-col gap-2 pointer-events-none">
-        {/* Orbital Domain Filter Tabs */}
-        <div className="flex items-center justify-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto">
-          {(['ALL', 'AI', 'SYSTEMS', 'ALGO'] as const).map((mode) => {
-            const isActive = activeMode === mode;
-            return (
-              <button
-                key={mode}
-                onClick={() => {
-                  playClick();
-                  setActiveMode(mode);
-                }}
-                className={`px-2.5 sm:px-3 py-1 rounded-lg font-mono text-[9px] sm:text-[10px] transition-all duration-200 border whitespace-nowrap active:scale-95 ${
-                  isActive
-                    ? 'bg-white text-black font-extrabold border-white shadow-[0_0_12px_rgba(255,255,255,0.4)]'
-                    : 'bg-black/60 text-white/60 border-white/10 hover:border-white/30 hover:text-white backdrop-blur-md'
-                }`}
-              >
-                {mode === 'ALL' && 'ALL ARSENAL'}
-                {mode === 'AI' && 'AI & RAG'}
-                {mode === 'SYSTEMS' && 'FULL-STACK'}
-                {mode === 'ALGO' && 'LEETCODE 1951'}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Footnote instruction */}
-        <div className="flex items-center justify-between text-[8px] sm:text-[9px] font-mono text-white/40 px-1">
-          <span>[ 3D NEURAL CLUSTER ]</span>
-          <span>DRAG TO ROTATE • CLICK TO OVERCLOCK</span>
-        </div>
       </div>
     </div>
   );
