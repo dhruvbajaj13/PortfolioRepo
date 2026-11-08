@@ -192,8 +192,8 @@ const Hero3DGeometricBackground = () => {
   return <div ref={mountRef} className="absolute inset-0 z-0 pointer-events-none opacity-80" />;
 };
 
-// ─── 2. Cyberpunk Night Drive 3D Supercar Scene (Locked 60-120FPS) ───
-import { HeroCyberpunkCar3D } from "./HeroCyberpunkCar3D";
+// ─── 2. Interactive 3D Tech Neural Nexus (AI, Systems & Algorithms) ───
+import { HeroTechNexus3D } from "./HeroTechNexus3D";
 
 // Roles for Typewriter Text Loop
 const ROLES = [
@@ -411,17 +411,17 @@ export function ActHero({
 
         </div>
 
-        {/* Right Column: 3D Cyberpunk Night Drive Supercar (Interactive & Locked 60FPS) */}
+        {/* Right Column: 3D Tech Neural Nexus (Interactive & Locked 60FPS) */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4 }}
           className="w-full lg:w-[48%] flex flex-col items-center justify-center relative mt-4 lg:mt-0"
         >
-          <div className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/10] rounded-3xl border border-white/15 hover:border-white/40 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.95)] hover:shadow-[0_25px_70px_rgba(255,255,255,0.08)] overflow-hidden backdrop-blur-2xl flex flex-col group/carcard transition-all duration-300">
+          <div className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/11] sm:aspect-[16/10] rounded-3xl border border-white/15 hover:border-white/40 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.95)] hover:shadow-[0_25px_70px_rgba(255,255,255,0.08)] overflow-hidden backdrop-blur-2xl flex flex-col transition-all duration-300">
             {/* 3D Canvas Viewport */}
             <div className="relative flex-1 w-full h-full overflow-hidden">
-              <HeroCyberpunkCar3D />
+              <HeroTechNexus3D />
             </div>
           </div>
         </motion.div>
