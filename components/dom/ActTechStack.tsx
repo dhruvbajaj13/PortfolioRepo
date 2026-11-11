@@ -48,7 +48,6 @@ const ALL_TECH: TechItem[] = [
   { name: 'LangChain',   category: 'AI / ML',   color: '#1CD399', logo: 'https://cdn.simpleicons.org/langchain/1CD399', isCore: true },
   { name: 'LangGraph',   category: 'AI / ML',   color: '#FF6B6B', logo: 'https://cdn.simpleicons.org/langchain/FF6B6B', isCore: true },
   { name: 'RAG',         category: 'AI / ML',   color: '#F59E0B', logo: 'https://cdn.simpleicons.org/googlebard/F59E0B', isCore: true },
-  { name: 'Groq',        category: 'AI / ML',   color: '#F55036', logo: 'https://api.iconify.design/logos/groq.svg', isCore: true },
   { name: 'Llama',       category: 'AI / ML',   color: '#046CE5', logo: 'https://cdn.simpleicons.org/meta/046CE5', isCore: true },
   { name: 'HuggingFace', category: 'AI / ML',   color: '#FFD21E', logo: 'https://cdn.simpleicons.org/huggingface/FFD21E' },
   { name: 'Streamlit',   category: 'AI / ML',   color: '#FF4B4B', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/streamlit/streamlit-original.svg' },
@@ -157,7 +156,7 @@ export function ActTechStack() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Find tech (e.g. C++, Llama, Groq)..."
+              placeholder="Find tech (e.g. C++, Llama, Docker)..."
               className="w-full bg-white/[0.03] hover:bg-white/[0.05] focus:bg-white/[0.06] border border-white/10 focus:border-white/40 rounded-full pl-8 pr-8 py-1.5 text-xs font-mono text-white placeholder-white/30 focus:outline-none transition-all duration-200"
             />
             {searchQuery && (
