@@ -40,7 +40,7 @@ export function ScrollTimelineScrubber({ activeScene = 0 }: { activeScene?: numb
   return (
     <div
       aria-label="Page scroll timeline"
-      className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center py-4 px-2 rounded-full border border-white/10 bg-[#0A0A0A]/80 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.8)] pointer-events-auto transition-opacity duration-300"
+      className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center py-4 px-2 rounded-full liquid-glass shadow-[0_10px_35px_rgba(0,0,0,0.8)] pointer-events-auto transition-opacity duration-300"
     >
       {/* Nodes list */}
       <div className="relative flex flex-col items-center gap-3.5 my-1">

@@ -135,7 +135,7 @@ export function ActTechStack() {
                   className={`px-3 sm:px-4 py-1.5 rounded-full font-mono text-[11px] sm:text-xs transition-all duration-300 flex items-center gap-1.5 border whitespace-nowrap shrink-0 active:scale-95 ${
                     isActive
                       ? 'bg-white text-black font-bold border-white shadow-[0_0_20px_rgba(255,255,255,0.35)] scale-105'
-                      : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-white/40 hover:text-white hover:bg-white/[0.06]'
+                      : 'liquid-glass-pill text-white/70 hover:border-white/40 hover:text-white'
                   }`}
                 >
                   <span>{tab}</span>
@@ -157,7 +157,7 @@ export function ActTechStack() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Find tech (e.g. C++, Llama, Docker)..."
-              className="w-full bg-white/[0.03] hover:bg-white/[0.05] focus:bg-white/[0.06] border border-white/10 focus:border-white/40 rounded-full pl-8 pr-8 py-1.5 text-xs font-mono text-white placeholder-white/30 focus:outline-none transition-all duration-200"
+              className="w-full liquid-glass focus:border-white/40 rounded-full pl-8 pr-8 py-1.5 text-xs font-mono text-white placeholder-white/30 focus:outline-none transition-all duration-200"
             />
             {searchQuery && (
               <button
@@ -228,7 +228,7 @@ function TechCard({ tech, index }: { tech: TechItem; index: number }) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/40 transition-all duration-300 cursor-default shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.6)] overflow-hidden"
+      className="group relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl liquid-glass hover:border-white/40 transition-all duration-300 cursor-default overflow-hidden"
     >
       {/* Bento Spotlight radial glow that follows mouse cursor */}
       <div

@@ -387,10 +387,10 @@ export function CommandPalette() {
               exit={{ opacity: 0, scale: 0.96, y: -10 }}
               transition={{ duration: 0.2 }}
               data-lenis-prevent="true"
-              className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-[#0C0C0E]/98 backdrop-blur-2xl shadow-[0_20px_70px_rgba(0,0,0,0.95)] overflow-hidden z-10 flex flex-col max-h-[85vh]"
+              className="relative w-full max-w-xl rounded-2xl liquid-glass shadow-[0_20px_70px_rgba(0,0,0,0.95)] overflow-hidden z-10 flex flex-col max-h-[85vh]"
             >
               {/* Search Bar Input */}
-              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-[#121215] shrink-0">
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-white/[0.04] backdrop-blur-sm shrink-0">
                 <Search className="w-4 h-4 text-white/50 shrink-0" />
                 <input
                   ref={inputRef}
@@ -498,7 +498,7 @@ export function CommandPalette() {
       </AnimatePresence>
 
       {/* Floating Quick Action Hint Pill */}
-      <div className="fixed bottom-5 right-5 z-30 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-[#08080A]/90 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] text-[10px] font-mono text-white/50 select-none pointer-events-auto hover:border-white/30 transition-all">
+      <div className="fixed bottom-5 right-5 z-30 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full liquid-glass-pill shadow-[0_10px_30px_rgba(0,0,0,0.8)] text-[10px] font-mono text-white/50 select-none pointer-events-auto hover:border-white/30 transition-all">
         <button
           type="button"
           onClick={() => {

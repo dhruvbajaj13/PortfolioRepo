@@ -107,8 +107,8 @@ export function ActExperience() {
                 onClick={() => setActiveIdx(i)}
                 className={`group text-left w-full px-4 sm:px-6 py-3.5 sm:py-5 rounded-2xl border transition-all duration-300 flex justify-between items-start gap-3 sm:gap-4 hover:translate-x-1.5 ${
                   activeIdx === i
-                    ? 'bg-white/5 border-white/40 shadow-[0_0_25px_rgba(255,255,255,0.08)]'
-                    : 'bg-white/[0.02] border-white/8 hover:border-white/30 hover:bg-white/[0.04]'
+                    ? 'liquid-glass border-white/35 shadow-[0_0_25px_rgba(255,255,255,0.08)]'
+                    : 'liquid-glass border-white/8 hover:border-white/25'
                 }`}
               >
                 <div className="flex flex-col gap-1 min-w-0">

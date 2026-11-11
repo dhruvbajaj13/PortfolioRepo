@@ -307,10 +307,10 @@ export function ActProjects() {
               viewport={{ once: true, margin: '-30px' }}
               transition={{ duration: 0.4, delay: (i % 2) * 0.1 }}
               whileHover={{ y: -4 }}
-              className="group/card relative rounded-2xl border border-white/10 bg-[#0C0C0C] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:border-white/30 hover:shadow-[0_16px_45px_rgba(255,255,255,0.08)] transition-all duration-300 flex flex-col justify-between"
+              className="group/card relative rounded-2xl liquid-glass overflow-hidden transition-all duration-300 flex flex-col justify-between"
             >
               {/* macOS Browser Header Bar */}
-              <div className="flex items-center justify-between px-3 sm:px-3.5 py-2 bg-[#121212] border-b border-white/8 gap-2">
+              <div className="flex items-center justify-between px-3 sm:px-3.5 py-2 bg-white/[0.04] backdrop-blur-sm border-b border-white/8 gap-2">
                 {/* Traffic light dots */}
                 <div className="flex items-center gap-1.5 shrink-0">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_5px_rgba(255,95,87,0.5)] group-hover/card:brightness-110 transition-all" />
@@ -319,7 +319,7 @@ export function ActProjects() {
                 </div>
 
                 {/* Browser URL Search Bar */}
-                <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full bg-[#080808] border border-white/10 max-w-[105px] xs:max-w-[160px] sm:max-w-[220px] truncate">
+                <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full liquid-glass-pill max-w-[105px] xs:max-w-[160px] sm:max-w-[220px] truncate">
                   <Globe className="w-2.5 h-2.5 text-white/30 shrink-0" />
                   <span className="font-mono text-[9px] text-white/50 truncate select-none">
                     {proj.browserUrl ? proj.browserUrl.replace('https://', '') : `${proj.id}.dev`}
@@ -353,49 +353,49 @@ export function ActProjects() {
               {/* Project Screenshot Media with Carousel Animation */}
               <ProjectCardMedia project={proj} index={i} />
 
-              {/* Compact Card Body: Name, Tech Stack & Action Links Only */}
-              <div className="p-3 sm:p-4 flex flex-col gap-2.5">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-display font-black text-sm sm:text-base text-white tracking-tight uppercase leading-tight">
-                    {proj.title}
-                  </h3>
+                {/* Compact Card Body: Name, Tech Stack & Action Links Only */}
+                <div className="p-3 sm:p-4 flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-display font-black text-sm sm:text-base text-white tracking-tight uppercase leading-tight">
+                      {proj.title}
+                    </h3>
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    <a
-                      href={proj.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 py-1.5 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 hover:border-white/40 text-[10px] font-mono text-white/70 hover:text-white transition-all flex items-center gap-1"
-                      title="GitHub Repository"
-                    >
-                      <Github className="w-3 h-3" />
-                      <span>Code</span>
-                    </a>
-                    <a
-                      href={proj.liveDemo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 py-1.5 rounded-lg bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1 shadow-sm"
-                      title="Open Live App"
-                    >
-                      <span>Live</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </a>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <a
+                        href={proj.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2.5 py-1.5 rounded-lg liquid-glass hover:border-white/40 text-[10px] font-mono text-white/70 hover:text-white transition-all flex items-center gap-1"
+                        title="GitHub Repository"
+                      >
+                        <Github className="w-3 h-3" />
+                        <span>Code</span>
+                      </a>
+                      <a
+                        href={proj.liveDemo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2.5 py-1.5 rounded-lg bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1 shadow-sm"
+                        title="Open Live App"
+                      >
+                        <span>Live</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Tech Stack Badges */}
+                  <div className="flex flex-wrap gap-1">
+                    {proj.techStack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="px-2 py-0.5 rounded-full liquid-glass text-[9px] font-mono text-white/60"
+                      >
+                        {tech}
+                      </span>
+                    ))}
                   </div>
                 </div>
-
-                {/* Tech Stack Badges */}
-                <div className="flex flex-wrap gap-1">
-                  {proj.techStack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-2 py-0.5 rounded-full border border-white/8 bg-white/[0.03] text-[9px] font-mono text-white/60"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
 
             </motion.div>
           ))}

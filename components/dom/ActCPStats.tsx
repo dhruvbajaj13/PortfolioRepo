@@ -172,7 +172,7 @@ export function ActCPStats() {
 
         {/* 2026 Live Milestone Highlights Strip */}
         <div className="mb-5 sm:mb-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl liquid-glass">
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
               <Trophy className="w-4 h-4 text-amber-400" />
             </div>
@@ -182,7 +182,7 @@ export function ActCPStats() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl liquid-glass">
             <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
               <Flame className="w-4 h-4 text-orange-400" />
             </div>
@@ -192,7 +192,7 @@ export function ActCPStats() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+          <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl liquid-glass">
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
               <Award className="w-4 h-4 text-emerald-400" />
             </div>
@@ -220,7 +220,7 @@ export function ActCPStats() {
                 className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-sans transition-all duration-300 shrink-0 border hover:-translate-y-0.5 active:scale-95 ${
                   isSelected
                     ? 'bg-white text-black font-bold border-white shadow-[0_0_18px_rgba(255,255,255,0.35)] scale-105'
-                    : 'bg-white/[0.03] text-white/60 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/[0.06]'
+                    : 'liquid-glass-pill text-white/70 hover:border-white/35 hover:text-white'
                 }`}
               >
                 <Logo color={isSelected ? '#000' : iconColor} />
@@ -238,7 +238,7 @@ export function ActCPStats() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-            className="group relative rounded-3xl border border-white/10 bg-[#0A0A0E]/95 p-5 sm:p-7 md:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col gap-5 hover:-translate-y-1.5 hover:border-white/35 hover:shadow-[0_25px_65px_rgba(255,255,255,0.06)] transition-all duration-300 overflow-hidden"
+            className="group relative rounded-3xl liquid-glass p-5 sm:p-7 md:p-8 flex flex-col gap-5 hover:-translate-y-1.5 transition-all duration-300 overflow-hidden"
           >
             {/* Subtle Ambient Glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none group-hover:bg-white/10 transition-colors duration-500" />
@@ -247,7 +247,7 @@ export function ActCPStats() {
             <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10 relative z-10">
               <div className="flex items-center gap-3.5">
                 <div
-                  className="w-11 h-11 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform"
+                  className="w-11 h-11 rounded-2xl liquid-glass-pill flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform"
                   style={{ color: PLATFORM_ICON_COLORS[active.id] }}
                 >
                   <active.Logo color={PLATFORM_ICON_COLORS[active.id]} />
@@ -266,7 +266,7 @@ export function ActCPStats() {
               </div>
 
               <div className="flex items-center gap-2.5">
-                <span className="text-[10px] font-bold font-mono px-3 py-1 rounded-full border border-white/30 bg-white/10 text-white shadow-sm">
+                <span className="text-[10px] font-bold font-mono px-3 py-1 rounded-full liquid-glass-pill text-white shadow-sm">
                   {active.badge}
                 </span>
 
@@ -287,7 +287,7 @@ export function ActCPStats() {
               {active.stats.map((s) => (
                 <div
                   key={s.label}
-                  className="flex flex-col gap-0.5 sm:gap-1 p-2.5 sm:p-3.5 rounded-2xl border border-white/8 bg-white/[0.02] text-center hover:border-white/30 hover:bg-white/[0.05] hover:-translate-y-1 transition-all duration-200 cursor-default group/stat shadow-sm"
+                  className="flex flex-col gap-0.5 sm:gap-1 p-2.5 sm:p-3.5 rounded-2xl liquid-glass text-center hover:border-white/35 hover:-translate-y-1 transition-all duration-200 cursor-default group/stat shadow-sm"
                 >
                   <span className="font-display font-black text-base xs:text-xl sm:text-3xl text-white tracking-tight group-hover/stat:text-white transition-colors">
                     <AnimatedCounter target={s.value} />
@@ -311,7 +311,7 @@ export function ActCPStats() {
                 {active.graphs.map((g) => (
                   <div
                     key={g.src}
-                    className="rounded-2xl overflow-hidden border border-white/10 bg-[#08080a] p-2.5 sm:p-3 flex items-center justify-center hover:border-white/30 hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(255,255,255,0.06)] transition-all duration-300 group/graph"
+                    className="rounded-2xl overflow-hidden liquid-glass p-2.5 sm:p-3 flex items-center justify-center hover:border-white/35 hover:-translate-y-1 transition-all duration-300 group/graph"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

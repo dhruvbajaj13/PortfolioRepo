@@ -41,7 +41,7 @@ export function ActAbout() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="relative w-full aspect-square max-w-[260px] sm:max-w-[310px] lg:max-w-[350px] rounded-2xl overflow-hidden border border-white/15 bg-white/[0.03] group shadow-2xl"
+              className="relative w-full aspect-square max-w-[260px] sm:max-w-[310px] lg:max-w-[350px] rounded-2xl overflow-hidden liquid-glass group shadow-2xl"
             >
               <img
                 src="/images/dhruv_profile.jpg"
@@ -57,7 +57,7 @@ export function ActAbout() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="flex-1 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-8 md:p-10 flex flex-col justify-center gap-4"
+            className="flex-1 w-full rounded-2xl liquid-glass p-5 sm:p-8 md:p-10 flex flex-col justify-center gap-4"
           >
             <h3 className="font-display font-black text-white text-2xl md:text-3xl tracking-tight mb-2">
               Dhruv Bajaj
