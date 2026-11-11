@@ -96,56 +96,104 @@ html.lenis, html.lenis body {
   -webkit-text-fill-color: transparent;
 }
 
-/* 2026 Liquid Glassmorphism (VisionOS / macOS Optical Glass) */
+/* 2026 Liquid Glassmorphism — Rich frosted glass, clearly visible on dark backgrounds */
+
+/* Animated shimmer keyframe for glass sheen */
+@keyframes glass-sheen {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
 .liquid-glass {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.015) 50%,
-    rgba(255, 255, 255, 0.035) 100%
-  );
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top-color: rgba(255, 255, 255, 0.28);
-  border-left-color: rgba(255, 255, 255, 0.2);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.11) 0%,
+      rgba(255, 255, 255, 0.04) 40%,
+      rgba(255, 255, 255, 0.07) 100%
+    );
+  backdrop-filter: blur(32px) saturate(200%) brightness(1.08);
+  -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.45);
+  border-left-color: rgba(255, 255, 255, 0.28);
+  border-right-color: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
   box-shadow:
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35),
-    0 20px 45px -12px rgba(0, 0, 0, 0.85);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    /* top specular rim */
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.35),
+    /* bottom inner shadow for depth */
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.5),
+    /* left inner edge light */
+    inset 1.5px 0 2px 0 rgba(255, 255, 255, 0.12),
+    /* outer glow / lift */
+    0 8px 32px -4px rgba(0, 0, 0, 0.7),
+    0 2px 8px -2px rgba(255, 255, 255, 0.06);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Animated diagonal gloss sweep on hover */
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.07) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.liquid-glass:hover::before {
+  opacity: 1;
+  animation: glass-sheen 1.4s ease forwards;
 }
 
 .liquid-glass:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.025) 50%,
-    rgba(255, 255, 255, 0.055) 100%
-  );
-  border-color: rgba(255, 255, 255, 0.22);
-  border-top-color: rgba(255, 255, 255, 0.42);
-  border-left-color: rgba(255, 255, 255, 0.32);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.055) 40%,
+      rgba(255, 255, 255, 0.10) 100%
+    );
+  border-top-color: rgba(255, 255, 255, 0.60);
+  border-left-color: rgba(255, 255, 255, 0.38);
+  border-color: rgba(255, 255, 255, 0.28);
   box-shadow:
-    inset 0 1px 2px 0 rgba(255, 255, 255, 0.28),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.3),
-    0 25px 55px -12px rgba(0, 0, 0, 0.92),
-    0 0 25px rgba(255, 255, 255, 0.04);
+    inset 0 2px 3px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.45),
+    inset 2px 0 2px 0 rgba(255, 255, 255, 0.16),
+    0 12px 40px -4px rgba(0, 0, 0, 0.75),
+    0 0 20px -4px rgba(255, 255, 255, 0.08);
 }
 
 .liquid-glass-pill {
   background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.02) 100%
+    160deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.09) 100%
   );
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-top-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(28px) saturate(190%) brightness(1.06);
+  -webkit-backdrop-filter: blur(28px) saturate(190%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.50);
+  border-left-color: rgba(255, 255, 255, 0.30);
+  border-right-color: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.07);
   box-shadow:
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.2),
-    0 12px 32px rgba(0, 0, 0, 0.6);
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.38),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4),
+    0 8px 24px -4px rgba(0, 0, 0, 0.65),
+    0 2px 6px -2px rgba(255, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glow-cyan,
