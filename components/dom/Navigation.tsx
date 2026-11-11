@@ -65,8 +65,8 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
       {/* Top Floating Glass Pill Navbar */}
       <header className="fixed top-4 sm:top-6 left-0 right-0 z-40 flex justify-center px-3 sm:px-4 pointer-events-auto">
         <nav
-          className={`flex items-center justify-between md:justify-center w-full max-w-[calc(100vw-24px)] sm:max-w-md md:max-w-fit px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full transition-all duration-300 border border-white/10 bg-[#0A0A0A]/90 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.9)] ${
-            scrolled ? 'scale-95 border-white/20' : 'scale-100'
+          className={`flex items-center justify-between md:justify-center w-full max-w-[calc(100vw-24px)] sm:max-w-md md:max-w-fit px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full liquid-glass-pill transition-all duration-300 ${
+            scrolled ? 'scale-95 shadow-[0_15px_50px_rgba(0,0,0,0.95)]' : 'scale-100'
           }`}
         >
           {/* Desktop Centered Navigation Links */}

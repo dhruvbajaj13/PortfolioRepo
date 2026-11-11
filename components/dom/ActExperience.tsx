@@ -138,7 +138,7 @@ export function ActExperience() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-                className="group relative h-full rounded-3xl border border-white/10 bg-[#0A0A0E]/95 p-5 sm:p-9 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col gap-5 sm:gap-7 hover:-translate-y-1.5 hover:border-white/35 hover:shadow-[0_25px_65px_rgba(255,255,255,0.06)] transition-all duration-300 overflow-hidden"
+                className="group relative h-full rounded-3xl liquid-glass p-5 sm:p-9 md:p-10 flex flex-col gap-5 sm:gap-7 hover:-translate-y-1.5 transition-all duration-300 overflow-hidden"
               >
                 {/* Subtle Ambient Glow Orb in background */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none group-hover:bg-white/10 transition-colors duration-500" />

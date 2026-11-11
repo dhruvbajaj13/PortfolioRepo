@@ -116,10 +116,10 @@ export function ActAchievements() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="rounded-2xl border border-white/10 bg-[#0A0A0C]/90 backdrop-blur-xl overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.8)] divide-y divide-white/8"
+          className="rounded-2xl liquid-glass overflow-hidden divide-y divide-white/8"
         >
           {/* Header Bar */}
-          <div className="px-4 sm:px-5 py-2.5 sm:py-3 bg-[#111114] border-b border-white/8 flex items-center justify-between">
+          <div className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white/[0.03] border-b border-white/8 flex items-center justify-between">
             <div className="flex items-center gap-2 font-mono text-[11px] sm:text-xs text-white/50">
               <Terminal className="w-3.5 h-3.5 text-white/40" />
               <span>key_milestones.md</span>

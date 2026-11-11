@@ -270,7 +270,7 @@ export function ActHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#0C0C0E] border border-white/10 text-[10.5px] sm:text-xs font-semibold text-slate-300 shadow-md backdrop-blur-md mb-2"
+              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full liquid-glass-pill text-[10.5px] sm:text-xs font-semibold text-white/90 shadow-lg mb-2"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
               <span>Open to SDE Opportunities / Internship</span>
@@ -387,7 +387,7 @@ export function ActHero({
             transition={{ duration: 1, delay: 0.9 }}
             className="pt-2 w-full max-w-lg mx-auto"
           >
-            <div className="flex flex-row items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl border border-white/10 bg-[#0C0C0E]/90 shadow-xl backdrop-blur-xl">
+            <div className="flex flex-row items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl liquid-glass">
               <div className="text-center flex-1">
                 <div className="font-display text-base sm:text-2xl font-extrabold text-[#FFFFFF]">1,100+</div>
                 <div className="font-mono text-[7.5px] xs:text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Solved</div>
@@ -418,7 +418,7 @@ export function ActHero({
           transition={{ duration: 1, delay: 0.4 }}
           className="w-full lg:w-[48%] flex flex-col items-center justify-center relative mt-4 lg:mt-0"
         >
-          <div className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/11] sm:aspect-[16/10] rounded-3xl border border-white/15 hover:border-white/40 bg-[#0C0C0E]/95 shadow-[0_20px_60px_rgba(0,0,0,0.95)] hover:shadow-[0_25px_70px_rgba(255,255,255,0.08)] overflow-hidden backdrop-blur-2xl flex flex-col transition-all duration-300">
+          <div className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/11] sm:aspect-[16/10] rounded-3xl liquid-glass overflow-hidden flex flex-col">
             {/* 3D Canvas Viewport */}
             <div className="relative flex-1 w-full h-full overflow-hidden">
               <HeroTechNexus3D />
