@@ -165,7 +165,7 @@ function ProjectCardMedia({
 
   return (
     <div
-      className="relative w-full aspect-[16/7.2] overflow-hidden bg-[#060608] border-b border-white/8 group/img select-none cursor-pointer"
+      className="relative w-full aspect-[16/6.2] overflow-hidden bg-[#060608] border-b border-white/8 group/img select-none cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
@@ -276,7 +276,7 @@ export function ActProjects() {
 
   return (
     <section id="projects" className="relative bg-transparent pt-12 pb-18 md:pt-16 md:pb-24">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
         <div className="mb-6 md:mb-8">
