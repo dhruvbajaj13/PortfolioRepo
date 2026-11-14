@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Github, ArrowUpRight, Globe } from 'lucide-react';
+import { Github, ArrowUpRight, Globe, Layers, X, Check, Sparkles, ExternalLink } from 'lucide-react';
 
 export interface ProjectItem {
   id: string;
   title: string;
   tagline: string;
   category: string;
+  filterCategory: 'ai' | 'fullstack' | 'devtools';
   image: string;
   images?: string[];
   imageLabels?: string[];
@@ -29,6 +30,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     title: 'SPLITR – AI Based Expense Splitting Platform',
     tagline: 'AI-Powered Expense Sharing & Bill Splitting',
     category: 'Full-Stack & AI',
+    filterCategory: 'fullstack',
     image: '/images/splitr_home.png',
     images: ['/images/splitr_home.png', '/images/splitr_dashboard.png'],
     imageLabels: ['Home', 'Dashboard'],
@@ -45,6 +47,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     title: 'RAG AI Agent with Web Search',
     tagline: 'Autonomous Document Intelligence & Live Search',
     category: 'GenAI & Agents',
+    filterCategory: 'ai',
     image: '/images/rag_agent.png',
     browserUrl: 'https://github.com/dhruvbajaj13/RAG-Based-AI-Document-Agent',
     problem: 'Standard LLMs hallucinate outdated information and cannot securely reason over proprietary internal documents or live web facts.',
@@ -61,6 +64,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     title: 'Stock Market Analyzer',
     tagline: 'Real-Time Equity Analytics & Technical Indicators',
     category: 'FinTech & Analytics',
+    filterCategory: 'fullstack',
     image: '/images/stock_analyser.png',
     browserUrl: 'https://stock-market-analyzer-we8x.vercel.app',
     problem: 'Retail investors struggle with fragmented platforms for analyzing real-time stock quotes, candlestick patterns, and technical indicators.',
@@ -75,6 +79,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     title: 'CODECRAFT – SAAS CODE EDITOR AND IDE',
     tagline: 'SaaS Cloud IDE & Multi-Language Runner',
     category: 'Cloud DevTools',
+    filterCategory: 'devtools',
     image: '/images/codecraft_home.png',
     images: ['/images/codecraft_home.png', '/images/codecraft_editor.png'],
     imageLabels: ['Home', 'Editor'],
@@ -93,6 +98,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     title: 'SYNTHEX AI Chrome Extension',
     tagline: 'AI Web Productivity Chrome Extension',
     category: 'Browser Extensions',
+    filterCategory: 'ai',
     image: '/images/synthex.png',
     browserUrl: 'https://github.com/dhruvbajaj13/Synthex',
     problem: 'Constantly switching tabs to prompt AI assistants interrupts reading focus, email drafting, and online research.',
@@ -107,6 +113,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     title: 'CleanCity',
     tagline: 'Smart Waste Management Platform with IoT Telemetry',
     category: 'IoT & Smart Cities',
+    filterCategory: 'devtools',
     image: '/images/cleancity_home.png',
     images: ['/images/cleancity_home.png', '/images/cleancity_about.png', '/images/cleancity_dashboard.png'],
     imageLabels: ['Home', 'About', 'Dashboard'],
@@ -123,9 +130,11 @@ export const PROJECTS_DATA: ProjectItem[] = [
 function ProjectCardMedia({
   project,
   index,
+  onInspect,
 }: {
   project: ProjectItem;
   index: number;
+  onInspect: () => void;
 }) {
   const images = project.images && project.images.length > 1 ? project.images : [project.image];
   const [activeIdx, setActiveIdx] = useState(0);
@@ -149,7 +158,6 @@ function ProjectCardMedia({
 
   const hasMultiple = images.length > 1;
 
-  // Choose optimal image alignment
   const objectPosition =
     project.id === 'rag-agent'
       ? 'object-top'
@@ -159,15 +167,11 @@ function ProjectCardMedia({
 
   return (
     <div
-      className="relative w-full aspect-[16/8] overflow-hidden bg-[#070707] border-b border-white/8 group/img select-none cursor-pointer"
+      className="relative w-full aspect-[16/8.5] overflow-hidden bg-[#060608] border-b border-white/8 group/img select-none cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
-      onClick={() => {
-        if (hasMultiple) {
-          setActiveIdx((prev) => (prev + 1) % images.length);
-        }
-      }}
+      onClick={onInspect}
     >
       {/* Top Segmented Story Progress Bar for Multi-Image Projects */}
       {hasMultiple && (
@@ -191,16 +195,16 @@ function ProjectCardMedia({
         </div>
       )}
 
-      {/* Main Image with Cinematic Zoom-Blur Reveal Animation */}
+      {/* Main Image with Smooth Fade-Scale Reveal Animation */}
       <AnimatePresence mode="popLayout">
         <motion.img
           key={images[activeIdx]}
           src={images[activeIdx]}
           alt={`${project.title} preview ${activeIdx + 1}`}
-          initial={{ opacity: 0, scale: 1.06, filter: 'blur(6px)' }}
-          animate={{ opacity: 0.95, scale: 1, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, scale: 0.97, filter: 'blur(4px)' }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 0.95, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           className={`w-full h-full object-cover ${objectPosition} group-hover/img:opacity-100 group-hover/img:scale-105 transition-all duration-700 ease-out`}
           loading="lazy"
         />
@@ -210,29 +214,24 @@ function ProjectCardMedia({
       <div
         className="pointer-events-none absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity duration-500 z-10"
         style={{
-          background: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, rgba(255, 255, 255, 0.14), transparent 75%)`,
+          background: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, rgba(255, 255, 255, 0.12), transparent 75%)`,
         }}
       />
 
       {/* Vignette Gradients */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0C0C0C] via-transparent to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent pointer-events-none z-10" />
-
-      {/* Futuristic Hologram Scanline Sweeper on Hover */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.04] to-transparent -translate-y-full group-hover/img:translate-y-full transition-transform duration-1000 ease-in-out pointer-events-none z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-transparent to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none z-10" />
 
       {/* Project Category Tag */}
-      <div className="absolute top-3 left-3 font-mono text-[9px] font-bold text-white/90 bg-black/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/15 z-20 shadow-md">
+      <div className="absolute top-3 left-3 font-mono text-[9px] font-bold text-white/90 bg-black/85 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/15 z-20 shadow-md">
         0{index + 1} // {project.category}
       </div>
 
       {/* Center Interactive Preview Badge on Hover */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all duration-300 pointer-events-none z-20">
-        <div className="px-3.5 py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/25 text-white font-mono text-[10px] tracking-wider uppercase flex items-center gap-2 shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-90 group-hover/img:scale-100 transition-transform duration-300">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-semibold text-white/90">
-            {hasMultiple ? `VIEW [${activeIdx + 1}/${images.length}]` : 'INSPECT'}
-          </span>
+        <div className="px-3.5 py-1.5 rounded-full bg-black/85 backdrop-blur-md border border-white/30 text-white font-mono text-[10px] tracking-wider uppercase flex items-center gap-2 shadow-[0_8px_30px_rgba(0,0,0,0.95)] scale-95 group-hover/img:scale-100 transition-transform duration-300">
+          <Sparkles className="w-3 h-3 text-white" />
+          <span className="font-semibold text-white">Inspect Architecture</span>
         </div>
       </div>
 
@@ -253,7 +252,7 @@ function ProjectCardMedia({
                 className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono transition-all backdrop-blur-md border ${
                   isActive
                     ? 'bg-white text-black font-bold border-white shadow-[0_0_10px_rgba(255,255,255,0.5)] scale-105'
-                    : 'bg-black/70 text-white/60 border-white/15 hover:text-white hover:border-white/40'
+                    : 'bg-black/75 text-white/60 border-white/15 hover:text-white hover:border-white/40'
                 }`}
                 title={`Switch to ${label}`}
               >
@@ -267,13 +266,36 @@ function ProjectCardMedia({
   );
 }
 
+const FILTER_TABS = [
+  { id: 'all', label: 'All Projects', count: 6 },
+  { id: 'ai', label: 'AI & GenAI', count: 2 },
+  { id: 'fullstack', label: 'Full-Stack Apps', count: 2 },
+  { id: 'devtools', label: 'Cloud & Systems', count: 2 },
+] as const;
+
 export function ActProjects() {
+  const [activeTab, setActiveTab] = useState<typeof FILTER_TABS[number]['id']>('all');
+  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+
+  // Keyboard shortcut: Escape closes modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedProject(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const filteredProjects = activeTab === 'all'
+    ? PROJECTS_DATA
+    : PROJECTS_DATA.filter((p) => p.filterCategory === activeTab);
+
   return (
     <section id="projects" className="relative bg-transparent pt-12 pb-18 md:pt-16 md:pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
 
         {/* Section Header */}
-        <div className="mb-8 md:mb-10">
+        <div className="mb-6 md:mb-8">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -292,100 +314,132 @@ export function ActProjects() {
               Projects
             </motion.h2>
             <span className="font-mono text-[10.5px] text-white/40 tracking-wider">
-              [ 6 Featured Applications · 3 × 2 Grid ]
+              [ 6 Featured Applications · Production Code &amp; Deployed Apps ]
             </span>
           </div>
         </div>
 
+        {/* Category Filter Pills Bar */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-6 sm:mb-8 -webkit-overflow-scrolling-touch">
+          {FILTER_TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3.5 sm:px-4 py-1.5 rounded-full font-mono text-[11px] sm:text-xs transition-all duration-300 flex items-center gap-1.5 border whitespace-nowrap shrink-0 active:scale-95 ${
+                  isActive
+                    ? 'bg-white text-black font-bold border-white shadow-[0_0_18px_rgba(255,255,255,0.35)] scale-105'
+                    : 'liquid-glass-pill text-white/70 hover:border-white/35 hover:text-white'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full ${
+                  isActive ? 'bg-black/20 text-black font-bold' : 'bg-white/10 text-white/40'
+                }`}>
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* 3 Rows × 2 Columns Responsive Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
-          {PROJECTS_DATA.map((proj, i) => (
-            <motion.div
-              key={proj.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-30px' }}
-              transition={{ duration: 0.4, delay: (i % 2) * 0.1 }}
-              whileHover={{ y: -4 }}
-              className="group/card relative rounded-2xl liquid-glass overflow-hidden transition-all duration-300 flex flex-col justify-between"
-            >
-              {/* macOS Browser Header Bar */}
-              <div className="flex items-center justify-between px-3 sm:px-3.5 py-2 bg-white/[0.04] backdrop-blur-sm border-b border-white/8 gap-2">
-                {/* Traffic light dots */}
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_5px_rgba(255,95,87,0.5)] group-hover/card:brightness-110 transition-all" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_5px_rgba(254,188,46,0.4)] group-hover/card:brightness-110 transition-all" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_5px_rgba(40,200,64,0.4)] group-hover/card:brightness-110 transition-all" />
+        <motion.div
+          layout
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((proj, i) => (
+              <motion.div
+                key={proj.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                viewport={{ once: true, margin: '-30px' }}
+                transition={{ duration: 0.4, delay: (i % 2) * 0.08 }}
+                whileHover={{ y: -5 }}
+                className="group/card relative rounded-2xl liquid-glass overflow-hidden transition-all duration-300 flex flex-col justify-between"
+              >
+                {/* macOS Browser Header Bar */}
+                <div className="flex items-center justify-between px-3.5 sm:px-4 py-2.5 bg-white/[0.03] backdrop-blur-md border-b border-white/8 gap-2">
+                  {/* Traffic light dots */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_6px_rgba(255,95,87,0.6)] group-hover/card:brightness-110 transition-all" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_6px_rgba(254,188,46,0.5)] group-hover/card:brightness-110 transition-all" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_6px_rgba(40,200,64,0.5)] group-hover/card:brightness-110 transition-all" />
+                  </div>
+
+                  {/* Browser URL Search Bar with Live Pulse Dot */}
+                  <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full liquid-glass-pill max-w-[130px] xs:max-w-[190px] sm:max-w-[240px] truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_6px_#10b981] animate-pulse" />
+                    <Globe className="w-2.5 h-2.5 text-white/40 shrink-0" />
+                    <span className="font-mono text-[9px] text-white/60 truncate select-none">
+                      {proj.browserUrl ? proj.browserUrl.replace('https://', '') : `${proj.id}.dev`}
+                    </span>
+                  </div>
+
+                  {/* Quick Link Buttons */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <a
+                      href={proj.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-white hover:border-white/60 hover:bg-white/10 transition-all bg-[#080808]"
+                      title="View GitHub Repository"
+                    >
+                      <Github className="w-3 h-3" />
+                    </a>
+                    <a
+                      href={proj.liveDemo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2.5 h-6 rounded-full bg-white text-black font-bold uppercase tracking-wider text-[8px] flex items-center gap-1 hover:scale-105 transition-transform shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                      title="Open Live App"
+                    >
+                      <span>Live</span>
+                      <ArrowUpRight className="w-2.5 h-2.5" />
+                    </a>
+                  </div>
                 </div>
 
-                {/* Browser URL Search Bar */}
-                <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full liquid-glass-pill max-w-[105px] xs:max-w-[160px] sm:max-w-[220px] truncate">
-                  <Globe className="w-2.5 h-2.5 text-white/30 shrink-0" />
-                  <span className="font-mono text-[9px] text-white/50 truncate select-none">
-                    {proj.browserUrl ? proj.browserUrl.replace('https://', '') : `${proj.id}.dev`}
-                  </span>
-                </div>
+                {/* Project Screenshot Media with Carousel Animation & Click-to-Inspect */}
+                <ProjectCardMedia
+                  project={proj}
+                  index={i}
+                  onInspect={() => setSelectedProject(proj)}
+                />
 
-                {/* Quick Link Buttons */}
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <a
-                    href={proj.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-white hover:border-white/60 hover:bg-white/10 transition-all bg-[#080808]"
-                    title="View GitHub Repository"
-                  >
-                    <Github className="w-2.5 h-2.5" />
-                  </a>
-                  <a
-                    href={proj.liveDemo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-2 h-6 rounded-full bg-white text-black font-bold uppercase tracking-wider text-[8px] flex items-center gap-0.5 hover:scale-105 transition-transform shadow-[0_0_10px_rgba(255,255,255,0.4)]"
-                    title="Open Live App"
-                  >
-                    <span>Live</span>
-                    <ArrowUpRight className="w-2.5 h-2.5" />
-                  </a>
-                </div>
-              </div>
-
-              {/* Project Screenshot Media with Carousel Animation */}
-              <ProjectCardMedia project={proj} index={i} />
-
-                {/* Compact Card Body: Name, Tech Stack & Action Links Only */}
-                <div className="p-3 sm:p-4 flex flex-col gap-2.5">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="font-display font-black text-sm sm:text-base text-white tracking-tight uppercase leading-tight">
-                      {proj.title}
-                    </h3>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                      <a
-                        href={proj.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg liquid-glass hover:border-white/40 text-[10px] font-mono text-white/70 hover:text-white transition-all flex items-center gap-1"
-                        title="GitHub Repository"
-                      >
-                        <Github className="w-3 h-3" />
-                        <span>Code</span>
-                      </a>
-                      <a
-                        href={proj.liveDemo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1 shadow-sm"
-                        title="Open Live App"
-                      >
-                        <span>Live</span>
-                        <ArrowUpRight className="w-3 h-3" />
-                      </a>
+                {/* Enhanced Card Body: Title, Tagline, Key Feature Chips & Tech Badges */}
+                <div className="p-4 sm:p-5 flex flex-col gap-3 justify-between flex-1">
+                  <div className="space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-display font-black text-base sm:text-lg text-white tracking-tight uppercase leading-snug group-hover/card:text-white transition-colors">
+                        {proj.title}
+                      </h3>
                     </div>
+                    <p className="font-sans text-xs sm:text-[13px] text-white/60 leading-relaxed font-light">
+                      {proj.tagline}
+                    </p>
+                  </div>
+
+                  {/* Key Highlights Micro-Chips (2 Features) */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {proj.features.slice(0, 3).map((feat) => (
+                      <span
+                        key={feat}
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-[9.5px] font-mono text-white/75"
+                      >
+                        <Check className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
+                        <span>{feat}</span>
+                      </span>
+                    ))}
                   </div>
 
                   {/* Tech Stack Badges */}
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1 pt-1">
                     {proj.techStack.map((tech) => (
                       <span
                         key={tech}
@@ -395,13 +449,192 @@ export function ActProjects() {
                       </span>
                     ))}
                   </div>
+
+                  {/* Card Bottom Action Bar: Architecture Deep Dive + Direct Links */}
+                  <div className="pt-2 border-t border-white/8 flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProject(proj)}
+                      className="inline-flex items-center gap-1.5 text-[11px] font-mono text-white/70 hover:text-white transition-colors group/btn py-1"
+                    >
+                      <Layers className="w-3.5 h-3.5 text-white/50 group-hover/btn:text-white transition-colors" />
+                      <span className="underline underline-offset-4 decoration-white/25 group-hover/btn:decoration-white">Architecture Details</span>
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={proj.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2.5 py-1 rounded-lg liquid-glass hover:border-white/40 text-[10.5px] font-mono text-white/75 hover:text-white transition-all flex items-center gap-1"
+                      >
+                        <Github className="w-3 h-3" />
+                        <span>Code</span>
+                      </a>
+                      <a
+                        href={proj.liveDemo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1 rounded-lg bg-white text-black font-sans font-bold text-[10.5px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1 shadow-sm"
+                      >
+                        <span>Live</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+
                 </div>
 
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
 
       </div>
+
+      {/* Architecture Deep-Dive Modal (Apple VisionOS / iOS Liquid Glass Sheet) */}
+      <AnimatePresence>
+        {selectedProject && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl">
+            {/* Backdrop click to close */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedProject(null)}
+              className="absolute inset-0"
+            />
+
+            {/* Modal Sheet Container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+              className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto liquid-glass rounded-3xl p-5 sm:p-8 z-10 space-y-6 shadow-[0_30px_90px_rgba(0,0,0,0.98)] border border-white/20"
+            >
+              {/* Modal Header */}
+              <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/10">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full liquid-glass-pill text-white/70">
+                      {selectedProject.category}
+                    </span>
+                    <span className="font-mono text-[10px] text-emerald-400 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Live App
+                    </span>
+                  </div>
+                  <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight uppercase">
+                    {selectedProject.title}
+                  </h3>
+                  <p className="font-sans text-xs sm:text-sm text-white/60">
+                    {selectedProject.tagline}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedProject(null)}
+                  className="w-8 h-8 rounded-full liquid-glass flex items-center justify-center text-white/60 hover:text-white transition-colors shrink-0"
+                  aria-label="Close modal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Image Preview */}
+              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-white/10 bg-[#060608]">
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Problem & Solution Breakdown */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl liquid-glass space-y-1.5">
+                  <span className="font-mono text-[10px] text-amber-400 uppercase tracking-widest block font-bold">
+                    // 01 PROBLEM STATEMENT
+                  </span>
+                  <p className="font-sans text-xs sm:text-sm text-white/75 leading-relaxed font-light">
+                    {selectedProject.problem}
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl liquid-glass space-y-1.5">
+                  <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-widest block font-bold">
+                    // 02 ENGINEERING SOLUTION
+                  </span>
+                  <p className="font-sans text-xs sm:text-sm text-white/75 leading-relaxed font-light">
+                    {selectedProject.solution}
+                  </p>
+                </div>
+              </div>
+
+              {/* Key Features List */}
+              <div className="space-y-2">
+                <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest block">
+                  // KEY ARCHITECTURAL FEATURES
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {selectedProject.features.map((feat) => (
+                    <div
+                      key={feat}
+                      className="flex items-center gap-2 p-2.5 rounded-xl liquid-glass text-xs font-mono text-white/80"
+                    >
+                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tech Stack Arsenal */}
+              <div className="space-y-2">
+                <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest block">
+                  // TECH STACK
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedProject.techStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 rounded-full liquid-glass-pill text-[10.5px] font-mono text-white/80"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                <a
+                  href={selectedProject.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-xl liquid-glass hover:border-white/50 text-xs font-mono text-white/80 hover:text-white transition-all flex items-center gap-2"
+                >
+                  <Github className="w-4 h-4" />
+                  <span>View Repository</span>
+                </a>
+                <a
+                  href={selectedProject.liveDemo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-xl bg-white text-black font-sans font-bold text-xs uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1.5 shadow-lg"
+                >
+                  <span>Launch Live App</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </section>
   );
 }
