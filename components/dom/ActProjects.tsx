@@ -165,7 +165,7 @@ function ProjectCardMedia({
 
   return (
     <div
-      className="relative w-full aspect-[16/8.5] overflow-hidden bg-[#060608] border-b border-white/8 group/img select-none cursor-pointer"
+      className="relative w-full aspect-[16/7.2] overflow-hidden bg-[#060608] border-b border-white/8 group/img select-none cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
@@ -276,7 +276,7 @@ export function ActProjects() {
 
   return (
     <section id="projects" className="relative bg-transparent pt-12 pb-18 md:pt-16 md:pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* Section Header */}
         <div className="mb-6 md:mb-8">
@@ -304,7 +304,7 @@ export function ActProjects() {
         </div>
 
         {/* Category Filter Pills Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-6 sm:mb-8 -webkit-overflow-scrolling-touch">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-5 sm:mb-7 -webkit-overflow-scrolling-touch">
           {FILTER_TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -312,14 +312,14 @@ export function ActProjects() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-3.5 sm:px-4 py-1.5 rounded-full font-mono text-[11px] sm:text-xs transition-all duration-300 flex items-center gap-1.5 border whitespace-nowrap shrink-0 active:scale-95 ${
+                className={`px-3 sm:px-3.5 py-1.5 rounded-full font-mono text-[10.5px] sm:text-[11px] transition-all duration-300 flex items-center gap-1.5 border whitespace-nowrap shrink-0 active:scale-95 ${
                   isActive
-                    ? 'bg-white text-black font-bold border-white shadow-[0_0_18px_rgba(255,255,255,0.35)] scale-105'
+                    ? 'bg-white text-black font-bold border-white shadow-[0_0_16px_rgba(255,255,255,0.35)] scale-105'
                     : 'liquid-glass-pill text-white/70 hover:border-white/35 hover:text-white'
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full ${
+                <span className={`text-[8.5px] sm:text-[9.5px] px-1.5 py-0.2 rounded-full ${
                   isActive ? 'bg-black/20 text-black font-bold' : 'bg-white/10 text-white/40'
                 }`}>
                   {tab.count}
@@ -332,7 +332,7 @@ export function ActProjects() {
         {/* 3 Rows × 2 Columns Responsive Grid */}
         <motion.div
           layout
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5"
+          className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4"
         >
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((proj, i) => (
@@ -344,48 +344,30 @@ export function ActProjects() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.4, delay: (i % 2) * 0.08 }}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -4 }}
                 className="group/card relative rounded-2xl liquid-glass overflow-hidden transition-all duration-300 flex flex-col justify-between"
               >
-                {/* macOS Browser Header Bar */}
-                <div className="flex items-center justify-between px-3.5 sm:px-4 py-2.5 bg-white/[0.03] backdrop-blur-md border-b border-white/8 gap-2">
+                {/* macOS Browser Header Bar (Only system dots + domain bar + category badge) */}
+                <div className="flex items-center justify-between px-3 sm:px-3.5 py-2 bg-white/[0.03] backdrop-blur-md border-b border-white/8 gap-2">
                   {/* Traffic light dots */}
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_6px_rgba(255,95,87,0.6)] group-hover/card:brightness-110 transition-all" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_6px_rgba(254,188,46,0.5)] group-hover/card:brightness-110 transition-all" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_6px_rgba(40,200,64,0.5)] group-hover/card:brightness-110 transition-all" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_5px_rgba(255,95,87,0.6)] group-hover/card:brightness-110 transition-all" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_5px_rgba(254,188,46,0.5)] group-hover/card:brightness-110 transition-all" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_5px_rgba(40,200,64,0.5)] group-hover/card:brightness-110 transition-all" />
                   </div>
 
                   {/* Browser URL Search Bar with Live Pulse Dot */}
-                  <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full liquid-glass-pill max-w-[130px] xs:max-w-[190px] sm:max-w-[240px] truncate">
+                  <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full liquid-glass-pill max-w-[140px] xs:max-w-[200px] sm:max-w-[250px] truncate">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_6px_#10b981] animate-pulse" />
                     <Globe className="w-2.5 h-2.5 text-white/40 shrink-0" />
-                    <span className="font-mono text-[9px] text-white/60 truncate select-none">
+                    <span className="font-mono text-[8.5px] sm:text-[9px] text-white/60 truncate select-none">
                       {proj.browserUrl ? proj.browserUrl.replace('https://', '') : `${proj.id}.dev`}
                     </span>
                   </div>
 
-                  {/* Quick Link Buttons */}
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <a
-                      href={proj.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-white hover:border-white/60 hover:bg-white/10 transition-all bg-[#080808]"
-                      title="View GitHub Repository"
-                    >
-                      <Github className="w-3 h-3" />
-                    </a>
-                    <a
-                      href={proj.liveDemo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 h-6 rounded-full bg-white text-black font-bold uppercase tracking-wider text-[8px] flex items-center gap-1 hover:scale-105 transition-transform shadow-[0_0_10px_rgba(255,255,255,0.4)]"
-                      title="Open Live App"
-                    >
-                      <span>Live</span>
-                      <ArrowUpRight className="w-2.5 h-2.5" />
-                    </a>
+                  {/* Category Chip in Top Bar */}
+                  <div className="font-mono text-[8.5px] text-white/45 tracking-wider shrink-0 uppercase">
+                    0{i + 1}
                   </div>
                 </div>
 
@@ -396,60 +378,60 @@ export function ActProjects() {
                 />
 
                 {/* Enhanced Card Body: Title, Tagline, Key Feature Chips & Tech Badges */}
-                <div className="p-4 sm:p-5 flex flex-col gap-3 justify-between flex-1">
-                  <div className="space-y-1.5">
-                    <h3 className="font-display font-black text-base sm:text-lg text-white tracking-tight uppercase leading-snug">
+                <div className="p-3 sm:p-3.5 flex flex-col gap-2.5 justify-between flex-1">
+                  <div className="space-y-1">
+                    <h3 className="font-display font-black text-sm sm:text-base text-white tracking-tight uppercase leading-snug">
                       {proj.title}
                     </h3>
-                    <p className="font-sans text-xs sm:text-[13px] text-white/60 leading-relaxed font-light">
+                    <p className="font-sans text-[11px] sm:text-xs text-white/60 leading-relaxed font-light">
                       {proj.tagline}
                     </p>
                   </div>
 
                   {/* Key Highlights Micro-Chips (2-3 Features) */}
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {proj.features.slice(0, 3).map((feat) => (
                       <span
                         key={feat}
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-[9.5px] font-mono text-white/75"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-[8.5px] font-mono text-white/75"
                       >
-                        <Check className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
+                        <Check className="w-2 h-2 text-emerald-400 shrink-0" />
                         <span>{feat}</span>
                       </span>
                     ))}
                   </div>
 
                   {/* Tech Stack Badges */}
-                  <div className="flex flex-wrap gap-1 pt-1">
+                  <div className="flex flex-wrap gap-1 pt-0.5">
                     {proj.techStack.map((tech) => (
                       <span
                         key={tech}
-                        className="px-2 py-0.5 rounded-full liquid-glass text-[9px] font-mono text-white/60"
+                        className="px-1.5 py-0.5 rounded-full liquid-glass text-[8.5px] font-mono text-white/60"
                       >
                         {tech}
                       </span>
                     ))}
                   </div>
 
-                  {/* Card Bottom: Direct Code & Live Demo Action Buttons */}
-                  <div className="pt-3 border-t border-white/8 flex items-center justify-end gap-2.5">
+                  {/* Card Bottom: SINGLE location for Code & Live Demo Action Buttons */}
+                  <div className="pt-2.5 border-t border-white/8 flex items-center justify-end gap-2">
                     <a
                       href={proj.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3.5 py-1.5 rounded-lg liquid-glass hover:border-white/40 text-[11px] font-mono text-white/80 hover:text-white transition-all flex items-center gap-1.5"
+                      className="px-3 py-1 rounded-lg liquid-glass hover:border-white/40 text-[10px] font-mono text-white/80 hover:text-white transition-all flex items-center gap-1.5"
                     >
-                      <Github className="w-3.5 h-3.5" />
+                      <Github className="w-3 h-3" />
                       <span>Code</span>
                     </a>
                     <a
                       href={proj.liveDemo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-1.5 rounded-lg bg-white text-black font-sans font-bold text-[11px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1.5 shadow-sm"
+                      className="px-3.5 py-1 rounded-lg bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1 shadow-sm"
                     >
                       <span>Live Demo</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      <ArrowUpRight className="w-3 h-3" />
                     </a>
                   </div>
 
