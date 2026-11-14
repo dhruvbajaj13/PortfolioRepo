@@ -156,16 +156,9 @@ function ProjectCardMedia({
 
   const hasMultiple = images.length > 1;
 
-  const objectPosition =
-    project.id === 'rag-agent'
-      ? 'object-top'
-      : hasMultiple
-      ? 'object-bottom'
-      : 'object-center';
-
   return (
     <div
-      className="relative w-full aspect-[16/6.2] overflow-hidden bg-[#060608] border-b border-white/8 group/img select-none cursor-pointer"
+      className="relative w-full aspect-[16/10] overflow-hidden bg-[#070709] border-b border-white/8 group/img select-none cursor-pointer flex items-center justify-center"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
@@ -177,7 +170,7 @@ function ProjectCardMedia({
     >
       {/* Top Segmented Story Progress Bar for Multi-Image Projects */}
       {hasMultiple && (
-        <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 px-3 pt-2 pb-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+        <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 px-3 pt-2 pb-2 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
           {images.map((_, idx) => (
             <div
               key={idx}
@@ -197,17 +190,17 @@ function ProjectCardMedia({
         </div>
       )}
 
-      {/* Main Image with Smooth Fade-Scale Reveal Animation */}
+      {/* Main Image with Smooth Fade-Scale Reveal Animation - Full Screenshot Visible (No Cropping) */}
       <AnimatePresence mode="popLayout">
         <motion.img
           key={images[activeIdx]}
           src={images[activeIdx]}
           alt={`${project.title} preview ${activeIdx + 1}`}
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 0.95, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className={`w-full h-full object-cover ${objectPosition} group-hover/img:opacity-100 group-hover/img:scale-105 transition-all duration-700 ease-out`}
+          initial={{ opacity: 0, scale: 1.02 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.99 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full h-full object-contain object-center group-hover/img:scale-[1.01] transition-transform duration-500 ease-out"
           loading="lazy"
         />
       </AnimatePresence>
@@ -216,18 +209,9 @@ function ProjectCardMedia({
       <div
         className="pointer-events-none absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity duration-500 z-10"
         style={{
-          background: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, rgba(255, 255, 255, 0.12), transparent 75%)`,
+          background: `radial-gradient(circle 220px at ${mousePos.x}% ${mousePos.y}%, rgba(255, 255, 255, 0.1), transparent 75%)`,
         }}
       />
-
-      {/* Vignette Gradients */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-transparent to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none z-10" />
-
-      {/* Project Category Tag */}
-      <div className="absolute top-3 left-3 font-mono text-[9px] font-bold text-white/90 bg-black/85 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/15 z-20 shadow-md">
-        0{index + 1} // {project.category}
-      </div>
 
       {/* Multi-Image Interactive Indicator Pills */}
       {hasMultiple && (
