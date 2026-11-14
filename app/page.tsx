@@ -57,7 +57,12 @@ export default function Home() {
       {/* Preloader */}
       <AnimatePresence>
         {isLoading && (
-          <CinematicPreloader onComplete={() => setIsLoading(false)} />
+          <CinematicPreloader
+            onComplete={() => {
+              setIsLoading(false);
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+            }}
+          />
         )}
       </AnimatePresence>
 

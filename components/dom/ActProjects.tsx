@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Github, ArrowUpRight, Globe, Layers, X, Check, Sparkles, ExternalLink } from 'lucide-react';
+import { Github, ArrowUpRight, Globe, Check } from 'lucide-react';
 
 export interface ProjectItem {
   id: string;
@@ -130,11 +130,9 @@ export const PROJECTS_DATA: ProjectItem[] = [
 function ProjectCardMedia({
   project,
   index,
-  onInspect,
 }: {
   project: ProjectItem;
   index: number;
-  onInspect: () => void;
 }) {
   const images = project.images && project.images.length > 1 ? project.images : [project.image];
   const [activeIdx, setActiveIdx] = useState(0);
@@ -171,7 +169,11 @@ function ProjectCardMedia({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
-      onClick={onInspect}
+      onClick={() => {
+        if (hasMultiple) {
+          setActiveIdx((prev) => (prev + 1) % images.length);
+        }
+      }}
     >
       {/* Top Segmented Story Progress Bar for Multi-Image Projects */}
       {hasMultiple && (
@@ -227,14 +229,6 @@ function ProjectCardMedia({
         0{index + 1} // {project.category}
       </div>
 
-      {/* Center Interactive Preview Badge on Hover */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all duration-300 pointer-events-none z-20">
-        <div className="px-3.5 py-1.5 rounded-full bg-black/85 backdrop-blur-md border border-white/30 text-white font-mono text-[10px] tracking-wider uppercase flex items-center gap-2 shadow-[0_8px_30px_rgba(0,0,0,0.95)] scale-95 group-hover/img:scale-100 transition-transform duration-300">
-          <Sparkles className="w-3 h-3 text-white" />
-          <span className="font-semibold text-white">Inspect Architecture</span>
-        </div>
-      </div>
-
       {/* Multi-Image Interactive Indicator Pills */}
       {hasMultiple && (
         <div className="absolute bottom-2.5 right-3 flex items-center gap-1.5 z-20">
@@ -275,16 +269,6 @@ const FILTER_TABS = [
 
 export function ActProjects() {
   const [activeTab, setActiveTab] = useState<typeof FILTER_TABS[number]['id']>('all');
-  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
-
-  // Keyboard shortcut: Escape closes modal
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSelectedProject(null);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   const filteredProjects = activeTab === 'all'
     ? PROJECTS_DATA
@@ -405,27 +389,24 @@ export function ActProjects() {
                   </div>
                 </div>
 
-                {/* Project Screenshot Media with Carousel Animation & Click-to-Inspect */}
+                {/* Project Screenshot Media with Carousel Animation */}
                 <ProjectCardMedia
                   project={proj}
                   index={i}
-                  onInspect={() => setSelectedProject(proj)}
                 />
 
                 {/* Enhanced Card Body: Title, Tagline, Key Feature Chips & Tech Badges */}
                 <div className="p-4 sm:p-5 flex flex-col gap-3 justify-between flex-1">
                   <div className="space-y-1.5">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-display font-black text-base sm:text-lg text-white tracking-tight uppercase leading-snug group-hover/card:text-white transition-colors">
-                        {proj.title}
-                      </h3>
-                    </div>
+                    <h3 className="font-display font-black text-base sm:text-lg text-white tracking-tight uppercase leading-snug">
+                      {proj.title}
+                    </h3>
                     <p className="font-sans text-xs sm:text-[13px] text-white/60 leading-relaxed font-light">
                       {proj.tagline}
                     </p>
                   </div>
 
-                  {/* Key Highlights Micro-Chips (2 Features) */}
+                  {/* Key Highlights Micro-Chips (2-3 Features) */}
                   <div className="flex flex-wrap gap-1.5">
                     {proj.features.slice(0, 3).map((feat) => (
                       <span
@@ -450,37 +431,26 @@ export function ActProjects() {
                     ))}
                   </div>
 
-                  {/* Card Bottom Action Bar: Architecture Deep Dive + Direct Links */}
-                  <div className="pt-2 border-t border-white/8 flex items-center justify-between gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedProject(proj)}
-                      className="inline-flex items-center gap-1.5 text-[11px] font-mono text-white/70 hover:text-white transition-colors group/btn py-1"
+                  {/* Card Bottom: Direct Code & Live Demo Action Buttons */}
+                  <div className="pt-3 border-t border-white/8 flex items-center justify-end gap-2.5">
+                    <a
+                      href={proj.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-1.5 rounded-lg liquid-glass hover:border-white/40 text-[11px] font-mono text-white/80 hover:text-white transition-all flex items-center gap-1.5"
                     >
-                      <Layers className="w-3.5 h-3.5 text-white/50 group-hover/btn:text-white transition-colors" />
-                      <span className="underline underline-offset-4 decoration-white/25 group-hover/btn:decoration-white">Architecture Details</span>
-                    </button>
-
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={proj.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2.5 py-1 rounded-lg liquid-glass hover:border-white/40 text-[10.5px] font-mono text-white/75 hover:text-white transition-all flex items-center gap-1"
-                      >
-                        <Github className="w-3 h-3" />
-                        <span>Code</span>
-                      </a>
-                      <a
-                        href={proj.liveDemo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1 rounded-lg bg-white text-black font-sans font-bold text-[10.5px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1 shadow-sm"
-                      >
-                        <span>Live</span>
-                        <ArrowUpRight className="w-3 h-3" />
-                      </a>
-                    </div>
+                      <Github className="w-3.5 h-3.5" />
+                      <span>Code</span>
+                    </a>
+                    <a
+                      href={proj.liveDemo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-1.5 rounded-lg bg-white text-black font-sans font-bold text-[11px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1.5 shadow-sm"
+                    >
+                      <span>Live Demo</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </a>
                   </div>
 
                 </div>
@@ -491,150 +461,6 @@ export function ActProjects() {
         </motion.div>
 
       </div>
-
-      {/* Architecture Deep-Dive Modal (Apple VisionOS / iOS Liquid Glass Sheet) */}
-      <AnimatePresence>
-        {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl">
-            {/* Backdrop click to close */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedProject(null)}
-              className="absolute inset-0"
-            />
-
-            {/* Modal Sheet Container */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-              className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto liquid-glass rounded-3xl p-5 sm:p-8 z-10 space-y-6 shadow-[0_30px_90px_rgba(0,0,0,0.98)] border border-white/20"
-            >
-              {/* Modal Header */}
-              <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/10">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full liquid-glass-pill text-white/70">
-                      {selectedProject.category}
-                    </span>
-                    <span className="font-mono text-[10px] text-emerald-400 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      Live App
-                    </span>
-                  </div>
-                  <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight uppercase">
-                    {selectedProject.title}
-                  </h3>
-                  <p className="font-sans text-xs sm:text-sm text-white/60">
-                    {selectedProject.tagline}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedProject(null)}
-                  className="w-8 h-8 rounded-full liquid-glass flex items-center justify-center text-white/60 hover:text-white transition-colors shrink-0"
-                  aria-label="Close modal"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Image Preview */}
-              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-white/10 bg-[#060608]">
-                <img
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Problem & Solution Breakdown */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl liquid-glass space-y-1.5">
-                  <span className="font-mono text-[10px] text-amber-400 uppercase tracking-widest block font-bold">
-                    // 01 PROBLEM STATEMENT
-                  </span>
-                  <p className="font-sans text-xs sm:text-sm text-white/75 leading-relaxed font-light">
-                    {selectedProject.problem}
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl liquid-glass space-y-1.5">
-                  <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-widest block font-bold">
-                    // 02 ENGINEERING SOLUTION
-                  </span>
-                  <p className="font-sans text-xs sm:text-sm text-white/75 leading-relaxed font-light">
-                    {selectedProject.solution}
-                  </p>
-                </div>
-              </div>
-
-              {/* Key Features List */}
-              <div className="space-y-2">
-                <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest block">
-                  // KEY ARCHITECTURAL FEATURES
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {selectedProject.features.map((feat) => (
-                    <div
-                      key={feat}
-                      className="flex items-center gap-2 p-2.5 rounded-xl liquid-glass text-xs font-mono text-white/80"
-                    >
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tech Stack Arsenal */}
-              <div className="space-y-2">
-                <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest block">
-                  // TECH STACK
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedProject.techStack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-3 py-1 rounded-full liquid-glass-pill text-[10.5px] font-mono text-white/80"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
-                <a
-                  href={selectedProject.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl liquid-glass hover:border-white/50 text-xs font-mono text-white/80 hover:text-white transition-all flex items-center gap-2"
-                >
-                  <Github className="w-4 h-4" />
-                  <span>View Repository</span>
-                </a>
-                <a
-                  href={selectedProject.liveDemo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl bg-white text-black font-sans font-bold text-xs uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1.5 shadow-lg"
-                >
-                  <span>Launch Live App</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
     </section>
   );
 }

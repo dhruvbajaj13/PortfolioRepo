@@ -34,15 +34,15 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
   const scanRef   = useRef<HTMLDivElement>(null);
   const mv        = useMotionValue(0);          // smooth 0-100 motion value
 
-  // ── Smooth 0-100 over ~1.8s with slight ease-in ease-out
+  // ── Smooth 0-100 over ~0.9s with slight ease-in ease-out
   useEffect(() => {
     const ctrl = animate(mv, 100, {
-      duration: 1.85,
+      duration: 0.9,
       ease: [0.25, 0.1, 0.25, 1],
       onUpdate: (v) => setDisplay(Math.round(v)),
       onComplete: () => {
-        setTimeout(() => setDone(true), 220);
-        setTimeout(onComplete, 620);
+        setDone(true);
+        setTimeout(onComplete, 180);
       },
     });
     return () => ctrl.stop();

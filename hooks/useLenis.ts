@@ -21,6 +21,11 @@ export function useLenis() {
 
     lenisRef.current = lenis;
 
+    const handleResize = () => {
+      lenis.resize();
+    };
+    window.addEventListener('resize', handleResize);
+
     let animId: number;
     function raf(time: number) {
       lenis.raf(time);
@@ -29,6 +34,7 @@ export function useLenis() {
     animId = requestAnimationFrame(raf);
 
     return () => {
+      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animId);
       lenis.destroy();
     };
