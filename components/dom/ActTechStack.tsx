@@ -88,7 +88,7 @@ export function ActTechStack() {
   return (
     <section
       id="skills"
-      className="relative w-full px-4 sm:px-8 md:px-16 py-16 sm:py-20 md:py-28 bg-[#050505]"
+      className="relative w-full px-4 sm:px-8 md:px-16 py-16 sm:py-20 md:py-28 bg-transparent"
     >
       <div className="max-w-6xl mx-auto">
 

@@ -126,7 +126,7 @@ export function ActContact() {
   return (
     <section
       id="contact"
-      className="relative w-full flex flex-col justify-center px-4 sm:px-8 md:px-16 py-16 md:py-24 overflow-hidden pointer-events-none bg-[#050505]"
+      className="relative w-full flex flex-col justify-center px-4 sm:px-8 md:px-16 py-16 md:py-24 overflow-hidden pointer-events-none bg-transparent"
     >
       <div className="max-w-4xl mx-auto w-full">
 

@@ -54,6 +54,14 @@ export default function Home() {
     <main className="relative bg-[#050505] bg-noise min-h-screen text-white overflow-x-hidden selection:bg-white/30 selection:text-[#FFFFFF]">
       {/* Global twinkling starfield — fixed behind entire site */}
       <StarfieldBackground />
+
+      {/* Subtle Ambient Refraction Orbs for authentic iOS/VisionOS Frosted Glass */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute top-[8%] left-[10%] w-[550px] h-[550px] rounded-full bg-blue-500/[0.045] blur-[140px]" />
+        <div className="absolute top-[32%] right-[8%] w-[600px] h-[600px] rounded-full bg-purple-500/[0.045] blur-[160px]" />
+        <div className="absolute top-[58%] left-[5%] w-[650px] h-[650px] rounded-full bg-emerald-500/[0.035] blur-[170px]" />
+        <div className="absolute top-[82%] right-[10%] w-[550px] h-[550px] rounded-full bg-indigo-500/[0.045] blur-[150px]" />
+      </div>
       {/* Preloader */}
       <AnimatePresence>
         {isLoading && (

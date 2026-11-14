@@ -7,7 +7,7 @@ export function ActAbout() {
   return (
     <section
       id="about"
-      className="relative w-full px-4 sm:px-8 md:px-16 py-16 sm:py-24 md:py-32 bg-[#050505]"
+      className="relative w-full px-4 sm:px-8 md:px-16 py-16 sm:py-24 md:py-32 bg-transparent"
     >
       <div className="max-w-6xl mx-auto">
 
