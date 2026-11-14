@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Github, ArrowUpRight, Globe, Check } from 'lucide-react';
+import { Github, ArrowUpRight, Check } from 'lucide-react';
 
 export interface ProjectItem {
   id: string;
@@ -158,7 +158,7 @@ function ProjectCardMedia({
 
   return (
     <div
-      className="relative w-full aspect-[16/10] overflow-hidden bg-[#070709] border-b border-white/8 group/img select-none cursor-pointer flex items-center justify-center"
+      className="relative w-full aspect-[16/9.5] overflow-hidden bg-[#070709] border-b border-white/8 group/img select-none cursor-pointer flex items-center justify-center rounded-t-2xl"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
@@ -259,11 +259,11 @@ export function ActProjects() {
     : PROJECTS_DATA.filter((p) => p.filterCategory === activeTab);
 
   return (
-    <section id="projects" className="relative bg-transparent pt-12 pb-18 md:pt-16 md:pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="projects" className="relative bg-transparent pt-10 pb-16 md:pt-14 md:pb-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
         {/* Section Header */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-6 md:mb-7">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -288,7 +288,7 @@ export function ActProjects() {
         </div>
 
         {/* Category Filter Pills Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-5 sm:mb-7 -webkit-overflow-scrolling-touch">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-5 sm:mb-6 -webkit-overflow-scrolling-touch">
           {FILTER_TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -331,42 +331,23 @@ export function ActProjects() {
                 whileHover={{ y: -4 }}
                 className="group/card relative rounded-2xl liquid-glass overflow-hidden transition-all duration-300 flex flex-col justify-between"
               >
-                {/* macOS Browser Header Bar (Only system dots + domain bar + category badge) */}
-                <div className="flex items-center justify-between px-3 sm:px-3.5 py-2 bg-white/[0.03] backdrop-blur-md border-b border-white/8 gap-2">
-                  {/* Traffic light dots */}
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_5px_rgba(255,95,87,0.6)] group-hover/card:brightness-110 transition-all" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_5px_rgba(254,188,46,0.5)] group-hover/card:brightness-110 transition-all" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_5px_rgba(40,200,64,0.5)] group-hover/card:brightness-110 transition-all" />
-                  </div>
-
-                  {/* Browser URL Search Bar with Live Pulse Dot */}
-                  <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full liquid-glass-pill max-w-[140px] xs:max-w-[200px] sm:max-w-[250px] truncate">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_6px_#10b981] animate-pulse" />
-                    <Globe className="w-2.5 h-2.5 text-white/40 shrink-0" />
-                    <span className="font-mono text-[8.5px] sm:text-[9px] text-white/60 truncate select-none">
-                      {proj.browserUrl ? proj.browserUrl.replace('https://', '') : `${proj.id}.dev`}
-                    </span>
-                  </div>
-
-                  {/* Category Chip in Top Bar */}
-                  <div className="font-mono text-[8.5px] text-white/45 tracking-wider shrink-0 uppercase">
-                    0{i + 1}
-                  </div>
-                </div>
-
-                {/* Project Screenshot Media with Carousel Animation */}
+                {/* Project Screenshot Media directly at the top (No fake search bar/traffic lights) */}
                 <ProjectCardMedia
                   project={proj}
                   index={i}
                 />
 
-                {/* Enhanced Card Body: Title, Tagline, Key Feature Chips & Tech Badges */}
-                <div className="p-3 sm:p-3.5 flex flex-col gap-2.5 justify-between flex-1">
+                {/* Compact Card Body */}
+                <div className="p-3 sm:p-3.5 flex flex-col gap-2 justify-between flex-1">
                   <div className="space-y-1">
-                    <h3 className="font-display font-black text-sm sm:text-base text-white tracking-tight uppercase leading-snug">
-                      {proj.title}
-                    </h3>
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-display font-black text-sm sm:text-base text-white tracking-tight uppercase leading-snug">
+                        {proj.title}
+                      </h3>
+                      <span className="font-mono text-[9px] text-white/40 tracking-wider shrink-0 uppercase">
+                        0{i + 1}
+                      </span>
+                    </div>
                     <p className="font-sans text-[11px] sm:text-xs text-white/60 leading-relaxed font-light">
                       {proj.tagline}
                     </p>
@@ -398,7 +379,7 @@ export function ActProjects() {
                   </div>
 
                   {/* Card Bottom: SINGLE location for Code & Live Demo Action Buttons */}
-                  <div className="pt-2.5 border-t border-white/8 flex items-center justify-end gap-2">
+                  <div className="pt-2 border-t border-white/8 flex items-center justify-end gap-2">
                     <a
                       href={proj.github}
                       target="_blank"
