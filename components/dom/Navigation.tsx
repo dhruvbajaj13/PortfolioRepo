@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Volume2, VolumeX, Search } from 'lucide-react';
+import { Menu, X, Search } from 'lucide-react';
 import { useTactileSound } from '@/hooks/useTactileSound';
 
 export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { soundEnabled, toggleSound, playClick } = useTactileSound();
+  const { playClick } = useTactileSound();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,13 +41,14 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
     { label: 'Contact', href: '#contact', index: 7 },
   ];
 
-  // Compact links for desktop pill to avoid clutter
+  // Compact links for desktop pill with intelligent section grouping
   const DESKTOP_LINKS = [
-    { label: 'Home', href: '#hero', index: 0 },
-    { label: 'About', href: '#about', index: 1 },
-    { label: 'Journey', href: '#experience', index: 2 },
-    { label: 'Projects', href: '#projects', index: 6 },
-    { label: 'Contact', href: '#contact', index: 7 },
+    { label: 'Home', href: '#hero', matchIndices: [0] },
+    { label: 'About', href: '#about', matchIndices: [1] },
+    { label: 'Journey', href: '#experience', matchIndices: [2, 3, 4] },
+    { label: 'Skills', href: '#skills', matchIndices: [5] },
+    { label: 'Projects', href: '#projects', matchIndices: [6] },
+    { label: 'Contact', href: '#contact', matchIndices: [7] },
   ];
 
   const handleLinkClick = (href: string) => {
@@ -63,16 +64,16 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
   return (
     <>
       {/* Top Floating Glass Pill Navbar */}
-      <header className="fixed top-4 sm:top-6 left-0 right-0 z-40 flex justify-center px-3 sm:px-4 pointer-events-auto">
+      <header className="fixed top-4 sm:top-5 left-0 right-0 z-40 flex justify-center px-3 sm:px-4 pointer-events-auto">
         <nav
-          className={`flex items-center justify-between md:justify-center w-full max-w-[calc(100vw-24px)] sm:max-w-md md:max-w-fit px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full liquid-glass-pill transition-all duration-300 ${
-            scrolled ? 'scale-95 shadow-[0_15px_50px_rgba(0,0,0,0.95)]' : 'scale-100'
+          className={`flex items-center justify-between md:justify-center w-full max-w-[calc(100vw-24px)] sm:max-w-md md:max-w-fit px-3 sm:px-4 py-1.5 rounded-full liquid-glass-pill transition-all duration-300 ${
+            scrolled ? 'scale-[0.98] shadow-[0_15px_45px_rgba(0,0,0,0.95)]' : 'scale-100'
           }`}
         >
-          {/* Desktop Centered Navigation Links */}
-          <div className="hidden md:flex items-center gap-5 lg:gap-7">
+          {/* Desktop Centered Navigation Links with Sliding Glass Capsule */}
+          <div className="hidden md:flex items-center gap-0.5">
             {DESKTOP_LINKS.map((link) => {
-              const isActive = activeScene === link.index;
+              const isActive = link.matchIndices.includes(activeScene);
               return (
                 <a
                   key={link.label}
@@ -81,40 +82,26 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                     e.preventDefault();
                     handleLinkClick(link.href);
                   }}
-                  className={`relative py-1 font-sans text-sm lg:text-[15px] font-medium tracking-wide transition-colors duration-300 group ${
-                    isActive ? 'text-white font-bold' : 'text-[#A8A8A8] hover:text-white'
+                  className={`relative px-3.5 py-1.5 font-sans text-[13px] font-medium tracking-tight rounded-full transition-colors duration-200 select-none ${
+                    isActive ? 'text-white font-semibold' : 'text-white/55 hover:text-white'
                   }`}
                 >
-                  <span>{link.label}</span>
+                  <span className="relative z-10">{link.label}</span>
 
-                  {/* Left-to-Right Underline Animation */}
-                  {isActive ? (
+                  {/* VisionOS-style Sliding Glass Capsule */}
+                  {isActive && (
                     <motion.div
-                      layoutId="navUnderline"
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      layoutId="activeNavBubble"
+                      className="absolute inset-0 rounded-full bg-white/[0.12] border border-white/20 shadow-[0_2px_10px_rgba(255,255,255,0.06),inset_0_1px_1px_rgba(255,255,255,0.22)] backdrop-blur-md"
+                      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                     />
-                  ) : (
-                    <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-white/60 rounded-full group-hover:w-full transition-all duration-300 ease-out" />
                   )}
                 </a>
               );
             })}
 
-            {/* Tactile UI Sound Toggle */}
-            <button
-              type="button"
-              onClick={toggleSound}
-              className={`ml-2 p-1.5 rounded-full transition-all duration-300 flex items-center justify-center border ${
-                soundEnabled
-                  ? 'border-white/40 bg-white/10 text-white shadow-[0_0_12px_rgba(255,255,255,0.4)]'
-                  : 'border-white/10 text-white/40 hover:text-white hover:border-white/20'
-              }`}
-              title={soundEnabled ? 'Mute Tactile UI Audio' : 'Enable Tactile UI Audio'}
-              aria-label="Toggle UI Audio"
-            >
-              {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
-            </button>
+            {/* Subtle Divider */}
+            <div className="h-3.5 w-[1px] bg-white/15 mx-1" />
 
             {/* Quick Command Palette Trigger (Cmd+K) */}
             <button
@@ -123,16 +110,15 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                 playClick();
                 window.dispatchEvent(new CustomEvent('open-command-palette'));
               }}
-              className="ml-1 pl-2 border-l border-white/15 flex items-center gap-1.5 py-1 text-white/40 hover:text-white transition-colors group"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-full text-white/45 hover:text-white hover:bg-white/5 transition-all text-xs font-mono"
               title="Search & Quick Actions (⌘K)"
             >
-              <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 group-hover:border-white/30 group-hover:bg-white/10 transition-all">
-                ⌘K
-              </span>
+              <Search className="w-3 h-3" />
+              <span className="text-[10px] text-white/40">⌘K</span>
             </button>
           </div>
 
-          {/* Mobile Header: Brand + Actions + Hamburger */}
+          {/* Mobile Header: Brand + Search + Hamburger (Sound button removed) */}
           <div className="flex md:hidden items-center justify-between w-full">
             <a
               href="#hero"
@@ -146,21 +132,7 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </a>
 
-            <div className="flex items-center gap-2">
-              {/* Mobile Audio Toggle */}
-              <button
-                type="button"
-                onClick={toggleSound}
-                className={`p-2 rounded-full border transition-all ${
-                  soundEnabled
-                    ? 'border-white/40 bg-white/15 text-white'
-                    : 'border-white/10 text-white/40'
-                }`}
-                aria-label="Toggle Audio"
-              >
-                {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-              </button>
-
+            <div className="flex items-center gap-1.5">
               {/* Mobile Command Palette Button */}
               <button
                 type="button"
