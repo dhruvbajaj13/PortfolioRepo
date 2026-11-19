@@ -158,7 +158,7 @@ function ProjectCardMedia({
 
   return (
     <div
-      className="relative w-full aspect-[16/9.5] overflow-hidden bg-[#070709] border-b border-white/8 group/img select-none cursor-pointer flex items-center justify-center rounded-t-2xl"
+      className="relative w-full aspect-[16/9] overflow-hidden bg-[#070709] border-b border-white/8 group/img select-none cursor-pointer flex items-center justify-center rounded-t-2xl"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
@@ -190,7 +190,7 @@ function ProjectCardMedia({
         </div>
       )}
 
-      {/* Main Image with Smooth Fade-Scale Reveal Animation - Full Screenshot Visible (No Cropping) */}
+      {/* Main Image with Smooth Fade-Scale Reveal Animation - Clean Project UI Only */}
       <AnimatePresence mode="popLayout">
         <motion.img
           key={images[activeIdx]}
@@ -200,7 +200,7 @@ function ProjectCardMedia({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.99 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full h-full object-contain object-center group-hover/img:scale-[1.01] transition-transform duration-500 ease-out"
+          className="w-full h-full object-cover object-top group-hover/img:scale-[1.02] transition-transform duration-500 ease-out"
           loading="lazy"
         />
       </AnimatePresence>
