@@ -378,25 +378,27 @@ export function ActProjects() {
                     ))}
                   </div>
 
-                  {/* Card Bottom: SINGLE location for Code & Live Demo Action Buttons */}
-                  <div className="pt-2 border-t border-white/8 flex items-center justify-end gap-2">
+                  {/* Card Bottom: Enhanced GitHub & Live Demo Action Buttons */}
+                  <div className="pt-2.5 border-t border-white/8 flex items-center justify-end gap-2 sm:gap-2.5">
                     <a
                       href={proj.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1 rounded-lg liquid-glass hover:border-white/40 text-[10px] font-mono text-white/80 hover:text-white transition-all flex items-center gap-1.5"
+                      className="group/btn flex-1 sm:flex-initial px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl liquid-glass border border-white/12 hover:border-white/40 text-white/75 hover:text-white hover:bg-white/[0.08] text-xs font-mono font-medium transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 shadow-sm"
+                      title="View GitHub Repository"
                     >
-                      <Github className="w-3 h-3" />
+                      <Github className="w-3.5 h-3.5 text-white/70 group-hover/btn:text-white transition-colors" />
                       <span>Code</span>
                     </a>
                     <a
                       href={proj.liveDemo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3.5 py-1 rounded-lg bg-white text-black font-sans font-bold text-[10px] uppercase tracking-wider hover:scale-105 transition-all flex items-center gap-1 shadow-sm"
+                      className="group/live flex-1 sm:flex-initial px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl bg-white text-black font-sans font-bold text-xs tracking-tight hover:bg-white/90 hover:shadow-[0_0_20px_rgba(255,255,255,0.35)] transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 shadow-sm"
+                      title="Open Live Application"
                     >
                       <span>Live Demo</span>
-                      <ArrowUpRight className="w-3 h-3" />
+                      <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5" />
                     </a>
                   </div>
 
