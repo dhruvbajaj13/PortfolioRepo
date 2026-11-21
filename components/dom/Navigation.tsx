@@ -64,14 +64,14 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
   return (
     <>
       {/* Top Floating Glass Pill Navbar */}
-      <header className="fixed top-4 sm:top-5 left-0 right-0 z-40 flex justify-center px-3 sm:px-4 pointer-events-auto">
+      <header className="fixed top-5 sm:top-6 left-0 right-0 z-40 flex justify-center px-4 sm:px-6 pointer-events-auto">
         <nav
-          className={`flex items-center justify-between md:justify-center w-full max-w-[calc(100vw-24px)] sm:max-w-md md:max-w-fit px-3 sm:px-4 py-1.5 rounded-full liquid-glass-pill transition-all duration-300 ${
-            scrolled ? 'scale-[0.98] shadow-[0_15px_45px_rgba(0,0,0,0.95)]' : 'scale-100'
+          className={`flex items-center justify-between md:justify-center w-full max-w-[calc(100vw-24px)] sm:max-w-md md:max-w-fit px-4 sm:px-6 py-2 sm:py-2.5 rounded-full liquid-glass-pill transition-all duration-300 ${
+            scrolled ? 'scale-[0.98] shadow-[0_18px_50px_rgba(0,0,0,0.95)]' : 'scale-100'
           }`}
         >
           {/* Desktop Centered Navigation Links with Sliding Glass Capsule */}
-          <div className="hidden md:flex items-center gap-0.5">
+          <div className="hidden md:flex items-center gap-1">
             {DESKTOP_LINKS.map((link) => {
               const isActive = link.matchIndices.includes(activeScene);
               return (
@@ -82,8 +82,8 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                     e.preventDefault();
                     handleLinkClick(link.href);
                   }}
-                  className={`relative px-3.5 py-1.5 font-sans text-[13px] font-medium tracking-tight rounded-full transition-colors duration-200 select-none ${
-                    isActive ? 'text-white font-semibold' : 'text-white/55 hover:text-white'
+                  className={`relative px-4 py-2 font-sans text-sm lg:text-[14.5px] font-medium tracking-tight rounded-full transition-colors duration-200 select-none ${
+                    isActive ? 'text-white font-semibold' : 'text-white/60 hover:text-white'
                   }`}
                 >
                   <span className="relative z-10">{link.label}</span>
@@ -92,7 +92,7 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                   {isActive && (
                     <motion.div
                       layoutId="activeNavBubble"
-                      className="absolute inset-0 rounded-full bg-white/[0.12] border border-white/20 shadow-[0_2px_10px_rgba(255,255,255,0.06),inset_0_1px_1px_rgba(255,255,255,0.22)] backdrop-blur-md"
+                      className="absolute inset-0 rounded-full bg-white/[0.13] border border-white/20 shadow-[0_2px_12px_rgba(255,255,255,0.08),inset_0_1px_1px_rgba(255,255,255,0.25)] backdrop-blur-md"
                       transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                     />
                   )}
@@ -101,7 +101,7 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
             })}
 
             {/* Subtle Divider */}
-            <div className="h-3.5 w-[1px] bg-white/15 mx-1" />
+            <div className="h-4 w-[1px] bg-white/15 mx-1.5" />
 
             {/* Quick Command Palette Trigger (Cmd+K) */}
             <button
@@ -110,11 +110,11 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                 playClick();
                 window.dispatchEvent(new CustomEvent('open-command-palette'));
               }}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full text-white/45 hover:text-white hover:bg-white/5 transition-all text-xs font-mono"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-all text-xs font-mono border border-transparent hover:border-white/15"
               title="Search & Quick Actions (⌘K)"
             >
-              <Search className="w-3 h-3" />
-              <span className="text-[10px] text-white/40">⌘K</span>
+              <Search className="w-3.5 h-3.5" />
+              <span className="text-[11px] text-white/45">⌘K</span>
             </button>
           </div>
 
@@ -126,13 +126,13 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                 e.preventDefault();
                 handleLinkClick('#hero');
               }}
-              className="font-display text-sm font-bold text-white tracking-wider flex items-center gap-2"
+              className="font-display text-sm sm:text-base font-bold text-white tracking-wider flex items-center gap-2"
             >
               <span>Dhruv Bajaj</span>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </a>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               {/* Mobile Command Palette Button */}
               <button
                 type="button"
@@ -140,7 +140,7 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                   playClick();
                   window.dispatchEvent(new CustomEvent('open-command-palette'));
                 }}
-                className="p-2 rounded-full border border-white/10 text-white/60 active:bg-white/10 transition-colors"
+                className="p-2.5 rounded-full border border-white/10 text-white/70 active:bg-white/10 transition-colors"
                 aria-label="Search"
               >
                 <Search className="w-4 h-4" />
@@ -153,7 +153,7 @@ export function Navigation({ activeScene = 0 }: { activeScene?: number }) {
                   playClick();
                   setMobileMenuOpen(!mobileMenuOpen);
                 }}
-                className="p-2 rounded-full text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                className="p-2.5 rounded-full text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                 aria-label="Toggle navigation menu"
               >
                 {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
