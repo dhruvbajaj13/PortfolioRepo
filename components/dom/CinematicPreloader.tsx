@@ -10,15 +10,15 @@ const HELLO_PATH =
 export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
   const [done, setDone] = useState(false);
 
-  // Total preloader duration: ~5.5 seconds (draw ~3.3s + hold/shimmer ~1.6s + exit ~0.6s)
+  // Total preloader duration: ~4.5 seconds (draw ~2.8s + hold ~1.15s + exit ~0.55s)
   useEffect(() => {
     const exitTimer = setTimeout(() => {
       setDone(true);
-    }, 4950);
+    }, 3950);
 
     const completeTimer = setTimeout(() => {
       onComplete();
-    }, 5550);
+    }, 4500);
 
     return () => {
       clearTimeout(exitTimer);
@@ -42,69 +42,97 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
             opacity: 0,
             scale: 1.04,
             filter: 'blur(14px)',
-            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+            transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
           }}
           onClick={handleSkip}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050507] overflow-hidden select-none cursor-pointer"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#080510] overflow-hidden select-none cursor-pointer"
         >
-          {/* ─── Rich Dark Obsidian + macOS-Inspired Liquid Aurora Mesh Background ─── */}
+          {/* ─── Rich macOS-Inspired Luminous Mesh Aurora Background ─── */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {/* Soft warm rose / magenta aurora orb (left) */}
+            {/* Base diagonal warm-rose to deep-indigo wash */}
+            <div
+              className="absolute inset-0 opacity-85"
+              style={{
+                background:
+                  'linear-gradient(125deg, #2a0e24 0%, #1c0f2e 38%, #121033 72%, #080510 100%)',
+              }}
+            />
+
+            {/* Luminous warm rose / magenta aurora orb (top-left) */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0.4, scale: 0.95 }}
               animate={{
-                opacity: [0.35, 0.55, 0.4],
-                scale: [1, 1.08, 1],
-                x: ['-4%', '2%', '-4%'],
-                y: ['-3%', '4%', '-3%'],
+                opacity: [0.55, 0.78, 0.6],
+                scale: [1, 1.1, 1],
+                x: ['-5%', '4%', '-5%'],
+                y: ['-4%', '5%', '-4%'],
+              }}
+              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-[18%] -left-[12%] w-[72vw] h-[72vw] max-w-[900px] max-h-[900px] rounded-full blur-[110px]"
+              style={{
+                background:
+                  'radial-gradient(circle at center, rgba(236, 72, 153, 0.45) 0%, rgba(190, 24, 93, 0.25) 42%, transparent 74%)',
+              }}
+            />
+
+            {/* Soft coral-pink highlight orb (center-left) */}
+            <motion.div
+              initial={{ opacity: 0.3 }}
+              animate={{
+                opacity: [0.35, 0.55, 0.38],
+                scale: [0.98, 1.08, 0.98],
+                x: ['2%', '-5%', '2%'],
+                y: ['4%', '-3%', '4%'],
               }}
               transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-[15%] -left-[10%] w-[65vw] h-[65vw] max-w-[780px] max-h-[780px] rounded-full blur-[120px]"
+              className="absolute top-[15%] left-[10%] w-[52vw] h-[52vw] max-w-[680px] max-h-[680px] rounded-full blur-[120px]"
               style={{
                 background:
-                  'radial-gradient(circle at center, rgba(219, 39, 119, 0.28) 0%, rgba(147, 51, 234, 0.16) 45%, transparent 75%)',
+                  'radial-gradient(circle at center, rgba(244, 114, 182, 0.30) 0%, rgba(168, 85, 247, 0.18) 50%, transparent 76%)',
               }}
             />
 
-            {/* Electric violet / indigo aurora orb (center-right) */}
+            {/* Deep violet / electric indigo aurora orb (bottom-right) */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0.4, scale: 1 }}
               animate={{
-                opacity: [0.3, 0.5, 0.35],
-                scale: [1.05, 0.96, 1.05],
-                x: ['4%', '-3%', '4%'],
-                y: ['3%', '-4%', '3%'],
+                opacity: [0.5, 0.72, 0.55],
+                scale: [1.06, 0.96, 1.06],
+                x: ['5%', '-4%', '5%'],
+                y: ['4%', '-5%', '4%'],
               }}
-              transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -bottom-[20%] -right-[10%] w-[70vw] h-[70vw] max-w-[850px] max-h-[850px] rounded-full blur-[130px]"
+              transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -bottom-[22%] -right-[12%] w-[75vw] h-[75vw] max-w-[940px] max-h-[940px] rounded-full blur-[120px]"
               style={{
                 background:
-                  'radial-gradient(circle at center, rgba(99, 102, 241, 0.28) 0%, rgba(168, 85, 247, 0.18) 45%, transparent 75%)',
+                  'radial-gradient(circle at center, rgba(99, 102, 241, 0.45) 0%, rgba(139, 92, 246, 0.28) 45%, transparent 75%)',
               }}
             />
 
-            {/* Subtle central ambient backlight behind "hello" */}
+            {/* Soft cyan-indigo rim whisper (top-right) */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.15, 0.3, 0.22] }}
-              transition={{ duration: 5, ease: 'easeInOut' }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[75vw] h-[38vh] rounded-full blur-[100px]"
+              animate={{
+                opacity: [0.22, 0.38, 0.22],
+                scale: [1, 1.06, 1],
+              }}
+              transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-[15%] right-[5%] w-[45vw] h-[45vw] max-w-[580px] max-h-[580px] rounded-full blur-[130px]"
               style={{
                 background:
-                  'radial-gradient(ellipse at center, rgba(236, 72, 153, 0.16) 0%, rgba(139, 92, 246, 0.14) 50%, transparent 80%)',
+                  'radial-gradient(circle at center, rgba(59, 130, 246, 0.28) 0%, transparent 72%)',
               }}
             />
 
-            {/* Subtle dark vignette around edges for obsidian depth */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_75%_at_50%_50%,transparent_40%,rgba(4,4,6,0.88)_100%)]" />
+            {/* Subtle dark radial vignette to frame the glass calligraphy */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_80%_at_50%_50%,transparent_35%,rgba(5,4,10,0.68)_100%)]" />
           </div>
 
-          {/* ─── Center Stage: 3D Frosted Glass Tube "hello" Calligraphy ─── */}
-          <div className="relative z-10 w-full max-w-[820px] px-6 sm:px-10 flex flex-col items-center justify-center">
+          {/* ─── Center Stage: Pure 3D Frosted Glass Tube "hello" Calligraphy (No Extra Text) ─── */}
+          <div className="relative z-10 w-full max-w-[820px] px-6 sm:px-10 flex items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
               className="w-full relative"
             >
               <svg
@@ -115,30 +143,25 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                 <defs>
                   {/* 3D Cylindrical Specular Lighting Filter for Authentic Glass Tube Depth */}
                   <filter id="hello-3d-glass" x="-20%" y="-20%" width="140%" height="140%">
-                    {/* Smooth heightmap from stroke alpha */}
                     <feGaussianBlur in="SourceAlpha" stdDeviation="5.5" result="heightMap" />
-                    {/* Top-left studio key light specular reflection */}
                     <feSpecularLighting
                       in="heightMap"
-                      surfaceScale="7"
-                      specularConstant="1.15"
+                      surfaceScale="7.5"
+                      specularConstant="1.2"
                       specularExponent="24"
                       lightingColor="#ffffff"
                       result="specularLight"
                     >
                       <feDistantLight azimuth="225" elevation="52" />
                     </feSpecularLighting>
-                    {/* Clip specular reflection cleanly inside the tube */}
                     <feComposite
                       in="specularLight"
                       in2="SourceAlpha"
                       operator="in"
                       result="clippedSpecular"
                     />
-                    {/* Soft outer frost bloom */}
                     <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="softBody" />
-                    {/* Elevation drop shadow */}
-                    <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#000000" floodOpacity="0.55" />
+                    <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#000000" floodOpacity="0.45" />
                     <feMerge>
                       <feMergeNode in="softBody" />
                       <feMergeNode in="clippedSpecular" />
@@ -147,16 +170,16 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
 
                   {/* Translucent frosted glass rim gradient */}
                   <linearGradient id="glass-tube-rim" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.72)" />
-                    <stop offset="45%" stopColor="rgba(245, 232, 255, 0.56)" />
-                    <stop offset="100%" stopColor="rgba(220, 210, 255, 0.68)" />
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.78)" />
+                    <stop offset="50%" stopColor="rgba(250, 236, 255, 0.62)" />
+                    <stop offset="100%" stopColor="rgba(226, 220, 255, 0.74)" />
                   </linearGradient>
 
                   {/* Soft translucent inner glass core gradient */}
                   <linearGradient id="glass-tube-core" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.14)" />
-                    <stop offset="50%" stopColor="rgba(255, 235, 250, 0.22)" />
-                    <stop offset="100%" stopColor="rgba(230, 230, 255, 0.16)" />
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.16)" />
+                    <stop offset="50%" stopColor="rgba(255, 238, 252, 0.24)" />
+                    <stop offset="100%" stopColor="rgba(232, 234, 255, 0.18)" />
                   </linearGradient>
                 </defs>
 
@@ -164,7 +187,7 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                 <motion.path
                   d={HELLO_PATH}
                   fill="none"
-                  stroke="rgba(255, 255, 255, 0.10)"
+                  stroke="rgba(255, 255, 255, 0.14)"
                   strokeWidth="36"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -172,8 +195,8 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
                   transition={{
-                    pathLength: { duration: 3.3, delay: 0.35, ease: [0.42, 0, 0.18, 1] },
-                    opacity: { duration: 0.4, delay: 0.35 },
+                    pathLength: { duration: 2.8, delay: 0.2, ease: [0.42, 0, 0.18, 1] },
+                    opacity: { duration: 0.35, delay: 0.2 },
                   }}
                 />
 
@@ -187,14 +210,14 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                   strokeLinejoin="round"
                   filter="url(#hello-3d-glass)"
                   initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 0.92 }}
+                  animate={{ pathLength: 1, opacity: 0.94 }}
                   transition={{
-                    pathLength: { duration: 3.3, delay: 0.35, ease: [0.42, 0, 0.18, 1] },
-                    opacity: { duration: 0.25, delay: 0.35 },
+                    pathLength: { duration: 2.8, delay: 0.2, ease: [0.42, 0, 0.18, 1] },
+                    opacity: { duration: 0.2, delay: 0.2 },
                   }}
                 />
 
-                {/* Layer 3: Translucent Hollow Inner Tube Core (gives authentic jelly-glass depth) */}
+                {/* Layer 3: Translucent Hollow Inner Tube Core */}
                 <motion.path
                   d={HELLO_PATH}
                   fill="none"
@@ -206,8 +229,8 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
                   transition={{
-                    pathLength: { duration: 3.3, delay: 0.35, ease: [0.42, 0, 0.18, 1] },
-                    opacity: { duration: 0.25, delay: 0.35 },
+                    pathLength: { duration: 2.8, delay: 0.2, ease: [0.42, 0, 0.18, 1] },
+                    opacity: { duration: 0.2, delay: 0.2 },
                   }}
                 />
 
@@ -215,46 +238,22 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                 <motion.path
                   d={HELLO_PATH}
                   fill="none"
-                  stroke="rgba(255, 255, 255, 0.55)"
+                  stroke="rgba(255, 255, 255, 0.6)"
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   transform="translate(-1.5, -4)"
                   style={{ filter: 'blur(2px)' }}
                   initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: [0, 0.75, 0.55] }}
+                  animate={{ pathLength: 1, opacity: [0, 0.8, 0.6] }}
                   transition={{
-                    pathLength: { duration: 3.3, delay: 0.35, ease: [0.42, 0, 0.18, 1] },
-                    opacity: { duration: 3.6, delay: 0.35 },
+                    pathLength: { duration: 2.8, delay: 0.2, ease: [0.42, 0, 0.18, 1] },
+                    opacity: { duration: 3.1, delay: 0.2 },
                   }}
                 />
               </svg>
             </motion.div>
-
-            {/* Minimalist Subtle Subtitle after "hello" finishes drawing */}
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 3.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-4 sm:mt-6 flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.28em] text-white/60 uppercase">
-                Dhruv Bajaj · Portfolio
-              </span>
-            </motion.div>
           </div>
-
-          {/* Subtle Skip Hint at Bottom */}
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.35 }}
-            whileHover={{ opacity: 0.8 }}
-            transition={{ duration: 0.6, delay: 1.5 }}
-            className="absolute bottom-7 font-mono text-[10px] tracking-[0.3em] text-white uppercase"
-          >
-            Click anywhere to enter
-          </motion.span>
         </motion.div>
       )}
     </AnimatePresence>
