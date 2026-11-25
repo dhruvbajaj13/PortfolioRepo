@@ -1,263 +1,260 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// ── Corner bracket
-function Corner({ pos }: { pos: 'tl' | 'tr' | 'bl' | 'br' }) {
-  const s = 24;
-  const sw = 1;
-  const c = 'rgba(255,255,255,0.2)';
-  return (
-    <svg
-      width={s} height={s} viewBox={`0 0 ${s} ${s}`}
-      className="absolute"
-      style={{
-        top:    pos.startsWith('t') ? 0 : undefined,
-        bottom: pos.startsWith('b') ? 0 : undefined,
-        left:   pos.endsWith('l')   ? 0 : undefined,
-        right:  pos.endsWith('r')   ? 0 : undefined,
-      }}
-    >
-      {pos === 'tl' && <><line x1={s} y1={sw/2} x2={sw/2} y2={sw/2} stroke={c} strokeWidth={sw}/><line x1={sw/2} y1={sw/2} x2={sw/2} y2={s} stroke={c} strokeWidth={sw}/></>}
-      {pos === 'tr' && <><line x1="0" y1={sw/2} x2={s-sw/2} y2={sw/2} stroke={c} strokeWidth={sw}/><line x1={s-sw/2} y1={sw/2} x2={s-sw/2} y2={s} stroke={c} strokeWidth={sw}/></>}
-      {pos === 'bl' && <><line x1={sw/2} y1="0" x2={sw/2} y2={s-sw/2} stroke={c} strokeWidth={sw}/><line x1={sw/2} y1={s-sw/2} x2={s} y2={s-sw/2} stroke={c} strokeWidth={sw}/></>}
-      {pos === 'br' && <><line x1={s-sw/2} y1="0" x2={s-sw/2} y2={s-sw/2} stroke={c} strokeWidth={sw}/><line x1={s-sw/2} y1={s-sw/2} x2="0" y2={s-sw/2} stroke={c} strokeWidth={sw}/></>}
-    </svg>
-  );
-}
+// Iconic Apple macOS-inspired continuous cursive "hello" vector path
+const HELLO_PATH =
+  'M 60 212 C 105 192, 158 128, 172 68 C 180 36, 144 34, 132 72 C 118 118, 108 185, 104 224 C 112 174, 140 144, 168 144 C 194 144, 196 174, 192 206 C 190 226, 212 232, 238 220 C 274 204, 314 178, 320 152 C 325 130, 288 130, 272 156 C 254 184, 264 224, 300 226 C 332 228, 364 204, 388 174 C 420 136, 450 96, 460 64 C 468 36, 436 34, 422 70 C 406 112, 394 182, 400 212 C 404 232, 430 232, 456 208 C 488 178, 528 112, 542 64 C 550 36, 518 34, 504 70 C 488 112, 476 182, 482 212 C 486 232, 514 232, 546 204 C 570 184, 592 152, 622 146 C 586 144, 564 180, 576 212 C 588 236, 636 236, 656 206 C 674 178, 658 148, 624 146 C 638 162, 684 168, 718 144';
 
 export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
-  const [display, setDisplay] = useState(0);   // integer shown on screen
-  const [done,    setDone]    = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const scanRef   = useRef<HTMLDivElement>(null);
-  const mv        = useMotionValue(0);          // smooth 0-100 motion value
+  const [done, setDone] = useState(false);
 
-  // ── Smooth 0-100 over ~0.9s with slight ease-in ease-out
+  // Total preloader duration: ~5.5 seconds (draw ~3.3s + hold/shimmer ~1.6s + exit ~0.6s)
   useEffect(() => {
-    const ctrl = animate(mv, 100, {
-      duration: 0.9,
-      ease: [0.25, 0.1, 0.25, 1],
-      onUpdate: (v) => setDisplay(Math.round(v)),
-      onComplete: () => {
-        setDone(true);
-        setTimeout(onComplete, 180);
-      },
-    });
-    return () => ctrl.stop();
-  }, [onComplete, mv]);
+    const exitTimer = setTimeout(() => {
+      setDone(true);
+    }, 4950);
 
-  // ── Film grain
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    let id: number;
-    const grain = () => {
-      id = requestAnimationFrame(grain);
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
-      const img = ctx.createImageData(canvas.width, canvas.height);
-      for (let i = 0; i < img.data.length; i += 4) {
-        const v = (Math.random() * 255) | 0;
-        img.data[i] = img.data[i+1] = img.data[i+2] = v;
-        img.data[i+3] = 8;
-      }
-      ctx.putImageData(img, 0, 0);
+    const completeTimer = setTimeout(() => {
+      onComplete();
+    }, 5550);
+
+    return () => {
+      clearTimeout(exitTimer);
+      clearTimeout(completeTimer);
     };
-    grain();
-    return () => cancelAnimationFrame(id);
-  }, []);
+  }, [onComplete]);
 
-  // ── Scanline sweep
-  useEffect(() => {
-    const el = scanRef.current;
-    if (!el) return;
-    let y = 0, id: number;
-    const sweep = () => {
-      id = requestAnimationFrame(sweep);
-      y  = (y + 1) % window.innerHeight;
-      el.style.transform = `translateY(${y}px)`;
-    };
-    sweep();
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  const padded  = display < 10 ? `0${display}` : `${display}`;
-  const percent = display;
-
-  // Name reveal: each letter fades in as progress crosses its threshold
-  const NAME = 'DHRUV BAJAJ';
-  const chars = NAME.split('');
-  const revealed = Math.floor((percent / 100) * chars.length);
-
-  // Ambient glow opacity scales with progress
-  const glowOpacity = percent / 100 * 0.18;
+  const handleSkip = () => {
+    if (done) return;
+    setDone(true);
+    setTimeout(onComplete, 450);
+  };
 
   return (
     <AnimatePresence>
       {!done && (
         <motion.div
-          key="preloader"
+          key="hello-preloader"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] } }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505] overflow-hidden select-none"
+          exit={{
+            opacity: 0,
+            scale: 1.04,
+            filter: 'blur(14px)',
+            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+          }}
+          onClick={handleSkip}
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050507] overflow-hidden select-none cursor-pointer"
         >
-          {/* Film grain */}
-          <canvas ref={canvasRef} aria-hidden className="absolute inset-0 w-full h-full pointer-events-none opacity-25 mix-blend-overlay" />
-
-          {/* Dot grid */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:34px_34px] pointer-events-none" />
-
-          {/* Scanline */}
-          <div ref={scanRef} className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.035] to-transparent pointer-events-none z-10" />
-
-          {/* Vignette */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,transparent_50%,rgba(0,0,0,0.94)_100%)] pointer-events-none" />
-
-          {/* Ambient glow — expands as progress grows */}
-          <div
-            className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-            style={{
-              background: `radial-gradient(ellipse 55% 45% at 50% 50%, rgba(255,255,255,${glowOpacity}) 0%, transparent 100%)`,
-            }}
-          />
-
-          {/* Thin horizontal rule lines */}
-          <div className="absolute left-4 sm:left-12 right-4 sm:right-12 top-[30%] h-px bg-white/[0.05] pointer-events-none" />
-          <div className="absolute left-4 sm:left-12 right-4 sm:right-12 bottom-[30%] h-px bg-white/[0.05] pointer-events-none" />
-
-          {/* Vertical side lines */}
-          <div className="absolute top-[30%] bottom-[30%] left-4 sm:left-12 w-px bg-white/[0.05] pointer-events-none" />
-          <div className="absolute top-[30%] bottom-[30%] right-4 sm:right-12 w-px bg-white/[0.05] pointer-events-none" />
-
-          {/* Corner brackets at rule intersections */}
-          {(['tl','tr','bl','br'] as const).map(p => (
-            <div
-              key={p}
-              className="absolute w-6 h-6"
-              style={{
-                top:    p.startsWith('t') ? 'calc(30% - 0px)' : undefined,
-                bottom: p.startsWith('b') ? 'calc(30% - 0px)' : undefined,
-                left:   p.endsWith('l')   ? '10px' : undefined,
-                right:  p.endsWith('r')   ? '10px' : undefined,
+          {/* ─── Rich Dark Obsidian + macOS-Inspired Liquid Aurora Mesh Background ─── */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* Soft warm rose / magenta aurora orb (left) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{
+                opacity: [0.35, 0.55, 0.4],
+                scale: [1, 1.08, 1],
+                x: ['-4%', '2%', '-4%'],
+                y: ['-3%', '4%', '-3%'],
               }}
-            >
-              <Corner pos={p} />
-            </div>
-          ))}
+              transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-[15%] -left-[10%] w-[65vw] h-[65vw] max-w-[780px] max-h-[780px] rounded-full blur-[120px]"
+              style={{
+                background:
+                  'radial-gradient(circle at center, rgba(219, 39, 119, 0.28) 0%, rgba(147, 51, 234, 0.16) 45%, transparent 75%)',
+              }}
+            />
 
-          {/* ── Top status bar */}
-          <div className="absolute top-5 sm:top-10 left-5 sm:left-14 right-5 sm:right-14 flex items-center justify-between z-20">
-            <span className="font-mono text-[9px] tracking-[0.35em] text-white/25 uppercase">Portfolio · 2026</span>
-            <motion.span
-              animate={{ opacity: [0.2, 0.55, 0.2] }}
-              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-              className="font-mono text-[9px] tracking-[0.35em] text-white/30 uppercase"
-            >
-              {percent === 100 ? 'Ready' : 'Loading'}
-            </motion.span>
+            {/* Electric violet / indigo aurora orb (center-right) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{
+                opacity: [0.3, 0.5, 0.35],
+                scale: [1.05, 0.96, 1.05],
+                x: ['4%', '-3%', '4%'],
+                y: ['3%', '-4%', '3%'],
+              }}
+              transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -bottom-[20%] -right-[10%] w-[70vw] h-[70vw] max-w-[850px] max-h-[850px] rounded-full blur-[130px]"
+              style={{
+                background:
+                  'radial-gradient(circle at center, rgba(99, 102, 241, 0.28) 0%, rgba(168, 85, 247, 0.18) 45%, transparent 75%)',
+              }}
+            />
+
+            {/* Subtle central ambient backlight behind "hello" */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0.15, 0.3, 0.22] }}
+              transition={{ duration: 5, ease: 'easeInOut' }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[75vw] h-[38vh] rounded-full blur-[100px]"
+              style={{
+                background:
+                  'radial-gradient(ellipse at center, rgba(236, 72, 153, 0.16) 0%, rgba(139, 92, 246, 0.14) 50%, transparent 80%)',
+              }}
+            />
+
+            {/* Subtle dark vignette around edges for obsidian depth */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_75%_at_50%_50%,transparent_40%,rgba(4,4,6,0.88)_100%)]" />
           </div>
 
-          {/* ── Center block */}
-          <div className="relative z-20 flex flex-col items-center w-full px-4 sm:px-8 gap-6 sm:gap-9">
-
-            {/* Name — letter-by-letter drop */}
-            <div className="flex items-center overflow-hidden h-[3.5vw] sm:h-[2.8vw] min-h-[18px]">
-              {chars.map((ch, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={i < revealed
-                    ? { opacity: ch === ' ' ? 0 : 0.15, y: 0 }
-                    : { opacity: 0, y: 10 }
-                  }
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-display font-black text-[3.8vw] sm:text-[2.6vw] md:text-[2vw] text-white tracking-[0.3em] uppercase"
-                >
-                  {ch === ' ' ? '\u2003' : ch}
-                </motion.span>
-              ))}
-            </div>
-
-            {/* Giant counter */}
-            <div className="flex items-end leading-none">
-              <span
-                className="font-display font-black text-white tabular-nums tracking-tighter"
-                style={{ fontSize: 'clamp(80px, 20vw, 220px)', lineHeight: 0.85 }}
+          {/* ─── Center Stage: 3D Frosted Glass Tube "hello" Calligraphy ─── */}
+          <div className="relative z-10 w-full max-w-[820px] px-6 sm:px-10 flex flex-col items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full relative"
+            >
+              <svg
+                viewBox="0 0 780 280"
+                className="w-full h-auto overflow-visible"
+                aria-label="hello"
               >
-                {padded}
-              </span>
-              <span
-                className="font-display font-thin text-white/15 ml-1"
-                style={{ fontSize: 'clamp(28px, 6vw, 72px)', marginBottom: '1.5vw' }}
-              >
-                %
-              </span>
-            </div>
+                <defs>
+                  {/* 3D Cylindrical Specular Lighting Filter for Authentic Glass Tube Depth */}
+                  <filter id="hello-3d-glass" x="-20%" y="-20%" width="140%" height="140%">
+                    {/* Smooth heightmap from stroke alpha */}
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="5.5" result="heightMap" />
+                    {/* Top-left studio key light specular reflection */}
+                    <feSpecularLighting
+                      in="heightMap"
+                      surfaceScale="7"
+                      specularConstant="1.15"
+                      specularExponent="24"
+                      lightingColor="#ffffff"
+                      result="specularLight"
+                    >
+                      <feDistantLight azimuth="225" elevation="52" />
+                    </feSpecularLighting>
+                    {/* Clip specular reflection cleanly inside the tube */}
+                    <feComposite
+                      in="specularLight"
+                      in2="SourceAlpha"
+                      operator="in"
+                      result="clippedSpecular"
+                    />
+                    {/* Soft outer frost bloom */}
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="softBody" />
+                    {/* Elevation drop shadow */}
+                    <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#000000" floodOpacity="0.55" />
+                    <feMerge>
+                      <feMergeNode in="softBody" />
+                      <feMergeNode in="clippedSpecular" />
+                    </feMerge>
+                  </filter>
 
-            {/* Progress track */}
-            <div className="relative w-full max-w-[260px] sm:max-w-[340px] py-3">
-              {/* Tick marks */}
-              {[0, 25, 50, 75, 100].map(t => (
-                <div
-                  key={t}
-                  className="absolute top-0 w-px"
-                  style={{
-                    left: `${t}%`,
-                    height: t % 50 === 0 ? '8px' : '5px',
-                    background: percent >= t ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.1)',
-                    transition: 'background 0.25s',
+                  {/* Translucent frosted glass rim gradient */}
+                  <linearGradient id="glass-tube-rim" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.72)" />
+                    <stop offset="45%" stopColor="rgba(245, 232, 255, 0.56)" />
+                    <stop offset="100%" stopColor="rgba(220, 210, 255, 0.68)" />
+                  </linearGradient>
+
+                  {/* Soft translucent inner glass core gradient */}
+                  <linearGradient id="glass-tube-core" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.14)" />
+                    <stop offset="50%" stopColor="rgba(255, 235, 250, 0.22)" />
+                    <stop offset="100%" stopColor="rgba(230, 230, 255, 0.16)" />
+                  </linearGradient>
+                </defs>
+
+                {/* Layer 1: Soft ambient outer halo behind the glass tube */}
+                <motion.path
+                  d={HELLO_PATH}
+                  fill="none"
+                  stroke="rgba(255, 255, 255, 0.10)"
+                  strokeWidth="36"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ filter: 'blur(14px)' }}
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{
+                    pathLength: { duration: 3.3, delay: 0.35, ease: [0.42, 0, 0.18, 1] },
+                    opacity: { duration: 0.4, delay: 0.35 },
                   }}
                 />
-              ))}
-              {/* Track */}
-              <div className="absolute top-[11px] left-0 right-0 h-px bg-white/10" />
-              {/* Fill */}
-              <motion.div
-                className="absolute top-[11px] left-0 h-px bg-white origin-left"
-                style={{ width: `${percent}%`, transition: 'width 0.06s linear' }}
-              />
-              {/* Glow dot */}
-              <motion.div
-                className="absolute w-[5px] h-[5px] rounded-full bg-white shadow-[0_0_12px_5px_rgba(255,255,255,0.5)]"
-                style={{
-                  top: '9px',
-                  left: `calc(${Math.min(percent, 99.5)}% - 2.5px)`,
-                  transition: 'left 0.06s linear',
-                }}
-              />
-            </div>
 
-            {/* Status text */}
-            <motion.p
-              key={Math.floor(percent / 25)}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="font-mono text-[9px] sm:text-[10px] tracking-[0.45em] text-white/20 uppercase"
-            >
-              {percent < 25 ? 'Initializing' : percent < 50 ? 'Building modules' : percent < 80 ? 'Preparing assets' : percent < 100 ? 'Launching' : 'Ready'}
-            </motion.p>
-          </div>
-
-          {/* ── Bottom bar */}
-          <div className="absolute bottom-5 sm:bottom-10 left-5 sm:left-14 right-5 sm:right-14 flex items-center justify-between z-20">
-            <span className="font-mono text-[9px] tracking-[0.3em] text-white/18 uppercase">Full-Stack · AI · DSA</span>
-            <motion.div className="flex items-center gap-2">
-              {[0, 1, 2].map(i => (
-                <motion.div
-                  key={i}
-                  className="w-[3px] h-[3px] rounded-full bg-white"
-                  animate={{ opacity: [0.1, 0.45, 0.1] }}
-                  transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3, ease: 'easeInOut' }}
+                {/* Layer 2: Main 3D Specular-Lit Frosted Glass Outer Tube */}
+                <motion.path
+                  d={HELLO_PATH}
+                  fill="none"
+                  stroke="url(#glass-tube-rim)"
+                  strokeWidth="26"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#hello-3d-glass)"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 0.92 }}
+                  transition={{
+                    pathLength: { duration: 3.3, delay: 0.35, ease: [0.42, 0, 0.18, 1] },
+                    opacity: { duration: 0.25, delay: 0.35 },
+                  }}
                 />
-              ))}
+
+                {/* Layer 3: Translucent Hollow Inner Tube Core (gives authentic jelly-glass depth) */}
+                <motion.path
+                  d={HELLO_PATH}
+                  fill="none"
+                  stroke="url(#glass-tube-core)"
+                  strokeWidth="15"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ filter: 'blur(2.5px)' }}
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{
+                    pathLength: { duration: 3.3, delay: 0.35, ease: [0.42, 0, 0.18, 1] },
+                    opacity: { duration: 0.25, delay: 0.35 },
+                  }}
+                />
+
+                {/* Layer 4: Fine Top-Edge Specular Glass Highlight */}
+                <motion.path
+                  d={HELLO_PATH}
+                  fill="none"
+                  stroke="rgba(255, 255, 255, 0.55)"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  transform="translate(-1.5, -4)"
+                  style={{ filter: 'blur(2px)' }}
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: [0, 0.75, 0.55] }}
+                  transition={{
+                    pathLength: { duration: 3.3, delay: 0.35, ease: [0.42, 0, 0.18, 1] },
+                    opacity: { duration: 3.6, delay: 0.35 },
+                  }}
+                />
+              </svg>
+            </motion.div>
+
+            {/* Minimalist Subtle Subtitle after "hello" finishes drawing */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 3.6, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-4 sm:mt-6 flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.28em] text-white/60 uppercase">
+                Dhruv Bajaj · Portfolio
+              </span>
             </motion.div>
           </div>
 
+          {/* Subtle Skip Hint at Bottom */}
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.35 }}
+            whileHover={{ opacity: 0.8 }}
+            transition={{ duration: 0.6, delay: 1.5 }}
+            className="absolute bottom-7 font-mono text-[10px] tracking-[0.3em] text-white uppercase"
+          >
+            Click anywhere to enter
+          </motion.span>
         </motion.div>
       )}
     </AnimatePresence>

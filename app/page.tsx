@@ -79,14 +79,35 @@ export default function Home() {
       <ScrollTimelineScrubber activeScene={activeScene} />
 
       {/* Natural Filmlike Continuous Layout */}
-      <div className="relative z-10 space-y-8 md:space-y-12">
+      <div className="relative z-10 space-y-6 md:space-y-10">
         <ActHero />
+        <div className="w-full max-w-4xl mx-auto px-6 pointer-events-none">
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
         <ActAbout />
+        <div className="w-full max-w-4xl mx-auto px-6 pointer-events-none">
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
         <ActExperience />
+        <div className="w-full max-w-4xl mx-auto px-6 pointer-events-none">
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
         <ActCPStats />
+        <div className="w-full max-w-4xl mx-auto px-6 pointer-events-none">
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
         <ActAchievements />
+        <div className="w-full max-w-4xl mx-auto px-6 pointer-events-none">
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
         <ActTechStack />
+        <div className="w-full max-w-4xl mx-auto px-6 pointer-events-none">
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
         <ActProjects />
+        <div className="w-full max-w-4xl mx-auto px-6 pointer-events-none">
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
         <ActContact />
       </div>
     </main>

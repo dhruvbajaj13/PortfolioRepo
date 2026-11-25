@@ -203,6 +203,38 @@ const ROLES = [
   "Software Developer",
 ];
 
+// ─── Animated Number Counter for Stats ───
+const AnimatedCounter = ({ target, suffix = "" }: { target: number; suffix?: string }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const duration = 1500;
+    const stepTime = 25;
+    const totalSteps = duration / stepTime;
+    const increment = target / totalSteps;
+
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [target]);
+
+  return (
+    <span>
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
+};
+
 export function ActHero({
   selectedProject,
   setSelectedProject,
@@ -216,6 +248,15 @@ export function ActHero({
   const [roleIndex, setRoleIndex] = useState(0);
   const [currentText, setCurrentText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: ((e.clientX - rect.left) / rect.width) * 100,
+      y: ((e.clientY - rect.top) / rect.height) * 100,
+    });
+  };
 
   useEffect(() => {
     const targetRole = ROLES[roleIndex];
@@ -249,10 +290,19 @@ export function ActHero({
   return (
     <section
       id="hero"
+      onMouseMove={handleMouseMove}
       className="relative w-full min-h-screen flex flex-col justify-between px-3 xs:px-4 sm:px-8 md:px-12 lg:px-16 pt-16 sm:pt-24 md:pt-28 pb-8 sm:pb-10 overflow-hidden z-10 bg-[#050505]"
     >
       {/* 3D Wireframe & Particle Background */}
       <Hero3DGeometricBackground />
+
+      {/* Interactive Cursor Spotlight Glow */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-500"
+        style={{
+          background: `radial-gradient(circle 500px at ${mousePos.x}% ${mousePos.y}%, rgba(255, 255, 255, 0.05), transparent 75%)`,
+        }}
+      />
 
       {/* Subtle Volumetric Ambient Glow */}
       <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04)_0%,transparent_70%)] blur-[140px] pointer-events-none z-0" />
@@ -276,12 +326,12 @@ export function ActHero({
               <span>Open to SDE Opportunities / Internship</span>
             </motion.div>
 
-            {/* Hero Name Title */}
+            {/* Hero Name Title with Metallic Chrome Finish */}
             <motion.h1
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="heading-hover-sweep font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-tight text-center cursor-pointer"
+              className="heading-hover-sweep font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-tight text-center cursor-pointer bg-gradient-to-b from-white via-white/95 to-white/70 bg-clip-text text-transparent drop-shadow-[0_4px_35px_rgba(255,255,255,0.12)]"
             >
               Dhruv Bajaj
             </motion.h1>
@@ -320,10 +370,10 @@ export function ActHero({
             {/* Primary CTA: View My Work ↗ */}
             <a
               href="#projects"
-              className="w-full sm:w-auto px-6 sm:px-7 py-2.5 sm:py-3 min-h-[44px] rounded-2xl bg-[#FFFFFF] font-sans text-xs sm:text-sm font-bold text-black shadow-[0_0_25px_rgba(255,255,255,0.4)] hover:shadow-[0_0_40px_rgba(255,255,255,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
+              className="group/cta w-full sm:w-auto px-6 sm:px-7 py-2.5 sm:py-3 min-h-[44px] rounded-2xl bg-[#FFFFFF] font-sans text-xs sm:text-sm font-bold text-black shadow-[0_0_25px_rgba(255,255,255,0.4)] hover:shadow-[0_0_45px_rgba(255,255,255,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
             >
               <span>View My Work</span>
-              <ExternalLink className="w-4 h-4" />
+              <ExternalLink className="w-4 h-4 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" />
             </a>
 
             {/* Secondary CTA: Download Résumé */}
@@ -380,7 +430,7 @@ export function ActHero({
             </a>
           </motion.div>
 
-          {/* Stat Cards Container */}
+          {/* Stat Cards Container with Animated Counters */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
@@ -389,21 +439,27 @@ export function ActHero({
           >
             <div className="flex flex-row items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl liquid-glass">
               <div className="text-center flex-1">
-                <div className="font-display text-base sm:text-2xl font-extrabold text-[#FFFFFF]">1,100+</div>
+                <div className="font-display text-base sm:text-2xl font-extrabold text-[#FFFFFF]">
+                  <AnimatedCounter target={1100} suffix="+" />
+                </div>
                 <div className="font-mono text-[7.5px] xs:text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Solved</div>
               </div>
 
               <div className="w-px h-5 sm:h-7 bg-white/10" />
 
               <div className="text-center flex-1">
-                <div className="font-display text-base sm:text-2xl font-extrabold text-white">6+</div>
+                <div className="font-display text-base sm:text-2xl font-extrabold text-white">
+                  <AnimatedCounter target={6} suffix="+" />
+                </div>
                 <div className="font-mono text-[7.5px] xs:text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">Featured Apps</div>
               </div>
 
               <div className="w-px h-6 sm:h-7 bg-white/10" />
 
               <div className="text-center flex-1">
-                <div className="font-display text-base sm:text-2xl font-extrabold text-[#FFFFFF]">Top 3%</div>
+                <div className="font-display text-base sm:text-2xl font-extrabold text-[#FFFFFF]">
+                  Top <AnimatedCounter target={3} suffix="%" />
+                </div>
                 <div className="font-mono text-[7.5px] xs:text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Knight</div>
               </div>
             </div>
@@ -418,7 +474,20 @@ export function ActHero({
           transition={{ duration: 1, delay: 0.4 }}
           className="w-full lg:w-[48%] flex flex-col items-center justify-center relative mt-4 lg:mt-0"
         >
-          <div className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/11] sm:aspect-[16/10] rounded-3xl liquid-glass overflow-hidden flex flex-col">
+          <div className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/11] sm:aspect-[16/10] rounded-3xl liquid-glass overflow-hidden flex flex-col border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.2)]">
+            {/* Viewport Header */}
+            <div className="flex items-center justify-between px-3.5 sm:px-4 py-2 border-b border-white/8 bg-white/[0.02] backdrop-blur-md">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-[#FF5F57]/80" />
+                <div className="w-2 h-2 rounded-full bg-[#FEBC2E]/80" />
+                <div className="w-2 h-2 rounded-full bg-[#28C840]/80" />
+              </div>
+              <div className="font-mono text-[8.5px] sm:text-[9.5px] text-white/40 tracking-wider uppercase">
+                Interactive 3D Tech Nexus
+              </div>
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            </div>
+
             {/* 3D Canvas Viewport */}
             <div className="relative flex-1 w-full h-full overflow-hidden">
               <HeroTechNexus3D />
