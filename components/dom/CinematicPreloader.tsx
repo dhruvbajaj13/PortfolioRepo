@@ -10,15 +10,15 @@ const HELLO_PATH =
 export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
   const [done, setDone] = useState(false);
 
-  // Total preloader duration: ~4.5 seconds (draw ~2.8s + hold ~1.15s + exit ~0.55s)
+  // Total preloader duration: ~3.4 seconds (draw ~2.1s + hold ~0.65s + exit ~0.5s)
   useEffect(() => {
     const exitTimer = setTimeout(() => {
       setDone(true);
-    }, 3950);
+    }, 2900);
 
     const completeTimer = setTimeout(() => {
       onComplete();
-    }, 4500);
+    }, 3400);
 
     return () => {
       clearTimeout(exitTimer);
@@ -40,12 +40,11 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
           initial={{ opacity: 1 }}
           exit={{
             opacity: 0,
-            scale: 1.04,
-            filter: 'blur(14px)',
-            transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+            scale: 1.03,
+            transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
           }}
           onClick={handleSkip}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#030303] overflow-hidden select-none cursor-pointer"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#030303] overflow-hidden select-none cursor-pointer will-change-[opacity,transform]"
         >
           {/* ─── Deep Black Aurora Background ─── */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -99,13 +98,14 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_75%_at_50%_50%,transparent_30%,rgba(2,2,2,0.82)_100%)]" />
           </div>
 
-          {/* ─── Center Stage: Pure 3D Frosted Glass Tube "hello" Calligraphy (No Extra Text) ─── */}
+          {/* ─── Center Stage: Pure 3D Frosted Glass Tube "hello" Calligraphy ─── */}
           <div className="relative z-10 w-full max-w-[820px] px-6 sm:px-10 flex items-center justify-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full relative"
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full relative will-change-transform"
+              style={{ transform: 'translateZ(0)' }}
             >
               <svg
                 viewBox="0 0 780 280"
@@ -113,14 +113,14 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                 aria-label="hello"
               >
                 <defs>
-                  {/* 3D Cylindrical Specular Lighting Filter for Authentic Glass Tube Depth */}
-                  <filter id="hello-3d-glass" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur in="SourceAlpha" stdDeviation="5.5" result="heightMap" />
+                  {/* Lightweight 3D Cylindrical Specular Lighting Filter for Silky-Smooth 60fps Glass Depth */}
+                  <filter id="hello-3d-glass" x="-15%" y="-15%" width="130%" height="130%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="heightMap" />
                     <feSpecularLighting
                       in="heightMap"
-                      surfaceScale="7.5"
-                      specularConstant="1.2"
-                      specularExponent="24"
+                      surfaceScale="7"
+                      specularConstant="1.25"
+                      specularExponent="26"
                       lightingColor="#ffffff"
                       result="specularLight"
                     >
@@ -132,8 +132,7 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                       operator="in"
                       result="clippedSpecular"
                     />
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="softBody" />
-                    <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#000000" floodOpacity="0.45" />
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="softBody" />
                     <feMerge>
                       <feMergeNode in="softBody" />
                       <feMergeNode in="clippedSpecular" />
@@ -142,33 +141,32 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
 
                   {/* Translucent frosted glass rim gradient */}
                   <linearGradient id="glass-tube-rim" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.78)" />
-                    <stop offset="50%" stopColor="rgba(250, 236, 255, 0.62)" />
-                    <stop offset="100%" stopColor="rgba(226, 220, 255, 0.74)" />
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.82)" />
+                    <stop offset="50%" stopColor="rgba(245, 240, 255, 0.66)" />
+                    <stop offset="100%" stopColor="rgba(224, 228, 255, 0.78)" />
                   </linearGradient>
 
                   {/* Soft translucent inner glass core gradient */}
                   <linearGradient id="glass-tube-core" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.16)" />
-                    <stop offset="50%" stopColor="rgba(255, 238, 252, 0.24)" />
-                    <stop offset="100%" stopColor="rgba(232, 234, 255, 0.18)" />
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.14)" />
+                    <stop offset="50%" stopColor="rgba(248, 245, 255, 0.22)" />
+                    <stop offset="100%" stopColor="rgba(232, 236, 255, 0.16)" />
                   </linearGradient>
                 </defs>
 
-                {/* Layer 1: Soft ambient outer halo behind the glass tube */}
+                {/* Layer 1: Soft ambient outer glow (zero per-frame blur filter for 60fps smoothness) */}
                 <motion.path
                   d={HELLO_PATH}
                   fill="none"
-                  stroke="rgba(255, 255, 255, 0.14)"
-                  strokeWidth="36"
+                  stroke="rgba(255, 255, 255, 0.06)"
+                  strokeWidth="42"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  style={{ filter: 'blur(14px)' }}
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
                   transition={{
-                    pathLength: { duration: 2.8, delay: 0.2, ease: [0.42, 0, 0.18, 1] },
-                    opacity: { duration: 0.35, delay: 0.2 },
+                    pathLength: { duration: 2.1, delay: 0.12, ease: [0.37, 0, 0.2, 1] },
+                    opacity: { duration: 0.3, delay: 0.12 },
                   }}
                 />
 
@@ -182,10 +180,10 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                   strokeLinejoin="round"
                   filter="url(#hello-3d-glass)"
                   initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 0.94 }}
+                  animate={{ pathLength: 1, opacity: 0.95 }}
                   transition={{
-                    pathLength: { duration: 2.8, delay: 0.2, ease: [0.42, 0, 0.18, 1] },
-                    opacity: { duration: 0.2, delay: 0.2 },
+                    pathLength: { duration: 2.1, delay: 0.12, ease: [0.37, 0, 0.2, 1] },
+                    opacity: { duration: 0.2, delay: 0.12 },
                   }}
                 />
 
@@ -194,15 +192,14 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                   d={HELLO_PATH}
                   fill="none"
                   stroke="url(#glass-tube-core)"
-                  strokeWidth="15"
+                  strokeWidth="14"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  style={{ filter: 'blur(2.5px)' }}
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
                   transition={{
-                    pathLength: { duration: 2.8, delay: 0.2, ease: [0.42, 0, 0.18, 1] },
-                    opacity: { duration: 0.2, delay: 0.2 },
+                    pathLength: { duration: 2.1, delay: 0.12, ease: [0.37, 0, 0.2, 1] },
+                    opacity: { duration: 0.2, delay: 0.12 },
                   }}
                 />
 
@@ -210,17 +207,16 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
                 <motion.path
                   d={HELLO_PATH}
                   fill="none"
-                  stroke="rgba(255, 255, 255, 0.6)"
-                  strokeWidth="3.5"
+                  stroke="rgba(255, 255, 255, 0.58)"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   transform="translate(-1.5, -4)"
-                  style={{ filter: 'blur(2px)' }}
                   initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: [0, 0.8, 0.6] }}
+                  animate={{ pathLength: 1, opacity: [0, 0.85, 0.65] }}
                   transition={{
-                    pathLength: { duration: 2.8, delay: 0.2, ease: [0.42, 0, 0.18, 1] },
-                    opacity: { duration: 3.1, delay: 0.2 },
+                    pathLength: { duration: 2.1, delay: 0.12, ease: [0.37, 0, 0.2, 1] },
+                    opacity: { duration: 2.3, delay: 0.12 },
                   }}
                 />
               </svg>
