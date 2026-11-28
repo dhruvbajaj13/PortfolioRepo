@@ -45,86 +45,58 @@ export function CinematicPreloader({ onComplete }: { onComplete: () => void }) {
             transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
           }}
           onClick={handleSkip}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#080510] overflow-hidden select-none cursor-pointer"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#030303] overflow-hidden select-none cursor-pointer"
         >
-          {/* ─── Rich macOS-Inspired Luminous Mesh Aurora Background ─── */}
+          {/* ─── Deep Black Aurora Background ─── */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {/* Base diagonal warm-rose to deep-indigo wash */}
-            <div
-              className="absolute inset-0 opacity-85"
-              style={{
-                background:
-                  'linear-gradient(125deg, #2a0e24 0%, #1c0f2e 38%, #121033 72%, #080510 100%)',
-              }}
-            />
+            {/* Pure black base */}
+            <div className="absolute inset-0 bg-[#030303]" />
 
-            {/* Luminous warm rose / magenta aurora orb (top-left) */}
+            {/* Deep cyan-teal whisper orb (top-left) — very dim */}
             <motion.div
-              initial={{ opacity: 0.4, scale: 0.95 }}
+              initial={{ opacity: 0.15, scale: 0.95 }}
               animate={{
-                opacity: [0.55, 0.78, 0.6],
-                scale: [1, 1.1, 1],
-                x: ['-5%', '4%', '-5%'],
-                y: ['-4%', '5%', '-4%'],
-              }}
-              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-[18%] -left-[12%] w-[72vw] h-[72vw] max-w-[900px] max-h-[900px] rounded-full blur-[110px]"
-              style={{
-                background:
-                  'radial-gradient(circle at center, rgba(236, 72, 153, 0.45) 0%, rgba(190, 24, 93, 0.25) 42%, transparent 74%)',
-              }}
-            />
-
-            {/* Soft coral-pink highlight orb (center-left) */}
-            <motion.div
-              initial={{ opacity: 0.3 }}
-              animate={{
-                opacity: [0.35, 0.55, 0.38],
-                scale: [0.98, 1.08, 0.98],
-                x: ['2%', '-5%', '2%'],
-                y: ['4%', '-3%', '4%'],
+                opacity: [0.18, 0.28, 0.18],
+                scale: [1, 1.08, 1],
+                x: ['-5%', '3%', '-5%'],
+                y: ['-4%', '4%', '-4%'],
               }}
               transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-[15%] left-[10%] w-[52vw] h-[52vw] max-w-[680px] max-h-[680px] rounded-full blur-[120px]"
+              className="absolute -top-[20%] -left-[15%] w-[70vw] h-[70vw] max-w-[860px] max-h-[860px] rounded-full will-change-transform"
               style={{
                 background:
-                  'radial-gradient(circle at center, rgba(244, 114, 182, 0.30) 0%, rgba(168, 85, 247, 0.18) 50%, transparent 76%)',
+                  'radial-gradient(circle at center, rgba(56, 189, 248, 0.22) 0%, rgba(14, 165, 233, 0.08) 42%, transparent 72%)',
               }}
             />
 
-            {/* Deep violet / electric indigo aurora orb (bottom-right) */}
+            {/* Soft violet glow orb (bottom-right) — very subtle */}
             <motion.div
-              initial={{ opacity: 0.4, scale: 1 }}
+              initial={{ opacity: 0.15, scale: 1 }}
               animate={{
-                opacity: [0.5, 0.72, 0.55],
-                scale: [1.06, 0.96, 1.06],
-                x: ['5%', '-4%', '5%'],
-                y: ['4%', '-5%', '4%'],
+                opacity: [0.18, 0.30, 0.18],
+                scale: [1.04, 0.96, 1.04],
+                x: ['4%', '-3%', '4%'],
+                y: ['3%', '-4%', '3%'],
               }}
-              transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -bottom-[22%] -right-[12%] w-[75vw] h-[75vw] max-w-[940px] max-h-[940px] rounded-full blur-[120px]"
+              transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -bottom-[20%] -right-[15%] w-[72vw] h-[72vw] max-w-[900px] max-h-[900px] rounded-full will-change-transform"
               style={{
                 background:
-                  'radial-gradient(circle at center, rgba(99, 102, 241, 0.45) 0%, rgba(139, 92, 246, 0.28) 45%, transparent 75%)',
+                  'radial-gradient(circle at center, rgba(139, 92, 246, 0.22) 0%, rgba(109, 40, 217, 0.08) 44%, transparent 74%)',
               }}
             />
 
-            {/* Soft cyan-indigo rim whisper (top-right) */}
-            <motion.div
-              animate={{
-                opacity: [0.22, 0.38, 0.22],
-                scale: [1, 1.06, 1],
-              }}
-              transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-[15%] right-[5%] w-[45vw] h-[45vw] max-w-[580px] max-h-[580px] rounded-full blur-[130px]"
+            {/* Centre neutral glow — lifts the hello text ever so slightly */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[55vw] h-[55vw] max-w-[700px] max-h-[700px] rounded-full"
               style={{
                 background:
-                  'radial-gradient(circle at center, rgba(59, 130, 246, 0.28) 0%, transparent 72%)',
+                  'radial-gradient(circle at center, rgba(255,255,255,0.025) 0%, transparent 68%)',
               }}
             />
 
-            {/* Subtle dark radial vignette to frame the glass calligraphy */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_80%_at_50%_50%,transparent_35%,rgba(5,4,10,0.68)_100%)]" />
+            {/* Deep vignette to push edges to pure black */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_75%_at_50%_50%,transparent_30%,rgba(2,2,2,0.82)_100%)]" />
           </div>
 
           {/* ─── Center Stage: Pure 3D Frosted Glass Tube "hello" Calligraphy (No Extra Text) ─── */}

@@ -248,14 +248,14 @@ export function ActHero({
   const [roleIndex, setRoleIndex] = useState(0);
   const [currentText, setCurrentText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (!spotlightRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    setMousePos({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
-    });
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    spotlightRef.current.style.background = `radial-gradient(circle 500px at ${x}% ${y}%, rgba(255, 255, 255, 0.05), transparent 75%)`;
   };
 
   useEffect(() => {
@@ -291,27 +291,25 @@ export function ActHero({
     <section
       id="hero"
       onMouseMove={handleMouseMove}
-      className="relative w-full min-h-screen flex flex-col justify-between px-3 xs:px-4 sm:px-8 md:px-12 lg:px-16 pt-16 sm:pt-24 md:pt-28 pb-8 sm:pb-10 overflow-hidden z-10 bg-[#050505]"
+      className="relative w-full min-h-screen flex flex-col justify-between px-5 sm:px-8 md:px-12 lg:px-16 pt-24 sm:pt-28 md:pt-32 pb-10 overflow-hidden z-10 bg-[#050505]"
     >
       {/* 3D Wireframe & Particle Background */}
       <Hero3DGeometricBackground />
 
-      {/* Interactive Cursor Spotlight Glow */}
+      {/* Interactive Cursor Spotlight Glow (Zero React re-render via ref) */}
       <div
-        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-500"
-        style={{
-          background: `radial-gradient(circle 500px at ${mousePos.x}% ${mousePos.y}%, rgba(255, 255, 255, 0.05), transparent 75%)`,
-        }}
+        ref={spotlightRef}
+        className="hidden md:block pointer-events-none absolute inset-0 z-0"
       />
 
-      {/* Subtle Volumetric Ambient Glow */}
-      <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04)_0%,transparent_70%)] blur-[140px] pointer-events-none z-0" />
+      {/* Subtle Volumetric Ambient Glow (Pure CSS gradient, zero heavy GPU blur) */}
+      <div className="absolute top-1/3 right-1/4 w-[480px] h-[480px] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.035)_0%,transparent_70%)] pointer-events-none z-0" />
 
       {/* Main Hero Layout: 2 Columns (Responsive Stack on Mobile, Side-by-Side on Desktop) */}
-      <div className="max-w-7xl mx-auto w-full my-auto flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-14 relative z-10">
+      <div className="max-w-7xl mx-auto w-full my-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-14 relative z-10">
         
         {/* Left Column: Text & Actions (Centered Alignment with subtle left offset on desktop) */}
-        <div className="w-full lg:w-[52%] flex flex-col items-center text-center space-y-4 sm:space-y-6 lg:-translate-x-6 xl:-translate-x-10">
+        <div className="w-full lg:w-[52%] flex flex-col items-center text-center space-y-5 sm:space-y-6 lg:-translate-x-6 xl:-translate-x-10">
           
           {/* Header Title Lockup: Badge, Name & Typewriter Centered */}
           <div className="flex flex-col items-center max-w-fit w-full mx-auto">
@@ -320,7 +318,7 @@ export function ActHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full liquid-glass-pill text-[10.5px] sm:text-xs font-semibold text-white/90 shadow-lg mb-2"
+              className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full liquid-glass-pill text-[11px] sm:text-xs font-semibold text-white/90 shadow-lg mb-3"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
               <span>Open to SDE Opportunities / Internship</span>
@@ -331,7 +329,7 @@ export function ActHero({
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="heading-hover-sweep font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-tight text-center cursor-pointer bg-gradient-to-b from-white via-white/95 to-white/70 bg-clip-text text-transparent drop-shadow-[0_4px_35px_rgba(255,255,255,0.12)]"
+              className="heading-hover-sweep font-display text-[2.65rem] leading-[1.08] sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-center cursor-pointer bg-gradient-to-b from-white via-white/95 to-white/70 bg-clip-text text-transparent drop-shadow-[0_4px_35px_rgba(255,255,255,0.12)]"
             >
               Dhruv Bajaj
             </motion.h1>
@@ -341,7 +339,7 @@ export function ActHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="h-8 sm:h-10 flex items-center justify-center mt-0.5"
+              className="h-8 sm:h-10 flex items-center justify-center mt-1.5"
             >
               <span className="font-display text-sm sm:text-xl md:text-2xl font-semibold text-white tracking-wide text-center">
                 {currentText}
@@ -355,45 +353,47 @@ export function ActHero({
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.6 }}
-            className="font-sans text-xs sm:text-base md:text-lg text-[#A8A8A8] max-w-xl leading-relaxed font-light text-center mx-auto"
+            className="font-sans text-[13px] sm:text-base md:text-lg text-[#A8A8A8] max-w-md sm:max-w-xl leading-relaxed font-light text-center mx-auto"
           >
             Software engineer building production-grade full-stack web platforms and autonomous AI systems. Dedicated to algorithms, scalable architecture, and clean code.
           </motion.p>
 
-          {/* Hero Action CTA Buttons (Centered) */}
+          {/* Hero Action CTA Buttons (Compact 2-row on Mobile, Single Row on Desktop) */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.7 }}
-            className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto mx-auto"
+            className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full max-w-sm sm:max-w-none sm:w-auto mx-auto"
           >
             {/* Primary CTA: View My Work ↗ */}
             <a
               href="#projects"
-              className="group/cta w-full sm:w-auto px-6 sm:px-7 py-2.5 sm:py-3 min-h-[44px] rounded-2xl bg-[#FFFFFF] font-sans text-xs sm:text-sm font-bold text-black shadow-[0_0_25px_rgba(255,255,255,0.4)] hover:shadow-[0_0_45px_rgba(255,255,255,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
+              className="group/cta w-full sm:w-auto px-6 sm:px-7 py-3 min-h-[44px] rounded-2xl bg-[#FFFFFF] font-sans text-xs sm:text-sm font-bold text-black shadow-[0_0_25px_rgba(255,255,255,0.35)] hover:shadow-[0_0_45px_rgba(255,255,255,0.65)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
             >
               <span>View My Work</span>
               <ExternalLink className="w-4 h-4 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" />
             </a>
 
-            {/* Secondary CTA: Download Résumé */}
-            <a
-              href={RESUME_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 sm:px-7 py-2.5 sm:py-3 min-h-[44px] rounded-2xl border border-white/15 text-white font-sans text-xs sm:text-sm font-bold hover:border-white/60 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg bg-[#0C0C0E]"
-            >
-              <Download className="w-4 h-4 text-white" />
-              <span>Download Résumé</span>
-            </a>
+            <div className="grid grid-cols-2 gap-2.5 w-full sm:flex sm:w-auto sm:gap-3">
+              {/* Secondary CTA: Download Résumé */}
+              <a
+                href={RESUME_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-4 sm:px-7 py-2.5 sm:py-3 min-h-[44px] rounded-2xl border border-white/15 text-white font-sans text-xs sm:text-sm font-bold hover:border-white/60 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg bg-[#0C0C0E]"
+              >
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0" />
+                <span>Résumé</span>
+              </a>
 
-            {/* Tertiary CTA: Contact */}
-            <a
-              href="#contact"
-              className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 min-h-[44px] rounded-2xl border border-white/10 text-white/70 hover:text-white font-sans text-xs sm:text-sm font-medium hover:border-white/30 hover:bg-white/5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <span>Let&apos;s Talk</span>
-            </a>
+              {/* Tertiary CTA: Contact */}
+              <a
+                href="#contact"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 min-h-[44px] rounded-2xl border border-white/10 text-white/75 hover:text-white font-sans text-xs sm:text-sm font-medium hover:border-white/30 hover:bg-white/5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
+              >
+                <span>Let&apos;s Talk</span>
+              </a>
+            </div>
           </motion.div>
 
           {/* Social Icons Row (Centered) */}
@@ -401,7 +401,7 @@ export function ActHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="pt-1 flex items-center justify-center gap-3 w-full max-w-lg mx-auto"
+            className="pt-0.5 flex items-center justify-center gap-3 w-full max-w-lg mx-auto"
           >
             <a
               href="https://github.com/dhruvbajaj13"
@@ -435,23 +435,23 @@ export function ActHero({
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.9 }}
-            className="pt-2 w-full max-w-lg mx-auto"
+            className="pt-1 w-full max-w-md sm:max-w-lg mx-auto"
           >
-            <div className="flex flex-row items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl liquid-glass">
+            <div className="flex flex-row items-center justify-between px-3 sm:px-6 py-3 sm:py-3.5 rounded-2xl liquid-glass">
               <div className="text-center flex-1">
                 <div className="font-display text-base sm:text-2xl font-extrabold text-[#FFFFFF]">
                   <AnimatedCounter target={1100} suffix="+" />
                 </div>
-                <div className="font-mono text-[7.5px] xs:text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Solved</div>
+                <div className="font-mono text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Solved</div>
               </div>
 
-              <div className="w-px h-5 sm:h-7 bg-white/10" />
+              <div className="w-px h-6 sm:h-7 bg-white/10" />
 
               <div className="text-center flex-1">
                 <div className="font-display text-base sm:text-2xl font-extrabold text-white">
                   <AnimatedCounter target={6} suffix="+" />
                 </div>
-                <div className="font-mono text-[7.5px] xs:text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">Featured Apps</div>
+                <div className="font-mono text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">Featured Apps</div>
               </div>
 
               <div className="w-px h-6 sm:h-7 bg-white/10" />
@@ -460,7 +460,7 @@ export function ActHero({
                 <div className="font-display text-base sm:text-2xl font-extrabold text-[#FFFFFF]">
                   Top <AnimatedCounter target={3} suffix="%" />
                 </div>
-                <div className="font-mono text-[7.5px] xs:text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Knight</div>
+                <div className="font-mono text-[8px] sm:text-[9.5px] text-[#A8A8A8] uppercase tracking-wider mt-0.5">LeetCode Knight</div>
               </div>
             </div>
           </motion.div>
@@ -472,11 +472,11 @@ export function ActHero({
           initial={{ opacity: 0, scale: 0.92, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4 }}
-          className="w-full lg:w-[48%] flex flex-col items-center justify-center relative mt-4 lg:mt-0"
+          className="w-full lg:w-[48%] flex flex-col items-center justify-center relative mt-2 lg:mt-0"
         >
-          <div className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[500px] lg:max-w-[560px] aspect-[16/11] sm:aspect-[16/10] rounded-3xl liquid-glass overflow-hidden flex flex-col border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.2)]">
+          <div className="relative w-full max-w-md sm:max-w-[500px] lg:max-w-[560px] aspect-[16/11] sm:aspect-[16/10] rounded-3xl liquid-glass overflow-hidden flex flex-col border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.2)]">
             {/* Viewport Header */}
-            <div className="flex items-center justify-between px-3.5 sm:px-4 py-2 border-b border-white/8 bg-white/[0.02] backdrop-blur-md">
+            <div className="flex items-center justify-between px-3.5 sm:px-4 py-2 border-b border-white/8 bg-white/[0.02]">
               <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-[#FF5F57]/80" />
                 <div className="w-2 h-2 rounded-full bg-[#FEBC2E]/80" />

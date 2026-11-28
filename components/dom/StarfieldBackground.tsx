@@ -3,9 +3,8 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * Ultra-lightweight CSS-canvas starfield that sits fixed behind the entire page.
- * Uses a single OffscreenCanvas (or regular canvas) to draw ~200 tiny twinkling
- * white dots. No Three.js – runs on the CPU at negligible cost.
+ * Ultra-lightweight canvas starfield fixed behind the page.
+ * Throttled to ~20fps with fast fillRect draws so backdrop-filter glass layers never lag.
  */
 export function StarfieldBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -13,12 +12,12 @@ export function StarfieldBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    const STAR_COUNT = 220;
+    const isMobile = window.innerWidth < 768;
+    const STAR_COUNT = isMobile ? 55 : 100;
 
-    // Set canvas to viewport size
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -26,44 +25,45 @@ export function StarfieldBackground() {
     resize();
     window.addEventListener('resize', resize, { passive: true });
 
-    // Generate stars
     type Star = {
-      x: number; y: number;
-      r: number;
+      x: number;
+      y: number;
+      size: number;
       opacity: number;
-      speed: number;      // twinkle speed
-      phase: number;      // twinkle phase offset
+      speed: number;
+      phase: number;
     };
 
     const stars: Star[] = Array.from({ length: STAR_COUNT }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      r: 0.4 + Math.random() * 1.0,
-      opacity: 0.15 + Math.random() * 0.55,
-      speed: 0.3 + Math.random() * 0.8,
+      size: 1 + Math.random() * 1.4,
+      opacity: 0.2 + Math.random() * 0.55,
+      speed: 0.4 + Math.random() * 0.8,
       phase: Math.random() * Math.PI * 2,
     }));
 
     let animId: number;
-    let t = 0;
+    let lastTime = 0;
+    const FRAME_INTERVAL = 50; // ~20fps is plenty for slow star twinkling
 
-    const draw = () => {
+    const draw = (now: number) => {
       animId = requestAnimationFrame(draw);
-      t += 0.016;
+      if (document.hidden || now - lastTime < FRAME_INTERVAL) return;
+      lastTime = now;
 
+      const t = now * 0.001;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      for (const s of stars) {
-        // Twinkle: sine wave modulates opacity
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
         const twinkle = s.opacity * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${twinkle.toFixed(3)})`;
-        ctx.fill();
+        ctx.fillStyle = `rgba(255,255,255,${twinkle.toFixed(2)})`;
+        ctx.fillRect(s.x, s.y, s.size, s.size);
       }
     };
 
-    draw();
+    animId = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(animId);
@@ -78,8 +78,8 @@ export function StarfieldBackground() {
       style={{
         position: 'fixed',
         inset: 0,
-        width: '100%',
-        height: '100%',
+        width: '100vw',
+        height: '100vh',
         pointerEvents: 'none',
         zIndex: 0,
       }}
